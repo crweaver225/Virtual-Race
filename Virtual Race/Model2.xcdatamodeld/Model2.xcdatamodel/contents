@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="10174" systemVersion="15G31" minimumToolsVersion="Xcode 7.0">
+    <entity name="Match" syncable="YES">
+        <attribute name="myAvatar" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="myDistance" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="myID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="myName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="oppAvatar" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="oppDistance" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="oppID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="oppName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="startDate" attributeType="Date" syncable="YES"/>
+        <attribute name="started" attributeType="Boolean" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="Match" positionX="-54" positionY="-9" width="128" height="195"/>
+    </elements>
+</model>

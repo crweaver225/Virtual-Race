@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="10174" systemVersion="15G31" minimumToolsVersion="Xcode 7.0">
+    <entity name="Match" representedClassName=".Match" syncable="YES">
+        <attribute name="finishDate" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="finished" attributeType="Boolean" indexed="YES" syncable="YES"/>
+        <attribute name="myAvatar" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES" indexed="YES" syncable="YES"/>
+        <attribute name="myDistance" optional="YES" attributeType="Double" defaultValueString="0.0" indexed="YES" syncable="YES"/>
+        <attribute name="myID" optional="YES" attributeType="String" indexed="YES" syncable="YES"/>
+        <attribute name="myName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="oppAvatar" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES" indexed="YES" syncable="YES"/>
+        <attribute name="oppDistance" optional="YES" attributeType="Double" defaultValueString="0.0" indexed="YES" syncable="YES"/>
+        <attribute name="oppID" optional="YES" attributeType="String" indexed="YES" syncable="YES"/>
+        <attribute name="oppName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="raceLocation" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="recordID" optional="YES" attributeType="Transformable" syncable="YES"/>
+        <attribute name="startDate" attributeType="Date" indexed="YES" syncable="YES"/>
+        <attribute name="started" attributeType="Boolean" syncable="YES"/>
+        <attribute name="winner" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="Match" positionX="-63" positionY="-18" width="128" height="270"/>
+    </elements>
+</model>
