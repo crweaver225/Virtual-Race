@@ -122,14 +122,12 @@ class ChooseRouteViewController: UIViewController {
             
             let myID = NSUserDefaults.standardUserDefaults().objectForKey("myID") as! String
             
-            let startMatchAlert = UIAlertController(title: "Confirm the Start of a New Match", message: "Your new match against \(self.oppName) will start at midnight on \(formatDate(oneDayfromNow))", preferredStyle: UIAlertControllerStyle.Alert)
+            let startMatchAlert = UIAlertController(title: "Confirm the Start of a New Match", message: "Your new match against \(self.oppName) will start the following day of being accepted at midnight)", preferredStyle: UIAlertControllerStyle.Alert)
             startMatchAlert.addAction(UIAlertAction(title: "Start the match!", style: .Default, handler: { (action: UIAlertAction!) in
                 
                 performUIUpdatesOnMain{
                     self.activityIndicator.startAnimating()
                 }
-                
-                print("yyy \(self.oneDayfromNow)")
                 
                 let newMatch = Match(startDate: self.oneDayfromNow, myID: myID, context: (self.delegate.stack?.context)!)
                 newMatch.myName = NSUserDefaults.standardUserDefaults().objectForKey("fullName") as? String

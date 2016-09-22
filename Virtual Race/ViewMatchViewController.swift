@@ -51,8 +51,6 @@ class ViewMatchViewController: UIViewController, UITableViewDataSource, UITableV
         
         let row = raceList[indexPath.row]
         
-        print(row)
-        
         let raceLocation = extraInfo.chooseRaceCourse(row.raceLocation!)!
         
         var avatarImage = NSData()
@@ -79,7 +77,8 @@ class ViewMatchViewController: UIViewController, UITableViewDataSource, UITableV
             
         } else if row.rejected == "true" && row.started == true && row.finished == false {
             
-            cell.textLabel?.text = "\(row.oppName!) has choosen to end the race"
+            cell.textLabel?.text = "\(row.oppName!) is no longer participating in the race"
+            cell.textLabel?.numberOfLines = 2
             cell.detailTextLabel?.text = "The race was from \(raceLocation.startingTitle) to \(raceLocation.endingTitle)"
             
         } else if row.finished == true && row.oppID != nil {
@@ -142,7 +141,7 @@ class ViewMatchViewController: UIViewController, UITableViewDataSource, UITableV
         
         let row = raceList[indexPath.row]
         
-        if row.started! == true && row.rejected! == "false" {
+        if row.started! == true  {
         
             let controller: MapViewController
             controller = self.storyboard!.instantiateViewControllerWithIdentifier("MapViewController") as! MapViewController
@@ -289,7 +288,7 @@ class ViewMatchViewController: UIViewController, UITableViewDataSource, UITableV
                         return
                     }
                     
-                    if record!.objectForKey("started") as? String == "true" {
+                    if record!.objectForKey("started") as? String == "true" && match?.started == false {
                         match!.started = true
                         match?.startDate = record?.objectForKey("startDate") as? NSDate
                         performUIUpdatesOnMain{

@@ -92,6 +92,7 @@ class RaceRequestsViewController: UIViewController, UITableViewDataSource, UITab
                 cell.textLabel?.text = "\(name) has challenged you to a race"
                 
                 cell.detailTextLabel!.text = "The race would start in \(raceLocation!.startingTitle) and end in \(raceLocation!.endingTitle)"
+                cell.detailTextLabel?.numberOfLines = 2
                 
                 let avatarURL = NSURL(string: oppAvatar)
                 
