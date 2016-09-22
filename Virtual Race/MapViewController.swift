@@ -47,29 +47,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         self.viewDidLoad()
     }
     
-    func chooseRaceCourse(raceID: String) -> RaceCourses? {
-        
-        switch raceID {
-            
-        case "1":
-        let NewYorktoLA = RaceCourses(startingLat: 40.7589, startingLong: -73.9851, endingLat: 34.0522, endingLong: -118.243683, startingTitle: "New York", endingTitle: "Los Angeles")
-            return NewYorktoLA
-        
-        case "2":
-            let ShermansMarch = RaceCourses(startingLat: 33.7490, startingLong: -84.3880, endingLat: 32.002512, endingLong: -81.153557, startingTitle: "Atlanta, GA", endingTitle: "Savannah, GA")
-            return ShermansMarch
-            
-        case "3":
-            let LibertyTrail = RaceCourses(startingLat: 39.9526, startingLong: -75.1652, endingLat: 38.9072, endingLong: -77.0369, startingTitle: "Philadelphia", endingTitle: "Washington D.C.")
-            return LibertyTrail
-            
-        default:
-            print("no race course was choosen in the switch")
-        }
-        
-        return nil
-    }
-
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
         
         let raceCourse = chooseRaceCourse(self.match.raceLocation!)
@@ -111,15 +88,12 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                 pinView!.clipsToBounds = true
 
             default:
-                
                 print("Unable to make map pin")
             }
         
         return pinView!
     }
 
-    
-    
     func mapView(mapView: MKMapView, rendererForOverlay overlay: MKOverlay) -> MKOverlayRenderer {
         
         let renderer = MKPolylineRenderer(overlay: overlay)
@@ -127,6 +101,86 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         renderer.lineWidth = 4.0
         
         return renderer
+    }
+    
+    override func viewDidLoad() {
+        
+        self.oppDistanceNumber.hidden = true
+        
+        self.oppNameTextView.hidden = true
+        
+        self.oppProgressGraph.hidden = true
+        
+        let date = NSDate()
+        
+        let raceCourse = chooseRaceCourse(self.match.raceLocation!)
+        
+        let startDate = formatDate(self.match.startDate!)
+        
+        self.drawMap(raceCourse!) { (success) in
+            
+            self.getDistance(startDate) { (result) in
+                
+                if self.match.startDate!.compare(date) == NSComparisonResult.OrderedDescending {
+                    self.match.myDistance = 0.0
+                } else {
+                    if let result = result {
+                        self.match.myDistance = result
+                    }
+                }
+                
+                self.processSinglePlayerDistance(startDate, date: date, raceCourse: raceCourse!) { (success) in
+                    
+                    if self.match.oppID != nil && self.match.oppID != self.match.myID {
+                        
+                        let defaultContainer = CKContainer.defaultContainer()
+                        
+                        let publicDB = defaultContainer.publicCloudDatabase
+                        publicDB.fetchRecordWithID(self.match.recordID!) { (record, error) -> Void in
+                            
+                            guard let record = record else {
+                                
+                                self.displayAlert("We could not retrieve \(self.match.oppName!)'s information form the server at this time. Please make sure you are currently logged into your iCloud account")
+                                
+                                self.addPlayerToMap(self.match.oppID!, userDistance: (self.match.oppDistance as? Double)!, raceLocation: raceCourse!)
+                                
+                                return
+                            }
+                            
+                            self.match.oppDistance = record.objectForKey("d" + self.match.oppID!) as? Double
+                            
+                            self.processMultiplayerDistance(record){ (success) in
+                                
+                                self.addPlayerToMap(self.match.oppID!, userDistance: (self.match.oppDistance as? Double)!, raceLocation: raceCourse!)
+                                
+                                
+                                record.setObject(date, forKey: "u" + self.match.myID!)
+                                
+                                self.delegate.stack?.context.performBlock{
+                                    self.delegate.stack?.save()
+                                }
+                                
+                                if isICloudContainerAvailable() {
+                                    
+                                    record.setObject(self.match.myDistance, forKey: "d" + self.match.myID!)
+                                    
+                                    publicDB.saveRecord(record) { (record, error) -> Void in
+                                        guard let record = record else {
+                                            print("Error saving record: ", error)
+                                            return
+                                        }
+                                    }
+                                    
+                                } else {
+                                    
+                                    self.displayICloudError()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
     
     func processSinglePlayerDistance(startDate: String, date: NSDate, raceCourse: RaceCourses, completionHandler: (success: Bool) -> Void) {
@@ -259,87 +313,28 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         completionHandler(success: true)
     }
     
-    
-    override func viewDidLoad() {
-
-        self.oppDistanceNumber.hidden = true
+    func chooseRaceCourse(raceID: String) -> RaceCourses? {
         
-        self.oppNameTextView.hidden = true
-        
-        self.oppProgressGraph.hidden = true
-        
-        let date = NSDate()
-        
-        let raceCourse = chooseRaceCourse(self.match.raceLocation!)
-        
-        let startDate = formatDate(self.match.startDate!)
-        
-        self.drawMap(raceCourse!) { (success) in
+        switch raceID {
             
-                self.getDistance(startDate) { (result) in
-                    
-                    if self.match.startDate!.compare(date) == NSComparisonResult.OrderedDescending {
-                        self.match.myDistance = 0.0
-                    } else {
-                        if let result = result {
-                            self.match.myDistance = result
-                        }
-                    }
-                    
-                    self.processSinglePlayerDistance(startDate, date: date, raceCourse: raceCourse!) { (success) in
-                        
-                        if self.match.oppID != nil && self.match.oppID != self.match.myID {
-                            
-                            let defaultContainer = CKContainer.defaultContainer()
-                            
-                            let publicDB = defaultContainer.publicCloudDatabase
-                            publicDB.fetchRecordWithID(self.match.recordID!) { (record, error) -> Void in
-                                
-                                guard let record = record else {
-                                    
-                                    self.displayAlert("We could not retrieve \(self.match.oppName!)'s information form the server at this time. Please make sure you are currently logged into your iCloud account")
-                                    
-                                    self.addPlayerToMap(self.match.oppID!, userDistance: (self.match.oppDistance as? Double)!, raceLocation: raceCourse!)
-                                    
-                                    return
-                                }
-                                
-                                self.match.oppDistance = record.objectForKey("d" + self.match.oppID!) as? Double
-                                
-                                self.processMultiplayerDistance(record){ (success) in
-                                    
-                                    self.addPlayerToMap(self.match.oppID!, userDistance: (self.match.oppDistance as? Double)!, raceLocation: raceCourse!)
-                                    
-                                    
-                                    record.setObject(date, forKey: "u" + self.match.myID!)
-                                
-                                    self.delegate.stack?.context.performBlock{
-                                        self.delegate.stack?.save()
-                                    }
-                                
-                                if isICloudContainerAvailable() {
-                                    
-                                    record.setObject(self.match.myDistance, forKey: "d" + self.match.myID!)
-                                    
-                                    publicDB.saveRecord(record) { (record, error) -> Void in
-                                        guard let record = record else {
-                                            print("Error saving record: ", error)
-                                            return
-                                        }
-                                    }
-                                    
-                                } else {
-                                    
-                                    self.displayICloudError()
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        case "1":
+            let NewYorktoLA = RaceCourses(startingLat: 40.7589, startingLong: -73.9851, endingLat: 34.0522, endingLong: -118.243683, startingTitle: "New York", endingTitle: "Los Angeles")
+            return NewYorktoLA
+            
+        case "2":
+            let ShermansMarch = RaceCourses(startingLat: 33.7490, startingLong: -84.3880, endingLat: 32.002512, endingLong: -81.153557, startingTitle: "Atlanta, GA", endingTitle: "Savannah, GA")
+            return ShermansMarch
+            
+        case "3":
+            let LibertyTrail = RaceCourses(startingLat: 39.9526, startingLong: -75.1652, endingLat: 38.9072, endingLong: -77.0369, startingTitle: "Philadelphia", endingTitle: "Washington D.C.")
+            return LibertyTrail
+            
+        default:
+            print("no race course was choosen in the switch")
         }
+        
+        return nil
     }
-
     
     func getDistance(startDate: String, completionHandler: (result: Double?) -> Void) {
         

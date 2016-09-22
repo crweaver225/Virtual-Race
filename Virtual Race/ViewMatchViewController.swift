@@ -11,9 +11,6 @@ import UIKit
 import CoreData
 import CloudKit
 
-
-
-
 class ViewMatchViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     var friendList = [[String:AnyObject]]()
@@ -190,9 +187,17 @@ class ViewMatchViewController: UIViewController, UITableViewDataSource, UITableV
             
             let publicDB = defaultContainer.publicCloudDatabase
             
-            if isICloudContainerAvailable() {
+            if isICloudContainerAvailable()  {
             
             publicDB.fetchRecordWithID(raceList[indexPath.row].recordID!) { (record, error) -> Void in
+                
+                guard (error == nil) else {
+                    self.displayAlert((error?.localizedDescription)! + " You will not be able to delete this race until the issue is fixed.")
+                    performUIUpdatesOnMain{
+                        self.tableView.reloadData()
+                    }
+                    return
+                }
                 
                 guard let record = record else {
                     
@@ -214,7 +219,7 @@ class ViewMatchViewController: UIViewController, UITableViewDataSource, UITableV
                             }
                             return
                         }
-                    }
+                }
                 
                     self.delegate.stack?.context.deleteObject(self.raceList[indexPath.row])
                     
@@ -247,7 +252,7 @@ class ViewMatchViewController: UIViewController, UITableViewDataSource, UITableV
         
         super.viewWillAppear(animated)
         
-        self.raceList.removeAll()
+        raceList.removeAll()
         
         let fr = NSFetchRequest(entityName: "Match")
         fr.sortDescriptors = [NSSortDescriptor(key: "startDate", ascending: true)]
@@ -310,9 +315,9 @@ class ViewMatchViewController: UIViewController, UITableViewDataSource, UITableV
             raceList.append(match!)
         }
  
-        self.tableView.reloadData()
+        tableView.reloadData()
         
-        self.searchAllRaces()
+        searchAllRaces()
     }
     
     func updateRaces(match: Match) {
