@@ -12,11 +12,9 @@ import Foundation
 
 func isICloudContainerAvailable()->Bool {
     if let currentToken = NSFileManager.defaultManager().ubiquityIdentityToken {
-        print("icloud available")
         return true
     }
     else {
-        print("icloud unavailable")
         return false
     }
 }

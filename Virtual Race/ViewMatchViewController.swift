@@ -11,7 +11,9 @@ import UIKit
 import CoreData
 import CloudKit
 
-class ViewMatchViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UITableViewDelegate {
+    
+    @IBOutlet weak var tableView: UITableView!
     
     var friendList = [[String:AnyObject]]()
     
@@ -25,228 +27,6 @@ class ViewMatchViewController: UIViewController, UITableViewDataSource, UITableV
     
     var requestChecker = false
     
-    @IBOutlet weak var tableView: UITableView!
-    
-    @IBAction func returnButton(sender: AnyObject) {
-        let controller: LoginWebViewController
-        controller = self.storyboard!.instantiateViewControllerWithIdentifier("LoginWebViewController") as! LoginWebViewController
-        
-        self.presentViewController(controller, animated: false, completion: nil)
-
-    }
-
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
-        return raceList.count
-    }
- 
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        
-        let extraInfo = MapViewController()
-        
-        let cell = tableView.dequeueReusableCellWithIdentifier("currentRaces")!
-        
-        let row = raceList[indexPath.row]
-        
-        let raceLocation = extraInfo.chooseRaceCourse(row.raceLocation!)!
-        
-        var avatarImage = NSData()
-        
-        if row.oppAvatar == nil {
-            avatarImage = row.myAvatar!
-            cell.textLabel!.text = "\(raceLocation.startingTitle) to \(raceLocation.endingTitle)"
-        } else {
-            avatarImage = row.oppAvatar!
-            cell.textLabel?.text = "Racing \(row.oppName!) from \(raceLocation.startingTitle) to \(raceLocation.endingTitle)"
-            cell.textLabel!.numberOfLines = 2
-        }
-        
-        cell.imageView!.image = UIImage(data: avatarImage)
-        
-        if row.finished == true && row.oppID == nil {
-            
-            cell.detailTextLabel?.text = "The race is over!"
-            
-        } else if row.rejected == "true" {
-            
-            cell.textLabel?.text = "\(row.oppName!) has declined this race"
-            cell.detailTextLabel?.text = "The race was from \(raceLocation.startingTitle) to \(raceLocation.endingTitle)"
-            
-        } else if row.rejected == "true" && row.started == true && row.finished == false {
-            
-            cell.textLabel?.text = "\(row.oppName!) is no longer participating in the race"
-            cell.textLabel?.numberOfLines = 2
-            cell.detailTextLabel?.text = "The race was from \(raceLocation.startingTitle) to \(raceLocation.endingTitle)"
-            
-        } else if row.finished == true && row.oppID != nil {
-            
-            if row.winner! == "tie" {
-                cell.detailTextLabel?.text = "The race is over! it was a tie"
-                
-        } else {
-            
-                if row.winner == row.myName! || row.winner == row.oppName! {
-                    cell.detailTextLabel?.text = "The race is over! \(row.winner!) finished 1st"
-                    cell.detailTextLabel?.textColor = UIColor(red: 0.0, green: 0.502, blue: 0.004, alpha: 1.0)
-                } else {
-                    cell.detailTextLabel?.text = "\(row.winner!)"
-                    cell.detailTextLabel?.textColor = UIColor.redColor()
-                    cell.detailTextLabel!.numberOfLines = 2
-                }
-            }
-        
-        } else if row.started == true  {
-            
-            cell.detailTextLabel!.text = "Race start date: \(formatDate(row.startDate!))"
-            
-        } else {
-            
-            let defaultContainer = CKContainer.defaultContainer()
-            
-            let publicDB = defaultContainer.publicCloudDatabase
-            publicDB.fetchRecordWithID(row.recordID!) { (record, error) -> Void in
-                
-                guard let record = record else {
-                    print("Error fetching record: ", error)
-                    return
-                }
-                
-                if record.objectForKey("started") as? String == "false" && self.requestChecker == false {
-                    performUIUpdatesOnMain{
-                        cell.detailTextLabel!.text = "Waiting for your race request to be accepted"
-                        self.requestChecker = true
-                        self.tableView.reloadData()
-                    }
-                    
-                } else {
-                    row.started = true
-                    row.startDate = record.objectForKey("startDate") as? NSDate
-                    
-                    performUIUpdatesOnMain{
-                        cell.detailTextLabel!.text = "Race started on \(formatDate(row.startDate!))"
-                        self.delegate.stack?.save()
-                        self.tableView.reloadData()
-                    }
-                }
-            }
-        }
-
-        return cell
-    }
-    
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        
-        let row = raceList[indexPath.row]
-        
-        if row.started! == true  {
-        
-            let controller: MapViewController
-            controller = self.storyboard!.instantiateViewControllerWithIdentifier("MapViewController") as! MapViewController
-        
-            controller.match = row
-        
-            self.navigationController?.pushViewController(controller, animated: true)
-            
-        } else {
-            tableView.deselectRowAtIndexPath(indexPath, animated: true)
-        }
-    }
-    
-    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        
-        if editingStyle == .Delete {
-            
-            deleteMatchIndexPath = indexPath
-            
-            let matchToDelete = raceList[indexPath.row]
-            
-            confirmDelete(matchToDelete)
-        }
-    }
-    
-    func confirmDelete(match: Match) {
-        
-        let alert = UIAlertController(title: "Delete Race Request", message: "Are you sure you want to permanently end and delete this race? If this is a two player race, niether you or your opponent will be able to see race details upon its deletion.", preferredStyle: .ActionSheet)
-        
-        let DeleteAction = UIAlertAction(title: "Delete", style: .Destructive, handler: handleDeleteMatch)
-        
-        let CancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: cancelDeleteMatch)
-        
-        alert.addAction(DeleteAction)
-        
-        alert.addAction(CancelAction)
-    
-        self.presentViewController(alert, animated: true, completion: nil)
-    }
-    
-    func handleDeleteMatch(alertAction: UIAlertAction!) -> Void {
-        
-        if let indexPath = deleteMatchIndexPath {
-            
-            let defaultContainer = CKContainer.defaultContainer()
-            
-            let publicDB = defaultContainer.publicCloudDatabase
-            
-            if isICloudContainerAvailable()  {
-            
-            publicDB.fetchRecordWithID(raceList[indexPath.row].recordID!) { (record, error) -> Void in
-                
-                guard (error == nil) else {
-                    self.displayAlert((error?.localizedDescription)! + " You will not be able to delete this race until the issue is fixed.")
-                    performUIUpdatesOnMain{
-                        self.tableView.reloadData()
-                    }
-                    return
-                }
-                
-                guard let record = record else {
-                    
-                    self.displayAlert((error?.localizedDescription)!)
-                    
-                    performUIUpdatesOnMain{
-                        self.tableView.reloadData()
-                    }
-                    return
-                }
-                
-                record.setObject("true", forKey: "rejected")
-                
-                    publicDB.saveRecord(record) { (record, error) -> Void in
-                        guard let record = record else {
-                            self.displayAlert((error?.localizedDescription)!)
-                            performUIUpdatesOnMain{
-                                self.tableView.reloadData()
-                            }
-                            return
-                        }
-                }
-                
-                    self.delegate.stack?.context.deleteObject(self.raceList[indexPath.row])
-                    
-                    self.raceList.removeAtIndex(indexPath.row)
-                    
-                    self.delegate.stack?.save()
-                    
-                    self.deleteMatchIndexPath = nil
-                    
-                    performUIUpdatesOnMain{
-                        self.tableView.beginUpdates()
-                        self.tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
-                        self.tableView.endUpdates()
-                    }
-                }
-            } else {
-                performUIUpdatesOnMain{
-                    self.displayAlert("You cannot delete this race without being signed into an iCloud account")
-                    self.tableView.reloadData()
-                }
-            }
-        }
-    }
-    
-    func cancelDeleteMatch(alertAction: UIAlertAction!) {
-        deleteMatchIndexPath = nil
-    }
     
     override func viewWillAppear(animated:Bool) {
         
@@ -333,8 +113,8 @@ class ViewMatchViewController: UIViewController, UITableViewDataSource, UITableV
                         
                         NSUserDefaults.standardUserDefaults().setObject(nil, forKey: "Access Token")
                         
-                        let controller: LoginWebViewController
-                        controller = self.storyboard!.instantiateViewControllerWithIdentifier("LoginWebViewController") as! LoginWebViewController
+                        let controller: MainPageViewController
+                        controller = self.storyboard!.instantiateViewControllerWithIdentifier("MainPageViewController") as! MainPageViewController
                         
                         performUIUpdatesOnMain{
                             self.presentViewController(controller, animated: false, completion: nil)
@@ -558,12 +338,239 @@ class ViewMatchViewController: UIViewController, UITableViewDataSource, UITableV
         }
     }
     
-    func displayAlert(text: String) {
+    func confirmDelete(match: Match) {
         
-        let networkAlert = UIAlertController(title: "Warning", message: text, preferredStyle: UIAlertControllerStyle.Alert)
-        networkAlert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
+        let alert = UIAlertController(title: "Delete Race Request", message: "Are you sure you want to permanently end and delete this race? If this is a two player race, niether you or your opponent will be able to see race details upon its deletion.", preferredStyle: .ActionSheet)
         
-        self.presentViewController(networkAlert, animated: true, completion: nil)
+        let DeleteAction = UIAlertAction(title: "Delete", style: .Destructive, handler: handleDeleteMatch)
+        
+        let CancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: cancelDeleteMatch)
+        
+        alert.addAction(DeleteAction)
+        
+        alert.addAction(CancelAction)
+        
+        self.presentViewController(alert, animated: true, completion: nil)
+    }
+    
+    func handleDeleteMatch(alertAction: UIAlertAction!) -> Void {
+        
+        if let indexPath = deleteMatchIndexPath {
+            
+            let defaultContainer = CKContainer.defaultContainer()
+            
+            let publicDB = defaultContainer.publicCloudDatabase
+            
+            if isICloudContainerAvailable()  {
+                
+                publicDB.fetchRecordWithID(raceList[indexPath.row].recordID!) { (record, error) -> Void in
+                    
+                    guard (error == nil) else {
+                        self.displayAlert((error?.localizedDescription)! + " You will not be able to delete this race until the issue is fixed.")
+                        performUIUpdatesOnMain{
+                            self.tableView.reloadData()
+                        }
+                        return
+                    }
+                    
+                    guard let record = record else {
+                        
+                        self.displayAlert((error?.localizedDescription)!)
+                        
+                        performUIUpdatesOnMain{
+                            self.tableView.reloadData()
+                        }
+                        return
+                    }
+                    
+                    record.setObject("true", forKey: "rejected")
+                    
+                    publicDB.saveRecord(record) { (record, error) -> Void in
+                        guard let record = record else {
+                            self.displayAlert((error?.localizedDescription)!)
+                            performUIUpdatesOnMain{
+                                self.tableView.reloadData()
+                            }
+                            return
+                        }
+                    }
+                    
+                    self.delegate.stack?.context.deleteObject(self.raceList[indexPath.row])
+                    
+                    self.raceList.removeAtIndex(indexPath.row)
+                    
+                    self.delegate.stack?.save()
+                    
+                    self.deleteMatchIndexPath = nil
+                    
+                    performUIUpdatesOnMain{
+                        self.tableView.beginUpdates()
+                        self.tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+                        self.tableView.endUpdates()
+                    }
+                }
+            } else {
+                performUIUpdatesOnMain{
+                    self.displayAlert("You cannot delete this race without being signed into an iCloud account")
+                    self.tableView.reloadData()
+                }
+            }
+        }
+    }
+    
+    func cancelDeleteMatch(alertAction: UIAlertAction!) {
+        deleteMatchIndexPath = nil
+    }
+    
+    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        return 140.0
+    }
+    
+    
+    func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+        
+        cell.contentView.backgroundColor = UIColor.clearColor()
+        
+        let whiteRoundedView : UIView = UIView(frame: CGRectMake(0, 10, self.view.frame.size.width, 120))
+        
+        whiteRoundedView.layer.backgroundColor = CGColorCreate(CGColorSpaceCreateDeviceRGB(), [1.0, 1.0, 1.0, 1.0])
+        whiteRoundedView.layer.masksToBounds = false
+        whiteRoundedView.layer.cornerRadius = 2.0
+        whiteRoundedView.layer.shadowOffset = CGSizeMake(-1, 1)
+        whiteRoundedView.layer.shadowOpacity = 0.2
+        
+        cell.contentView.addSubview(whiteRoundedView)
+        cell.contentView.sendSubviewToBack(whiteRoundedView)
     }
  
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
+        return raceList.count
+    }
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        
+        let extraInfo = MapViewController()
+        
+        let cell = tableView.dequeueReusableCellWithIdentifier("currentRaces")!
+        
+        let row = raceList[indexPath.row]
+        
+        let raceLocation = extraInfo.chooseRaceCourse(row.raceLocation!)!
+        
+        var avatarImage = NSData()
+        
+        if row.oppAvatar == nil{
+            avatarImage = row.myAvatar!
+            cell.textLabel!.text = "\(raceLocation.startingTitle) to \(raceLocation.endingTitle)"
+            cell.imageView!.image = UIImage(data: avatarImage)
+            
+        } else {
+            avatarImage = row.oppAvatar!
+            cell.textLabel?.text = "Racing \(row.oppName!) from \(raceLocation.startingTitle) to \(raceLocation.endingTitle)"
+            cell.textLabel!.numberOfLines = 2
+            cell.imageView!.image = UIImage(data: avatarImage)
+            
+        }
+
+        switch row {
+            
+        case let row where row.finished == true && row.oppID == nil:
+            cell.detailTextLabel?.text = "The race is over!"
+            
+        case let row where row.rejected == "true":
+            cell.textLabel?.text = "\(row.oppName!) has declined this race"
+            cell.detailTextLabel?.text = "The race was from \(raceLocation.startingTitle) to \(raceLocation.endingTitle)"
+            
+        case let row where row.rejected == "true" && row.started == true && row.finished == false:
+            cell.textLabel?.text = "\(row.oppName!) is no longer participating in the race"
+            cell.textLabel?.numberOfLines = 2
+            cell.detailTextLabel?.text = "The race was from \(raceLocation.startingTitle) to \(raceLocation.endingTitle)"
+            
+        case let row where row.finished == true && row.oppID != nil:
+            if row.winner! == "tie" {
+                cell.detailTextLabel?.text = "The race is over! it was a tie"
+                cell.detailTextLabel?.textColor = UIColor.redColor()
+                
+            } else {
+                
+                if row.winner == row.myName! || row.winner == row.oppName! {
+                    cell.detailTextLabel?.text = "The race is over! \(row.winner!) finished 1st"
+                    cell.detailTextLabel?.textColor = UIColor(red: 0.0, green: 0.502, blue: 0.004, alpha: 1.0)
+                } else {
+                    cell.detailTextLabel?.text = "\(row.winner!)"
+                    cell.detailTextLabel?.textColor = UIColor.redColor()
+                    cell.detailTextLabel!.numberOfLines = 2
+                }
+            }
+            
+        case let row where row.started == true:
+             cell.detailTextLabel!.text = "Race start date: \(formatDate(row.startDate!))"
+            
+        default:
+           
+            let defaultContainer = CKContainer.defaultContainer()
+            
+            let publicDB = defaultContainer.publicCloudDatabase
+            publicDB.fetchRecordWithID(row.recordID!) { (record, error) -> Void in
+                
+                guard let record = record else {
+                    print("Error fetching record: ", error)
+                    return
+                }
+                
+                if record.objectForKey("started") as? String == "false" && self.requestChecker == false {
+                    performUIUpdatesOnMain{
+                        cell.detailTextLabel!.text = "Waiting for your race request to be accepted"
+                        self.requestChecker = true
+                        self.tableView.reloadData()
+                    }
+                    
+                } else {
+                    row.started = true
+                    row.startDate = record.objectForKey("startDate") as? NSDate
+                    
+                    performUIUpdatesOnMain{
+                        cell.detailTextLabel!.text = "Race started on \(formatDate(row.startDate!))"
+                        self.delegate.stack?.save()
+                        self.tableView.reloadData()
+                    }
+                }
+            }
+        }
+        
+        return cell
+    }
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        
+        let row = raceList[indexPath.row]
+        
+        if row.started! == true  {
+            
+            let controller: MapViewController
+            controller = self.storyboard!.instantiateViewControllerWithIdentifier("MapViewController") as! MapViewController
+            
+            controller.match = row
+            
+            self.navigationController?.pushViewController(controller, animated: true)
+            
+        } else {
+            tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        }
+    }
+    
+    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+        
+        if editingStyle == .Delete {
+            
+            deleteMatchIndexPath = indexPath
+            
+            let matchToDelete = raceList[indexPath.row]
+            
+            confirmDelete(matchToDelete)
+        }
+    }
+
 }

@@ -68,14 +68,12 @@ class RetrieveDistance {
     
     func getDistance(date: String,  completionHandler: (result: Double?, error: AnyObject?) -> Void) {
         
-        print("get distance")
-        
         let accessToken = NSUserDefaults.standardUserDefaults().objectForKey("Access Token") as? String
         
         var distance = 0.0
         
-        let url = "https://api.fitbit.com/1/user/-/activities/tracker/distance/date/\(date)/today.json"
-        
+       let url = "https://api.fitbit.com/1/user/-/activities/tracker/distance/date/\(date)/today.json"
+
         let request = NSMutableURLRequest(URL: NSURL(string: url)!)
         request.HTTPMethod = "GET"
         request.addValue("Bearer \(accessToken!)", forHTTPHeaderField: "Authorization")

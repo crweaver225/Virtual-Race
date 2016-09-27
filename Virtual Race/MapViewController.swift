@@ -12,15 +12,7 @@ import CoreData
 import CloudKit
 
 
-class MapViewController: UIViewController, MKMapViewDelegate {
-    
-    var coords: [CLLocationCoordinate2D] = []
-    
-    var distance: Double?
-    
-    var match = Match!()
-    
-    let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+class MapViewController: ViewControllerMethods, MKMapViewDelegate {
     
     @IBOutlet weak var mapView: MKMapView!
     
@@ -47,61 +39,14 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         self.viewDidLoad()
     }
     
-    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
-        
-        let raceCourse = chooseRaceCourse(self.match.raceLocation!)
-
-        let reuseId = "pin"
-
-        var pinView = mapView.dequeueReusableAnnotationViewWithIdentifier(reuseId)
-        
-        pinView = MKAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
- 
-        switch String(annotation.title!) {
-              
-            case String(raceCourse?.startingTitle):
-                
-                pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
-            
-            case String(raceCourse?.endingTitle):
-                
-                pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
-            
-            case String(self.match.myID):
-            
-                pinView!.image = UIImage(data: self.match.myAvatar!)
-                pinView?.frame = (frame: CGRectMake(20, 30, 30, 30))
-                pinView!.layer.borderWidth = 1.0
-                pinView!.layer.masksToBounds = false
-                pinView!.layer.borderColor = UIColor.whiteColor().CGColor
-                pinView!.layer.cornerRadius = pinView!.frame.size.width/2
-                pinView!.clipsToBounds = true
- 
-            case String(self.match.oppID):
-                
-                pinView!.image = UIImage(data: self.match.oppAvatar!)
-                pinView?.frame = (frame: CGRectMake(20, 30, 30, 30))
-                pinView!.layer.borderWidth = 1.0
-                pinView!.layer.masksToBounds = false
-                pinView!.layer.borderColor = UIColor.whiteColor().CGColor
-                pinView!.layer.cornerRadius = pinView!.frame.size.width/2
-                pinView!.clipsToBounds = true
-
-            default:
-                print("Unable to make map pin")
-            }
-        
-        return pinView!
-    }
-
-    func mapView(mapView: MKMapView, rendererForOverlay overlay: MKOverlay) -> MKOverlayRenderer {
-        
-        let renderer = MKPolylineRenderer(overlay: overlay)
-        renderer.strokeColor = UIColor.redColor()
-        renderer.lineWidth = 4.0
-        
-        return renderer
-    }
+    var coords: [CLLocationCoordinate2D] = []
+    
+    var distance: Double?
+    
+    var match = Match!()
+    
+    let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+    
     
     override func viewDidLoad() {
         
@@ -213,9 +158,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         
         performUIUpdatesOnMain{
             
-            print(self.match.startDate)
-            print(date)
-            
             if self.match.startDate!.compare(date) == NSComparisonResult.OrderedAscending {
                 self.raceLengthLabel.text = "Day \(daysBetween) of the Race"
             } else {
@@ -234,7 +176,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                 
             } else {
                 
-                self.myDistanceNumber.text = "Finish Date: \(self.match.myFinishDate!)"
+                self.myDistanceNumber.text = "Finished: \(self.match.myFinishDate!)"
             }
         }
         
@@ -253,6 +195,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             
             let oppFinishDate = dateConverter((record.objectForKey("finishDate") as! String))
             
+            self.match.oppFinishDate = record.objectForKey("finishDate") as? String
+            
             if myFinishDate.compare(oppFinishDate) == NSComparisonResult.OrderedAscending {
                 
                 record.setObject(self.match.winner, forKey: "winner")
@@ -261,7 +205,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             } else if myFinishDate.compare(oppFinishDate) == NSComparisonResult.OrderedDescending {
                 
                 self.match.winner = self.match.oppName
-                self.match.oppFinishDate = record.objectForKey("finishDate") as? String
                 
             } else {
                 
@@ -299,10 +242,12 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             
             self.oppProgressGraph.progress = Float((self.match.oppDistance as? Double)! / self.distance!)
             
+            print(self.match.oppFinishDate)
+            
             if self.match.oppFinishDate == nil {
                 self.oppDistanceNumber.text = String("\(Double(round((100 * (self.match.oppDistance as! Double / 1609.344))) / 100)) Miles")
             } else {
-                self.oppDistanceNumber.text = "Finish Date: \(self.match.oppFinishDate!)"
+                self.oppDistanceNumber.text = "Finished: \(self.match.oppFinishDate!)"
             }
             
             self.oppDistanceNumber.hidden = false
@@ -322,13 +267,13 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             return NewYorktoLA
             
         case "2":
-            let ShermansMarch = RaceCourses(startingLat: 33.7490, startingLong: -84.3880, endingLat: 32.002512, endingLong: -81.153557, startingTitle: "Atlanta, GA", endingTitle: "Savannah, GA")
-            return ShermansMarch
+            let CrossTownClassic = RaceCourses(startingLat: 41.8299, startingLong: -87.6338, endingLat: 41.9484, endingLong: -87.6553, startingTitle: "U.S. Cellular Field", endingTitle: "Wrigley Field")
+            return CrossTownClassic
             
         case "3":
             let LibertyTrail = RaceCourses(startingLat: 39.9526, startingLong: -75.1652, endingLat: 38.9072, endingLong: -77.0369, startingTitle: "Philadelphia", endingTitle: "Washington D.C.")
             return LibertyTrail
-            
+  
         default:
             print("no race course was choosen in the switch")
         }
@@ -347,8 +292,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                     
                     NSUserDefaults.standardUserDefaults().setObject(nil, forKey: "Access Token")
                     
-                    let controller: LoginWebViewController
-                    controller = self.storyboard!.instantiateViewControllerWithIdentifier("LoginWebViewController") as! LoginWebViewController
+                    let controller: MainPageViewController
+                    controller = self.storyboard!.instantiateViewControllerWithIdentifier("MainPageViewController") as! MainPageViewController
                     
                     performUIUpdatesOnMain{
                         self.presentViewController(controller, animated: false, completion: nil)
@@ -386,8 +331,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                     
                     NSUserDefaults.standardUserDefaults().setObject(nil, forKey: "Access Token")
                     
-                    let controller: LoginWebViewController
-                    controller = self.storyboard!.instantiateViewControllerWithIdentifier("LoginWebViewController") as! LoginWebViewController
+                    let controller: MainPageViewController
+                    controller = self.storyboard!.instantiateViewControllerWithIdentifier("MainPageViewController") as! MainPageViewController
                     
                     performUIUpdatesOnMain{
                         self.presentViewController(controller, animated: false, completion: nil)
@@ -528,20 +473,68 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     func refreshToken() {
         NSUserDefaults.standardUserDefaults().setObject(nil, forKey: "Access Token")
         
-        let controller: LoginWebViewController
-        controller = self.storyboard!.instantiateViewControllerWithIdentifier("LoginWebViewController") as! LoginWebViewController
+        let controller: MainPageViewController
+        controller = self.storyboard!.instantiateViewControllerWithIdentifier("MainPageViewController") as! MainPageViewController
         
         performUIUpdatesOnMain{
             self.presentViewController(controller, animated: false, completion: nil)
         }
     }
     
-    func displayAlert(text: String) {
+    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
         
-        let networkAlert = UIAlertController(title: "Warning", message: text, preferredStyle: UIAlertControllerStyle.Alert)
+        let raceCourse = chooseRaceCourse(self.match.raceLocation!)
         
-        networkAlert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
+        let reuseId = "pin"
         
-        self.presentViewController(networkAlert, animated: true, completion: nil)
+        var pinView = mapView.dequeueReusableAnnotationViewWithIdentifier(reuseId)
+        
+        pinView = MKAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
+        
+        switch String(annotation.title!) {
+            
+        case String(raceCourse?.startingTitle):
+            
+            pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
+            
+        case String(raceCourse?.endingTitle):
+            
+            pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
+            
+        case String(self.match.myID):
+            
+            pinView!.image = UIImage(data: self.match.myAvatar!)
+            pinView?.frame = (frame: CGRectMake(20, 30, 30, 30))
+            pinView!.layer.borderWidth = 1.0
+            pinView!.layer.masksToBounds = false
+            pinView!.layer.borderColor = UIColor.whiteColor().CGColor
+            pinView!.layer.cornerRadius = pinView!.frame.size.width/2
+            pinView!.clipsToBounds = true
+            
+        case String(self.match.oppID):
+            
+            pinView!.image = UIImage(data: self.match.oppAvatar!)
+            pinView?.frame = (frame: CGRectMake(20, 30, 30, 30))
+            pinView!.layer.borderWidth = 1.0
+            pinView!.layer.masksToBounds = false
+            pinView!.layer.borderColor = UIColor.whiteColor().CGColor
+            pinView!.layer.cornerRadius = pinView!.frame.size.width/2
+            pinView!.clipsToBounds = true
+            
+        default:
+            print("Unable to make map pin")
+        }
+        
+        return pinView!
     }
+    
+    func mapView(mapView: MKMapView, rendererForOverlay overlay: MKOverlay) -> MKOverlayRenderer {
+        
+        let renderer = MKPolylineRenderer(overlay: overlay)
+        renderer.strokeColor = UIColor.redColor()
+        renderer.lineWidth = 4.0
+        
+        return renderer
+    }
+
 }

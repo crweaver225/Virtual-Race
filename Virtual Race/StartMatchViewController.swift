@@ -13,24 +13,96 @@ import CloudKit
 
 
 
-class StartMatchViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
-    
-    var friendList = [[String:AnyObject]]()
-    
-    var imageList = [NSData]()
+class StartMatchViewController: ViewControllerMethods, UITableViewDataSource, UITableViewDelegate {
     
     @IBOutlet weak var TableView: UITableView!
     
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
-    @IBAction func returnButton(sender: AnyObject) {
+    var friendList = [[String:AnyObject]]()
+    
+    var imageList = [NSData]()
+    
+    override func viewWillAppear(animated:Bool) {
         
-        let controller: LoginWebViewController
-        controller = self.storyboard!.instantiateViewControllerWithIdentifier("LoginWebViewController") as! LoginWebViewController
+        super.viewWillAppear(animated)
         
-        self.presentViewController(controller, animated: false, completion: nil)
+        self.activityIndicator.startAnimating()
+        
+        let friends = retrieveFBFriends()
+        
+        friends.getFriends() { (friendsList, error) in
+            
+            guard (error == nil) else {
+                
+                if error as? Int == 401 {
+                    
+                    NSUserDefaults.standardUserDefaults().setObject(nil, forKey: "Access Token")
+                    
+                    let controller: MainPageViewController
+                    controller = self.storyboard!.instantiateViewControllerWithIdentifier("MainPageViewController") as! MainPageViewController
+                    
+                    performUIUpdatesOnMain{
+                        self.presentViewController(controller, animated: false, completion: nil)
+                    }
+                    
+                } else if error as? Int == 001 {
+                    self.displayAlert("No internet connection")
+                    self.activityIndicator.stopAnimating()
+                }else {
+                    self.displayAlert("There was a problem accessing the fitbit servers, please try again later")
+                    self.activityIndicator.stopAnimating()
+                }
+                
+                return
+            }
+
+            self.friendList = friendsList!
+            
+            let avatar = String(NSUserDefaults.standardUserDefaults().URLForKey("avatar")!)
+            
+            let encodedID = NSUserDefaults.standardUserDefaults().objectForKey("myID") as! String
+            
+            self.friendList.insert((["user": ["avatar": avatar, "displayName" : "Start a new race with yourself", "encodedId": encodedID]]), atIndex: 0)
+            
+            if self.imageList.count != self.friendList.count {
+                self.loadPictures()
+            }
+            
+            performUIUpdatesOnMain{
+                self.activityIndicator.stopAnimating()
+                self.TableView.reloadData()
+            }
+        }
+    }
+
+    func loadPictures() {
+        
+        for image in friendList {
+            
+            guard let user = image["user"] as? [String:AnyObject] else {
+                print("could not get user")
+                return
+            }
+            
+            guard let avatar = user["avatar"] as? String else {
+                print("could not get avatar")
+                return
+            }
+            
+            let avatarURL = NSURL(string: avatar)
+            
+            let avatarImage = NSData(contentsOfURL: (avatarURL)!)
+            
+            self.imageList.append(avatarImage!)
+        }
     }
     
+    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        return 120.0
+    }
+    
+   
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         return friendList.count
@@ -65,7 +137,7 @@ class StartMatchViewController: UIViewController, UITableViewDataSource, UITable
         cell.imageView!.image = UIImage(data: self.imageList[indexPath.row])
         
         cell.textLabel?.text = name
-
+        
         return cell
     }
     
@@ -97,7 +169,7 @@ class StartMatchViewController: UIViewController, UITableViewDataSource, UITable
             controller.oppID = encodedID
             
             self.navigationController!.pushViewController(controller, animated: true)
-        
+            
         } else {
             
             let iCloudAlert = UIAlertController(title: "Action Denied", message: "Your IOS device must be signed into an iCloud account in order to create a new race. Exit the Virtual Race app > go to settings > sign into your iCloud > make sure Virtual Race has permission to use your iCloud account in the iCloud Drive settings. Virtual Race will not store any data on user's personal iCloud accounts.", preferredStyle: UIAlertControllerStyle.Alert)
@@ -107,88 +179,4 @@ class StartMatchViewController: UIViewController, UITableViewDataSource, UITable
             self.presentViewController(iCloudAlert, animated: true, completion: nil)
         }
     }
-
-    override func viewWillAppear(animated:Bool) {
-        
-        super.viewWillAppear(animated)
-        
-        self.activityIndicator.startAnimating()
-        
-        let friends = retrieveFBFriends()
-        
-        friends.getFriends() { (friendsList, error) in
-            
-            guard (error == nil) else {
-                
-                if error as? Int == 401 {
-                    
-                    NSUserDefaults.standardUserDefaults().setObject(nil, forKey: "Access Token")
-                    
-                    let controller: LoginWebViewController
-                    controller = self.storyboard!.instantiateViewControllerWithIdentifier("LoginWebViewController") as! LoginWebViewController
-                    
-                    performUIUpdatesOnMain{
-                        self.presentViewController(controller, animated: false, completion: nil)
-                    }
-                    
-                } else if error as? Int == 001 {
-                    self.displayAlert("No internet connection")
-                }else {
-                    self.displayAlert("There was a problem accessing the fitbit servers, please try again later")
-                }
-                
-                return
-            }
-
-            self.friendList = friendsList!
-            
-            let avatar = String(NSUserDefaults.standardUserDefaults().URLForKey("avatar")!)
-            
-            let encodedID = NSUserDefaults.standardUserDefaults().objectForKey("myID") as! String
-            
-            self.friendList.insert((["user": ["avatar": avatar, "displayName" : "Start a new race with yourself", "encodedId": encodedID]]), atIndex: 0)
-            
-            self.loadPictures()
-            
-            performUIUpdatesOnMain{
-                self.activityIndicator.stopAnimating()
-                self.TableView.reloadData()
-            }
-        }
-    }
-
-    func loadPictures() {
-        
-        for image in friendList {
-            
-            guard let user = image["user"] as? [String:AnyObject] else {
-                print("could not get user")
-                return
-            }
-            
-            guard let avatar = user["avatar"] as? String else {
-                print("could not get avatar")
-                return
-            }
-            
-            let avatarURL = NSURL(string: avatar)
-            
-            let avatarImage = NSData(contentsOfURL: (avatarURL)!)
-            
-            self.imageList.append(avatarImage!)
-        }
-    }
-    
-    func displayAlert(text: String) {
-        
-        let networkAlert = UIAlertController(title: "Warning", message: text, preferredStyle: UIAlertControllerStyle.Alert)
-        networkAlert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: { (action: UIAlertAction!) in
-           self.activityIndicator.stopAnimating()
-        }))
-        
-        self.presentViewController(networkAlert, animated: true, completion: nil)
-    }
-
-    
-    
 }

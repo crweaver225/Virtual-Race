@@ -16,13 +16,12 @@ class RetrieveAccessToken {
         
         taskForGetMethod((accessToken)!) { (result, error) in
             
+            
             guard (error == nil) else {
                 
                 if error as? Int == 401 {
-                    print("need refresh token")
                     completionHandler(success: nil, error: 401)
                 } else {
-                    print("the error was \(error)")
                     completionHandler(success: nil, error: error)
                 }
                 
@@ -34,7 +33,7 @@ class RetrieveAccessToken {
                 return
             }
             
-            guard let avatar = user["avatar150"] as? String else {
+            guard let avatar = user["avatar"] as? String else {
                 print("could not find avatar")
                 return
             }
@@ -50,9 +49,10 @@ class RetrieveAccessToken {
             }
             
             let convertedAvatar = NSData(contentsOfURL: NSURL(string: avatar)!)
+            let urlAvatar = NSURL(string: avatar)!
             
             NSUserDefaults.standardUserDefaults().setObject(convertedAvatar, forKey: "myAvatar")
-            NSUserDefaults.standardUserDefaults().setURL(NSURL(string:avatar), forKey: "avatar")
+            NSUserDefaults.standardUserDefaults().setURL(urlAvatar, forKey: "avatar")
             NSUserDefaults.standardUserDefaults().setObject(fullName, forKey: "fullName")
             NSUserDefaults.standardUserDefaults().setObject(encodedID, forKey: "myID")
             

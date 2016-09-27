@@ -25,22 +25,6 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Virtual Race/RaceRequestsViewController.swift"
-            timestampString = "496250542.767913"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "126"
-            endingLineNumber = "126"
-            landmarkName = "tableView(_:didSelectRowAtIndexPath:)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "../Virtual Race - practice/Virtual Tourist/FBNetworking.swift"
             timestampString = "496177552.894178"
             startingColumnNumber = "9223372036854775807"
@@ -49,38 +33,6 @@
             endingLineNumber = "71"
             landmarkName = "processRequest(_:completionHandlerForProcessing:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Virtual_Race.(processRequest (Swift.AnyObject, completionHandlerForProcessing : (result : Swift.ImplicitlyUnwrappedOptional&lt;Swift.AnyObject&gt;, error : Swift.Optional&lt;Swift.AnyObject&gt;) -&gt; ()) -&gt; ()).(closure #1)"
-                  moduleName = "Virtual Race"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/crweaver225/Desktop/Virtual%20Race%20-%20practice/Virtual%20Tourist/FBNetworking.swift"
-                  timestampString = "496006696.364941"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "80"
-                  endingLineNumber = "80"
-                  offsetFromSymbolStart = "1828">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Virtual_Race.(processRequest (Swift.AnyObject, completionHandlerForProcessing : (result : Swift.ImplicitlyUnwrappedOptional&lt;Swift.AnyObject&gt;, error : Swift.Optional&lt;Swift.AnyObject&gt;) -&gt; ()) -&gt; ()).(closure #1)"
-                  moduleName = "Virtual Race"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/crweaver225/Desktop/Virtual%20Race%20-%20practice/Virtual%20Tourist/FBNetworking.swift"
-                  timestampString = "496006696.36509"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "80"
-                  endingLineNumber = "80"
-                  offsetFromSymbolStart = "2287">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -105,46 +57,30 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Virtual Race/ViewMatchViewController.swift"
-            timestampString = "496259817.414791"
+            filePath = "Virtual Race/MapViewController.swift"
+            timestampString = "496689070.581776"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "224"
-            endingLineNumber = "224"
-            landmarkName = "handleDeleteMatch(_:)"
+            startingLineNumber = "237"
+            endingLineNumber = "237"
+            landmarkName = "processMultiplayerDistance(_:completionHandler:)"
             landmarkType = "5">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Virtual_Race.ViewMatchViewController.(handleDeletePlanet (Swift.ImplicitlyUnwrappedOptional&lt;__ObjC.UIAlertAction&gt;) -&gt; ()).(closure #1)"
-                  moduleName = "Virtual Race"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/crweaver225/Desktop/Virtual%20Race/Virtual%20Race/ViewMatchViewController.swift"
-                  timestampString = "496006696.330634"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "197"
-                  endingLineNumber = "197"
-                  offsetFromSymbolStart = "338">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Virtual_Race.ViewMatchViewController.(handleDeletePlanet (Swift.ImplicitlyUnwrappedOptional&lt;__ObjC.UIAlertAction&gt;) -&gt; ()).(closure #1).(closure #1)"
-                  moduleName = "Virtual Race"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/crweaver225/Desktop/Virtual%20Race/Virtual%20Race/ViewMatchViewController.swift"
-                  timestampString = "496006696.330894"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "197"
-                  endingLineNumber = "197"
-                  offsetFromSymbolStart = "62">
-               </Location>
-            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Virtual Race/RetrieveAccessToken.swift"
+            timestampString = "496699010.749556"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "51"
+            endingLineNumber = "51"
+            landmarkName = "retrieveData(_:)"
+            landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

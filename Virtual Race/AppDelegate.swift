@@ -22,8 +22,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UINavigationBar.appearance().tintColor = UIColor.whiteColor()
         UINavigationBar.appearance().barTintColor = UIColor.orangeColor()
         UINavigationBar.appearance().translucent = false
-       
         UINavigationBar.appearance().clipsToBounds = false
+        
+    //    NSUserDefaults.standardUserDefaults().setObject(nil, forKey: "Access Token")
         
         // Override point for customization after application launch.
         return true

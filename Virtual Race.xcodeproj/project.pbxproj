@@ -19,6 +19,8 @@
 		2E1F7B161D80AB7F003BC6FB /* ChooseRouteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E1F7B151D80AB7F003BC6FB /* ChooseRouteViewController.swift */; };
 		2E21A1381D8328EF00551193 /* RaceRequestsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E21A1371D8328EF00551193 /* RaceRequestsViewController.swift */; };
 		2E262C3D1D899625001DA4EC /* CheckiCloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E262C3C1D899625001DA4EC /* CheckiCloud.swift */; };
+		2E5DB2DB1D99AEFB0028350B /* ViewControllerMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E5DB2DA1D99AEFB0028350B /* ViewControllerMethods.swift */; };
+		2E5DB2DD1D99B5F20028350B /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E5DB2DC1D99B5F20028350B /* LoginViewController.swift */; };
 		2E6048BD1D8701A600A18A76 /* DateFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E6048BC1D8701A600A18A76 /* DateFormatter.swift */; };
 		2E6048BF1D87511200A18A76 /* RaceCourses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E6048BE1D87511200A18A76 /* RaceCourses.swift */; };
 		2E7CD6271D81AFF300B9ACB5 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2E7CD6251D81AFF200B9ACB5 /* Model.xcdatamodeld */; };
@@ -31,7 +33,7 @@
 		2E8043691D9414F700DFBB4B /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E8043681D9414F700DFBB4B /* MapViewController.swift */; };
 		2E80436B1D94152800DFBB4B /* RetrieveAccessToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E80436A1D94152800DFBB4B /* RetrieveAccessToken.swift */; };
 		2E80436E1D9415F200DFBB4B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2E80436C1D9415F200DFBB4B /* Main.storyboard */; };
-		2EB066241D908442004B6921 /* LoginWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB066231D908442004B6921 /* LoginWebViewController.swift */; };
+		2EB066241D908442004B6921 /* MainPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB066231D908442004B6921 /* MainPageViewController.swift */; };
 		2EB066251D908641004B6921 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2E1F7AD41D806075003BC6FB /* Info.plist */; };
 		2EF1BFFC1D904543002F2115 /* InternetReachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EF1BFFB1D904543002F2115 /* InternetReachability.swift */; };
 /* End PBXBuildFile section */
@@ -75,11 +77,13 @@
 		2E21A1371D8328EF00551193 /* RaceRequestsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RaceRequestsViewController.swift; sourceTree = "<group>"; };
 		2E22A67B1D8DC9D6009E71B2 /* Model 5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Model 5.xcdatamodel"; sourceTree = "<group>"; };
 		2E262C3C1D899625001DA4EC /* CheckiCloud.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CheckiCloud.swift; sourceTree = "<group>"; };
+		2E5DB2DA1D99AEFB0028350B /* ViewControllerMethods.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewControllerMethods.swift; sourceTree = "<group>"; };
+		2E5DB2DC1D99B5F20028350B /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		2E6048BC1D8701A600A18A76 /* DateFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateFormatter.swift; sourceTree = "<group>"; };
 		2E6048BE1D87511200A18A76 /* RaceCourses.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RaceCourses.swift; sourceTree = "<group>"; };
 		2E7CD6261D81AFF300B9ACB5 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
-		2E7CD6281D81B36C00B9ACB5 /* Match+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Match+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		2E7CD6291D81B36C00B9ACB5 /* Match.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Match.swift; sourceTree = "<group>"; };
+		2E7CD6281D81B36C00B9ACB5 /* Match+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Match+CoreDataProperties.swift"; path = "../Match+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		2E7CD6291D81B36C00B9ACB5 /* Match.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Match.swift; path = ../Match.swift; sourceTree = "<group>"; };
 		2E7CD62F1D81C3AB00B9ACB5 /* Model 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Model 2.xcdatamodel"; sourceTree = "<group>"; };
 		2E8043601D940EE000DFBB4B /* RetrieveFBDistance.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RetrieveFBDistance.swift; sourceTree = "<group>"; };
 		2E8043621D9414A700DFBB4B /* CoreDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
@@ -89,7 +93,7 @@
 		2E80436A1D94152800DFBB4B /* RetrieveAccessToken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RetrieveAccessToken.swift; sourceTree = "<group>"; };
 		2E80436D1D9415F200DFBB4B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		2E91BFDD1D883BFD00C25F33 /* Model 4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Model 4.xcdatamodel"; sourceTree = "<group>"; };
-		2EB066231D908442004B6921 /* LoginWebViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginWebViewController.swift; sourceTree = "<group>"; };
+		2EB066231D908442004B6921 /* MainPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainPageViewController.swift; sourceTree = "<group>"; };
 		2EF1BFFB1D904543002F2115 /* InternetReachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InternetReachability.swift; sourceTree = "<group>"; };
 		2EF1BFFD1D906313002F2115 /* Model 6.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Model 6.xcdatamodel"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -123,8 +127,6 @@
 		2E1F7ABC1D806075003BC6FB = {
 			isa = PBXGroup;
 			children = (
-				2E7CD6281D81B36C00B9ACB5 /* Match+CoreDataProperties.swift */,
-				2E7CD6291D81B36C00B9ACB5 /* Match.swift */,
 				2E1F7B0B1D8062E7003BC6FB /* CloudKit.framework */,
 				2E1F7AC71D806075003BC6FB /* Virtual Race */,
 				2E1F7ADC1D806075003BC6FB /* Virtual RaceTests */,
@@ -148,6 +150,8 @@
 			children = (
 				2E1F7B0A1D8062DA003BC6FB /* Virtual Race.entitlements */,
 				2E1F7AC81D806075003BC6FB /* AppDelegate.swift */,
+				2E7CD6291D81B36C00B9ACB5 /* Match.swift */,
+				2E7CD6281D81B36C00B9ACB5 /* Match+CoreDataProperties.swift */,
 				2E1F7B071D806246003BC6FB /* Model */,
 				2E1F7B081D80624D003BC6FB /* View */,
 				2E1F7B091D806251003BC6FB /* Controller */,
@@ -201,12 +205,14 @@
 		2E1F7B091D806251003BC6FB /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				2EB066231D908442004B6921 /* LoginWebViewController.swift */,
+				2E5DB2DC1D99B5F20028350B /* LoginViewController.swift */,
+				2EB066231D908442004B6921 /* MainPageViewController.swift */,
 				2E1F7B151D80AB7F003BC6FB /* ChooseRouteViewController.swift */,
 				2E21A1371D8328EF00551193 /* RaceRequestsViewController.swift */,
 				2E1F7B0F1D806B89003BC6FB /* StartMatchViewController.swift */,
 				2E1F7B111D807EFE003BC6FB /* ViewMatchViewController.swift */,
 				2E8043681D9414F700DFBB4B /* MapViewController.swift */,
+				2E5DB2DA1D99AEFB0028350B /* ViewControllerMethods.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -363,7 +369,7 @@
 			files = (
 				2E8043631D9414A700DFBB4B /* CoreDataStack.swift in Sources */,
 				2E6048BD1D8701A600A18A76 /* DateFormatter.swift in Sources */,
-				2EB066241D908442004B6921 /* LoginWebViewController.swift in Sources */,
+				2EB066241D908442004B6921 /* MainPageViewController.swift in Sources */,
 				2E1F7B161D80AB7F003BC6FB /* ChooseRouteViewController.swift in Sources */,
 				2E1F7B121D807EFE003BC6FB /* ViewMatchViewController.swift in Sources */,
 				2E6048BF1D87511200A18A76 /* RaceCourses.swift in Sources */,
@@ -371,6 +377,7 @@
 				2E8043651D9414CC00DFBB4B /* FBNetworking.swift in Sources */,
 				2E7CD6271D81AFF300B9ACB5 /* Model.xcdatamodeld in Sources */,
 				2EF1BFFC1D904543002F2115 /* InternetReachability.swift in Sources */,
+				2E5DB2DD1D99B5F20028350B /* LoginViewController.swift in Sources */,
 				2E1F7AC91D806075003BC6FB /* AppDelegate.swift in Sources */,
 				2E8043671D9414E000DFBB4B /* GCDBlackbox.swift in Sources */,
 				2E8043691D9414F700DFBB4B /* MapViewController.swift in Sources */,
@@ -379,6 +386,7 @@
 				2E1F7B101D806B89003BC6FB /* StartMatchViewController.swift in Sources */,
 				2E80436B1D94152800DFBB4B /* RetrieveAccessToken.swift in Sources */,
 				2E8043611D940EE000DFBB4B /* RetrieveFBDistance.swift in Sources */,
+				2E5DB2DB1D99AEFB0028350B /* ViewControllerMethods.swift in Sources */,
 				2E262C3D1D899625001DA4EC /* CheckiCloud.swift in Sources */,
 				2E1F7B0E1D8065AD003BC6FB /* RetrieveFBFriends.swift in Sources */,
 			);

@@ -11,7 +11,29 @@ import UIKit
 import CoreData
 import CloudKit
 
-class ChooseRouteViewController: UIViewController {
+class ChooseRouteViewController: ViewControllerMethods {
+    
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    
+    @IBAction func nyToLA(sender: AnyObject) {
+        chooseRace("1")
+    }
+    
+    @IBAction func crossTownClassic(sender: AnyObject) {
+        chooseRace("2")
+    }
+    
+    @IBAction func libertyTrail(sender: AnyObject) {
+        chooseRace("3")
+    }
+    
+    @IBAction func returnButton(sender: AnyObject) {
+        
+        let controller: UITabBarController
+        controller = self.storyboard!.instantiateViewControllerWithIdentifier("RacesViewController") as! UITabBarController
+        
+        self.presentViewController(controller, animated: false, completion: nil)
+    }
     
     var fetchedResultsController: NSFetchedResultsController!
     
@@ -28,29 +50,6 @@ class ChooseRouteViewController: UIViewController {
         let date = NSCalendar.currentCalendar().dateByAddingUnit(.Day, value: 1, toDate: NSDate(), options: [])!
         return NSCalendar.currentCalendar().dateBySettingHour(0, minute: 0, second: 0, ofDate: date, options: NSCalendarOptions())!
     }
-    
-    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-    
-    @IBAction func YorkvilletoOswego(sender: AnyObject) {
-        chooseRace("1")
-    }
-    
-    @IBAction func ShermansMarchTrail(sender: AnyObject) {
-        chooseRace("2")
-    }
-    
-    @IBAction func libertyTrail(sender: AnyObject) {
-        chooseRace("3")
-    }
-    
-    @IBAction func returnButton(sender: AnyObject) {
-        
-        let controller: UITabBarController
-        controller = self.storyboard!.instantiateViewControllerWithIdentifier("RacesViewController") as! UITabBarController
-        
-        self.presentViewController(controller, animated: false, completion: nil)
-    }
-    
 
     func chooseRace(raceID: String) {
         
@@ -61,8 +60,6 @@ class ChooseRouteViewController: UIViewController {
             let startMatchAlert = UIAlertController(title: "Confirm the Start of a New Match", message: "you new match against yourself will start at midnight on \(formatDate(oneDayfromNow))", preferredStyle: UIAlertControllerStyle.Alert)
             
             startMatchAlert.addAction(UIAlertAction(title: "Start the match!", style: .Default, handler: { (action: UIAlertAction!) in
-                
-                print("yyy \(self.oneDayfromNow)")
                 
                 let newMatch = Match(startDate: self.oneDayfromNow, myID: self.oppID, context: (self.delegate.stack?.context)!)
                 newMatch.myAvatar = self.oppAvatar
@@ -92,7 +89,7 @@ class ChooseRouteViewController: UIViewController {
                 
                 publicDB.saveRecord(onlineRace) { (record, error) -> Void in
                     guard let record = record else {
-                        print("Error saving record: ", error)
+                        self.displayAlert("Error saving record:  \(error)")
                         return
                     }
                     
@@ -101,14 +98,15 @@ class ChooseRouteViewController: UIViewController {
                     self.delegate.stack?.context.performBlock{
                         self.delegate.stack?.save()
                     }
+                    
                 }
                 
                 self.delegate.stack?.context.performBlock{
                     self.delegate.stack?.save()
                 }
                 
-                let controller: LoginWebViewController
-                controller = self.storyboard!.instantiateViewControllerWithIdentifier("LoginWebViewController") as! LoginWebViewController
+                let controller: MainPageViewController
+                controller = self.storyboard!.instantiateViewControllerWithIdentifier("MainPageViewController") as! MainPageViewController
                 
                 self.navigationController?.pushViewController(controller, animated: true)
                 
@@ -170,8 +168,8 @@ class ChooseRouteViewController: UIViewController {
                     
                     newMatch.recordID = record.recordID
                     
-                    let controller: LoginWebViewController
-                    controller = self.storyboard!.instantiateViewControllerWithIdentifier("LoginWebViewController") as! LoginWebViewController
+                    let controller: MainPageViewController
+                    controller = self.storyboard!.instantiateViewControllerWithIdentifier("MainPageViewController") as! MainPageViewController
                     
                     self.delegate.stack?.context.performBlock {
                         self.delegate.stack?.save()

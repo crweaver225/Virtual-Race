@@ -6,8 +6,6 @@
 //  Copyright © 2016 Christopher Weaver. All rights reserved.
 //
 
-
-
 import CoreData
 
 struct CoreDataStack {
