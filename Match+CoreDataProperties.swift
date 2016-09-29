@@ -15,13 +15,13 @@ import CloudKit
 
 extension Match {
 
-    @NSManaged var startDate: NSDate?
+    @NSManaged var startDate: Date?
     @NSManaged var myID: String?
     @NSManaged var myDistance: NSNumber?
-    @NSManaged var myAvatar: NSData?
+    @NSManaged var myAvatar: Data?
     @NSManaged var oppID: String?
     @NSManaged var oppDistance: NSNumber?
-    @NSManaged var oppAvatar: NSData?
+    @NSManaged var oppAvatar: Data?
     @NSManaged var finished: NSNumber?
     @NSManaged var started: NSNumber?
     @NSManaged var myName: String?

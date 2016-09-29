@@ -12,14 +12,14 @@ import Foundation
 
 class retrieveFBFriends {
     
-    func getFriends(completionHandler: (friendList: [[String:AnyObject]]?, error: AnyObject?) -> Void ) {
+    func getFriends(_ completionHandler: @escaping (_ friendList: [[String:AnyObject]]?, _ error: AnyObject?) -> Void ) {
         
-        let accessToken = NSUserDefaults.standardUserDefaults().objectForKey("Access Token") as? String
+        let accessToken = UserDefaults.standard.object(forKey: "Access Token") as? String
         
         let url = "https://api.fitbit.com/1/user/-/friends.json"
         
-        let request = NSMutableURLRequest(URL: NSURL(string: url)!)
-        request.HTTPMethod = "GET"
+        let request = NSMutableURLRequest(url: URL(string: url)!)
+        request.httpMethod = "GET"
         request.addValue("Bearer \(accessToken!)", forHTTPHeaderField: "Authorization")
         
         processRequest(request) { (result, error) in
@@ -28,11 +28,11 @@ class retrieveFBFriends {
                 
                 if error as? Int == 401 {
                 
-                completionHandler(friendList: nil, error: 401)
+                completionHandler(nil, 401 as AnyObject?)
                     
                 } else {
                     
-                    completionHandler(friendList: nil, error: error)
+                    completionHandler(nil, error)
                 }
                 
                 return
@@ -47,7 +47,7 @@ class retrieveFBFriends {
                 return
             }
  
-            completionHandler(friendList: friends, error: nil)
+            completionHandler(friends, nil)
         }
     }
 }

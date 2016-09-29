@@ -11,6 +11,27 @@ import MapKit
 import CoreData
 import CloudKit
 
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+fileprivate func >= <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l >= r
+  default:
+    return !(lhs < rhs)
+  }
+}
+
+
 
 class MapViewController: ViewControllerMethods, MKMapViewDelegate {
     
@@ -32,7 +53,7 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
     
     @IBOutlet weak var oppNameTextView: UITextView!
     
-    @IBAction func refreshButton(sender: AnyObject) {
+    @IBAction func refreshButton(_ sender: AnyObject) {
         self.mapView.removeAnnotations(mapView.annotations)
         self.mapView.removeOverlays(mapView.overlays)
         self.coords.removeAll()
@@ -43,22 +64,22 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
     
     var distance: Double?
     
-    var match = Match!()
+    var match: Match!
     
-    let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+    let delegate = UIApplication.shared.delegate as! AppDelegate
     
     
     override func viewDidLoad() {
         
-        self.oppDistanceNumber.hidden = true
+        self.oppDistanceNumber.isHidden = true
         
-        self.oppNameTextView.hidden = true
+        self.oppNameTextView.isHidden = true
         
-        self.oppProgressGraph.hidden = true
+        self.oppProgressGraph.isHidden = true
         
-        let date = NSDate()
+        let date = Date()
         
-        let raceCourse = chooseRaceCourse(self.match.raceLocation!)
+        let raceCourse = chooseRaceCourse((self.match.raceLocation!))
         
         let startDate = formatDate(self.match.startDate!)
         
@@ -66,11 +87,11 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
             
             self.getDistance(startDate) { (result) in
                 
-                if self.match.startDate!.compare(date) == NSComparisonResult.OrderedDescending {
+                if self.match.startDate!.compare(date) == ComparisonResult.orderedDescending {
                     self.match.myDistance = 0.0
                 } else {
                     if let result = result {
-                        self.match.myDistance = result
+                        self.match.myDistance = result as NSNumber?
                     }
                 }
                 
@@ -78,30 +99,35 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
                     
                     if self.match.oppID != nil && self.match.oppID != self.match.myID {
                         
-                        let defaultContainer = CKContainer.defaultContainer()
+                        let defaultContainer = CKContainer.default()
                         
                         let publicDB = defaultContainer.publicCloudDatabase
-                        publicDB.fetchRecordWithID(self.match.recordID!) { (record, error) -> Void in
+                        publicDB.fetch(withRecordID: self.match.recordID!) { (record, error) -> Void in
                             
                             guard let record = record else {
                                 
-                                self.displayAlert("We could not retrieve \(self.match.oppName!)'s information form the server at this time. Please make sure you are currently logged into your iCloud account")
+                                self.displayAlert("We could not retrieve \(self.match.oppName!)'s information from the server at this time. Please make sure you are currently logged into your iCloud account")
                                 
                                 self.addPlayerToMap(self.match.oppID!, userDistance: (self.match.oppDistance as? Double)!, raceLocation: raceCourse!)
                                 
                                 return
                             }
                             
-                            self.match.oppDistance = record.objectForKey("d" + self.match.oppID!) as? Double
-                            
+                            if self.match.startDate!.compare(date) == ComparisonResult.orderedDescending {
+                                self.match.oppDistance = 0.0
+                            } else {
+                                if let result = result {
+                                    self.match.oppDistance = record.object(forKey: "d" + self.match.oppID!) as! NSNumber?
+                                }
+                            }
+
                             self.processMultiplayerDistance(record){ (success) in
                                 
                                 self.addPlayerToMap(self.match.oppID!, userDistance: (self.match.oppDistance as? Double)!, raceLocation: raceCourse!)
                                 
+                                record.setObject(date as CKRecordValue?, forKey: "u" + self.match.myID!)
                                 
-                                record.setObject(date, forKey: "u" + self.match.myID!)
-                                
-                                self.delegate.stack?.context.performBlock{
+                                self.delegate.stack?.context.perform{
                                     self.delegate.stack?.save()
                                 }
                                 
@@ -109,12 +135,12 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
                                     
                                     record.setObject(self.match.myDistance, forKey: "d" + self.match.myID!)
                                     
-                                    publicDB.saveRecord(record) { (record, error) -> Void in
+                                    publicDB.save(record, completionHandler: { (record, error) -> Void in
                                         guard let record = record else {
                                             print("Error saving record: ", error)
                                             return
                                         }
-                                    }
+                                    }) 
                                     
                                 } else {
                                     
@@ -128,19 +154,21 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
         }
     }
     
-    func processSinglePlayerDistance(startDate: String, date: NSDate, raceCourse: RaceCourses, completionHandler: (success: Bool) -> Void) {
+    func processSinglePlayerDistance(_ startDate: String, date: Date, raceCourse: RaceCourses, completionHandler: (_ success: Bool) -> Void) {
         
-        let calendar = NSCalendar.currentCalendar()
+        let calendar = Calendar.current
         
-        let components = calendar.components([.Day], fromDate: self.match.startDate!, toDate: date, options: [])
+     //   let components = (calendar as NSCalendar).components([.day], from: self.match?.startDate! as! Date, to: date, options: [])
         
-        let daysBetween = components.day + 1
+        let components = (calendar as NSCalendar).components(.day, from: self.match.startDate! as Date, to: date, options: [])
+        
+        let daysBetween = components.day! + 1
         
         if self.match.myDistance as? Double >= self.distance {
             
             self.match.finished = true
             self.match.winner = self.match.myName
-            self.match.myDistance = self.distance
+            self.match.myDistance = self.distance as NSNumber?
             
             self.getFinishDate(startDate, distance: (self.match.myDistance as? Double)! / 1609.344) { (result) in
                 
@@ -149,7 +177,7 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
                     self.match.myFinishDate = result
                     self.match.finishDate = result
                 
-                    self.delegate.stack?.context.performBlock{
+                    self.delegate.stack?.context.perform{
                         self.delegate.stack?.save()
                     }
                 }
@@ -158,7 +186,7 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
         
         performUIUpdatesOnMain{
             
-            if self.match.startDate!.compare(date) == NSComparisonResult.OrderedAscending {
+            if self.match.startDate!.compare(date) == ComparisonResult.orderedAscending {
                 self.raceLengthLabel.text = "Day \(daysBetween) of the Race"
             } else {
                 self.raceLengthLabel.text = "Race has not started yet"
@@ -170,6 +198,8 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
             
             self.myProgressGraph.progress = Float((self.match.myDistance as? Double)! / self.distance!)
             
+            print(self.myProgressGraph.progress)
+            
             if self.match.myFinishDate == nil {
                 
                 self.myDistanceNumber.text = String("\(Double(round((100 * (self.match.myDistance as! Double / 1609.344))) / 100)) Miles")
@@ -180,47 +210,49 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
             }
         }
         
-        self.addPlayerToMap(self.match.myID!, userDistance: (self.match.myDistance as? Double)!, raceLocation: raceCourse)
+        self.addPlayerToMap((self.match.myID!), userDistance: (self.match.myDistance as? Double)!, raceLocation: raceCourse)
         
-        completionHandler(success: true)
+        completionHandler(true)
     }
     
-    func processMultiplayerDistance(record: CKRecord, completionHandler: (success: Bool) -> Void) {
+    func processMultiplayerDistance(_ record: CKRecord, completionHandler: (_ success: Bool) -> Void) {
+        
+        
         
         if self.match.oppDistance as? Double >= self.distance && self.match.myDistance as? Double >= self.distance {
             
-            self.match.oppDistance = self.distance
+            self.match.oppDistance = self.distance as NSNumber?
             
             let myFinishDate = dateConverter(self.match.myFinishDate!)
             
-            let oppFinishDate = dateConverter((record.objectForKey("finishDate") as! String))
+            let oppFinishDate = dateConverter((record.object(forKey: "finishDate") as! String))
             
-            self.match.oppFinishDate = record.objectForKey("finishDate") as? String
+            self.match.oppFinishDate = record.object(forKey: "finishDate") as? String
             
-            if myFinishDate.compare(oppFinishDate) == NSComparisonResult.OrderedAscending {
+            if myFinishDate.compare(oppFinishDate) == ComparisonResult.orderedAscending {
                 
-                record.setObject(self.match.winner, forKey: "winner")
-                record.setObject(self.match.myFinishDate, forKey: "finishDate")
+                record.setObject(self.match.winner as CKRecordValue?, forKey: "winner")
+                record.setObject(self.match.myFinishDate as CKRecordValue?, forKey: "finishDate")
                 
-            } else if myFinishDate.compare(oppFinishDate) == NSComparisonResult.OrderedDescending {
+            } else if myFinishDate.compare(oppFinishDate) == ComparisonResult.orderedDescending {
                 
                 self.match.winner = self.match.oppName
                 
             } else {
                 
                 self.match.winner = "tie"
-                record.setObject("tie", forKey: "winner")
+                record.setObject("tie" as CKRecordValue?, forKey: "winner")
             }
             
         } else if self.match.winner == self.match.myName {
             
-            let lastOppUpdate = record.objectForKey("u" + self.match.oppID!) as? NSDate
+            let lastOppUpdate = record.object(forKey: "u" + (self.match.oppID!)) as? Date
             
-            if dateConverter(self.match.myFinishDate!).compare(lastOppUpdate!) == NSComparisonResult.OrderedAscending {
+            if dateConverter(self.match.myFinishDate!).compare(lastOppUpdate!) == ComparisonResult.orderedAscending {
                 
-                record.setObject("true", forKey: "finished")
-                record.setObject(self.match.winner, forKey: "winner")
-                record.setObject(self.match.myFinishDate, forKey: "finishDate")
+                record.setObject("true" as CKRecordValue?, forKey: "finished")
+                record.setObject(self.match.winner as CKRecordValue?, forKey: "winner")
+                record.setObject(self.match.myFinishDate as CKRecordValue?, forKey: "finishDate")
                 
             } else {
                 
@@ -230,19 +262,24 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
         } else if self.match.oppDistance as? Double >= self.distance {
             self.match.finished = true
             self.match.winner = self.match.oppName
-            self.match.oppFinishDate = record.objectForKey("finishDate") as? String
+            self.match.oppFinishDate = record.object(forKey: "finishDate") as? String
             
         }
     
-        let calculatedDistance = Double(round((100 * (self.match.oppDistance as! Double / 1609.344))) / 100)
+
         
         performUIUpdatesOnMain{
             
+            print(self.match.oppDistance)
+            print(self.match.myDistance)
+            print(self.distance)
+            
             self.oppNameTextView.text = self.match.oppName
             
-            self.oppProgressGraph.progress = Float((self.match.oppDistance as? Double)! / self.distance!)
+            self.oppProgressGraph.progress = Float((self.match.oppDistance as! Double) / self.distance!)
             
-            print(self.match.oppFinishDate)
+            print("opp \(self.oppProgressGraph.progress)")
+            print(self.match.oppDistance)
             
             if self.match.oppFinishDate == nil {
                 self.oppDistanceNumber.text = String("\(Double(round((100 * (self.match.oppDistance as! Double / 1609.344))) / 100)) Miles")
@@ -250,15 +287,17 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
                 self.oppDistanceNumber.text = "Finished: \(self.match.oppFinishDate!)"
             }
             
-            self.oppDistanceNumber.hidden = false
-            self.oppNameTextView.hidden = false
-            self.oppProgressGraph.hidden = false
+            self.oppDistanceNumber.isHidden = false
+            self.oppNameTextView.isHidden = false
+            self.oppProgressGraph.isHidden = false
         }
         
-        completionHandler(success: true)
+        completionHandler(true)
     }
     
-    func chooseRaceCourse(raceID: String) -> RaceCourses? {
+    func chooseRaceCourse(_ raceID: String) -> RaceCourses? {
+        
+        print(raceID)
         
         switch raceID {
             
@@ -281,7 +320,7 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
         return nil
     }
     
-    func getDistance(startDate: String, completionHandler: (result: Double?) -> Void) {
+    func getDistance(_ startDate: String, completionHandler: @escaping (_ result: Double?) -> Void) {
         
         let newDistance = RetrieveDistance()
         newDistance.getDistance(startDate){ (result, error) in
@@ -290,37 +329,37 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
                 
                 if error as? Int == 401 {
                     
-                    NSUserDefaults.standardUserDefaults().setObject(nil, forKey: "Access Token")
+                    UserDefaults.standard.set(nil, forKey: "Access Token")
                     
                     let controller: MainPageViewController
-                    controller = self.storyboard!.instantiateViewControllerWithIdentifier("MainPageViewController") as! MainPageViewController
+                    controller = self.storyboard!.instantiateViewController(withIdentifier: "MainPageViewController") as! MainPageViewController
                     
                     performUIUpdatesOnMain{
-                        self.presentViewController(controller, animated: false, completion: nil)
+                        self.present(controller, animated: false, completion: nil)
                     }
                     
                 } else if error as? Int == 001 {
                     
                     self.displayAlert("No internet connection")
                     
-                    completionHandler(result: nil)
+                    completionHandler(nil)
                     
                 }else {
                     
                     self.displayAlert("There was a problem accessing the fitbit servers. Unable to update your progress at this time")
                     
-                    completionHandler(result: nil)
+                    completionHandler(nil)
                 }
                 return
             }
 
             let finalDistance = result! * 1609.344
             
-            completionHandler(result: finalDistance)
+            completionHandler(finalDistance)
         }
     }
     
-    func getFinishDate(startDate: String, distance: Double, completionHandler: (result: String?) -> Void) {
+    func getFinishDate(_ startDate: String, distance: Double, completionHandler: @escaping (_ result: String?) -> Void) {
         
         let newDistance = RetrieveDistance()
         newDistance.getFinishDate(distance, date: startDate) { (result, error) in
@@ -329,36 +368,36 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
                 
                 if error as? Int == 401 {
                     
-                    NSUserDefaults.standardUserDefaults().setObject(nil, forKey: "Access Token")
+                    UserDefaults.standard.set(nil, forKey: "Access Token")
                     
                     let controller: MainPageViewController
-                    controller = self.storyboard!.instantiateViewControllerWithIdentifier("MainPageViewController") as! MainPageViewController
+                    controller = self.storyboard!.instantiateViewController(withIdentifier: "MainPageViewController") as! MainPageViewController
                     
                     performUIUpdatesOnMain{
-                        self.presentViewController(controller, animated: false, completion: nil)
+                        self.present(controller, animated: false, completion: nil)
                     }
                     
                 } else if error as? Int == 001 {
                     
                     self.displayAlert("No internet connection")
                     
-                    completionHandler(result: nil)
+                    completionHandler(nil)
                     
                 } else {
                     
                     self.displayAlert("There was a problem accessing the fitbit servers. Unable to update your progress at this time")
                     
-                    completionHandler(result: nil)
+                    completionHandler(nil)
                 }
                 
                 return
             }
 
-            completionHandler(result: result!)
+            completionHandler(result!)
         }
     }
     
-    func drawMap(raceCourse: RaceCourses, completionHandler: (success: Bool) -> Void) {
+    func drawMap(_ raceCourse: RaceCourses, completionHandler: @escaping (_ success: Bool) -> Void) {
         
         self.mapView.delegate = self
         
@@ -390,11 +429,11 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
         let directionRequest = MKDirectionsRequest()
         directionRequest.source = sourceMapItem
         directionRequest.destination = destinationMapItem
-        directionRequest.transportType = .Automobile
+        directionRequest.transportType = .automobile
         
         let directions = MKDirections(request: directionRequest)
         
-        directions.calculateDirectionsWithCompletionHandler {
+        directions.calculate {
             (response, error) -> Void in
             
             guard let response = response else {
@@ -406,7 +445,7 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
             
             let route = response.routes[0]
         
-            self.mapView.addOverlay((route.polyline), level: MKOverlayLevel.AboveRoads)
+            self.mapView.add((route.polyline), level: MKOverlayLevel.aboveRoads)
             
             self.distance = route.distance
             
@@ -417,17 +456,17 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
            
             self.mapView.setRegion(MKCoordinateRegionForMapRect(rect), animated: true)
             
-            var coordsPointer = UnsafeMutablePointer<CLLocationCoordinate2D>.alloc(route.polyline.pointCount)
+            var coordsPointer = UnsafeMutablePointer<CLLocationCoordinate2D>.allocate(capacity: route.polyline.pointCount)
             route.polyline.getCoordinates(coordsPointer, range: NSMakeRange(0, route.polyline.pointCount))
             
             for i in 0..<route.polyline.pointCount {
                 self.coords.append(coordsPointer[i])
             }
-            completionHandler(success: true)
+            completionHandler(true)
         }
     }
 
-    func addPlayerToMap(userID: String, userDistance: Double, raceLocation: RaceCourses) {
+    func addPlayerToMap(_ userID: String, userDistance: Double, raceLocation: RaceCourses) {
         
         var currentDistance = 0.0
         
@@ -449,75 +488,75 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
         }
     }
     
-    func distance(from: CLLocationCoordinate2D, to:CLLocationCoordinate2D) -> CLLocationDistance {
+    func distance(_ from: CLLocationCoordinate2D, to:CLLocationCoordinate2D) -> CLLocationDistance {
         
         let from = CLLocation(latitude: from.latitude, longitude: from.longitude)
         
         let to = CLLocation(latitude: to.latitude, longitude: to.longitude)
         
-        return from.distanceFromLocation(to)
+        return from.distance(from: to)
     }
     
     
     func displayICloudError() {
         
-        let iCloudAlert = UIAlertController(title: "Warning", message: "Your IOS device must be signed into an iCloud account to participate in multiplayer races. Exit the Virtual Race app > go to settings > sign into your iCloud > make sure Virtual Race has permission to use your iCloud account in the iCloud Drive settings. Virtual Race will not store any data on a user's personal iCloud accounts.", preferredStyle: UIAlertControllerStyle.Alert)
+        let iCloudAlert = UIAlertController(title: "Warning", message: "Your IOS device must be signed into an iCloud account to participate in multiplayer races. Exit the Virtual Race app > go to settings > sign into your iCloud > make sure Virtual Race has permission to use your iCloud account in the iCloud Drive settings. Virtual Race will not store any data on a user's personal iCloud accounts.", preferredStyle: UIAlertControllerStyle.alert)
         
-        iCloudAlert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
+        iCloudAlert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
         
         performUIUpdatesOnMain{
-            self.presentViewController(iCloudAlert, animated: true, completion: nil)
+            self.present(iCloudAlert, animated: true, completion: nil)
         }
     }
     
     func refreshToken() {
-        NSUserDefaults.standardUserDefaults().setObject(nil, forKey: "Access Token")
+        UserDefaults.standard.set(nil, forKey: "Access Token")
         
         let controller: MainPageViewController
-        controller = self.storyboard!.instantiateViewControllerWithIdentifier("MainPageViewController") as! MainPageViewController
+        controller = self.storyboard!.instantiateViewController(withIdentifier: "MainPageViewController") as! MainPageViewController
         
         performUIUpdatesOnMain{
-            self.presentViewController(controller, animated: false, completion: nil)
+            self.present(controller, animated: false, completion: nil)
         }
     }
     
-    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         
-        let raceCourse = chooseRaceCourse(self.match.raceLocation!)
+        let raceCourse = chooseRaceCourse((self.match.raceLocation!))
         
         let reuseId = "pin"
         
-        var pinView = mapView.dequeueReusableAnnotationViewWithIdentifier(reuseId)
+        var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId)
         
         pinView = MKAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
         
-        switch String(annotation.title!) {
+        switch String(describing: annotation.title!) {
             
-        case String(raceCourse?.startingTitle):
-            
-            pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
-            
-        case String(raceCourse?.endingTitle):
+        case String(describing: raceCourse?.startingTitle):
             
             pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
             
-        case String(self.match.myID):
+        case String(describing: raceCourse?.endingTitle):
             
-            pinView!.image = UIImage(data: self.match.myAvatar!)
-            pinView?.frame = (frame: CGRectMake(20, 30, 30, 30))
+            pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
+            
+        case String(describing: self.match.myID):
+            
+            pinView!.image = UIImage(data: self.match.myAvatar! as! Data)
+            pinView?.frame = (frame: CGRect(x: 20, y: 30, width: 30, height: 30))
             pinView!.layer.borderWidth = 1.0
             pinView!.layer.masksToBounds = false
-            pinView!.layer.borderColor = UIColor.whiteColor().CGColor
+            pinView!.layer.borderColor = UIColor.white.cgColor
             pinView!.layer.cornerRadius = pinView!.frame.size.width/2
             pinView!.clipsToBounds = true
             
-        case String(self.match.oppID):
+        case String(describing: self.match.oppID):
             
-            pinView!.image = UIImage(data: self.match.oppAvatar!)
-            pinView?.frame = (frame: CGRectMake(20, 30, 30, 30))
+            pinView!.image = UIImage(data: self.match.oppAvatar! as! Data)
+            pinView?.frame = (frame: CGRect(x: 20, y: 30, width: 30, height: 30))
             pinView!.layer.borderWidth = 1.0
             pinView!.layer.masksToBounds = false
-            pinView!.layer.borderColor = UIColor.whiteColor().CGColor
+            pinView!.layer.borderColor = UIColor.white.cgColor
             pinView!.layer.cornerRadius = pinView!.frame.size.width/2
             pinView!.clipsToBounds = true
             
@@ -528,10 +567,10 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
         return pinView!
     }
     
-    func mapView(mapView: MKMapView, rendererForOverlay overlay: MKOverlay) -> MKOverlayRenderer {
+    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         
         let renderer = MKPolylineRenderer(overlay: overlay)
-        renderer.strokeColor = UIColor.redColor()
+        renderer.strokeColor = UIColor.red
         renderer.lineWidth = 4.0
         
         return renderer

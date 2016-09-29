@@ -15,55 +15,57 @@ class ChooseRouteViewController: ViewControllerMethods {
     
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
-    @IBAction func nyToLA(sender: AnyObject) {
+    @IBAction func nyToLA(_ sender: AnyObject) {
         chooseRace("1")
     }
     
-    @IBAction func crossTownClassic(sender: AnyObject) {
+    @IBAction func crossTownClassic(_ sender: AnyObject) {
         chooseRace("2")
     }
     
-    @IBAction func libertyTrail(sender: AnyObject) {
+    @IBAction func libertyTrail(_ sender: AnyObject) {
         chooseRace("3")
     }
     
-    @IBAction func returnButton(sender: AnyObject) {
+    @IBAction func returnButton(_ sender: AnyObject) {
         
         let controller: UITabBarController
-        controller = self.storyboard!.instantiateViewControllerWithIdentifier("RacesViewController") as! UITabBarController
+        controller = self.storyboard!.instantiateViewController(withIdentifier: "RacesViewController") as! UITabBarController
         
-        self.presentViewController(controller, animated: false, completion: nil)
+        self.present(controller, animated: false, completion: nil)
     }
     
-    var fetchedResultsController: NSFetchedResultsController!
+//    var fetchedResultsController: NSFetchedResultsController<AnyObject>!
     
-    let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+    let delegate = UIApplication.shared.delegate as! AppDelegate
     
     var oppName = String()
     
-    var oppAvatar = NSData()
+    var oppAvatar = Data()
     
     var oppID = String()
     
-    var oneDayfromNow: NSDate {
+    var oneDayfromNow: Date {
         
-        let date = NSCalendar.currentCalendar().dateByAddingUnit(.Day, value: 1, toDate: NSDate(), options: [])!
-        return NSCalendar.currentCalendar().dateBySettingHour(0, minute: 0, second: 0, ofDate: date, options: NSCalendarOptions())!
+        let date = (Calendar.current as NSCalendar).date(byAdding: .day, value: 1, to: Date(), options: [])!
+        return (Calendar.current as NSCalendar).date(bySettingHour: 0, minute: 0, second: 0, of: date, options: NSCalendar.Options())!
     }
 
-    func chooseRace(raceID: String) {
+    func chooseRace(_ raceID: String) {
         
-        if oppID == NSUserDefaults.standardUserDefaults().objectForKey("myID") as? String {
+        if oppID == UserDefaults.standard.object(forKey: "myID") as? String {
             
-            let myID = NSUserDefaults.standardUserDefaults().objectForKey("myID") as! String
+            let myID = UserDefaults.standard.object(forKey: "myID") as! String
             
-            let startMatchAlert = UIAlertController(title: "Confirm the Start of a New Match", message: "you new match against yourself will start at midnight on \(formatDate(oneDayfromNow))", preferredStyle: UIAlertControllerStyle.Alert)
+            let startMatchAlert = UIAlertController(title: "Confirm the Start of a New Match", message: "you new match against yourself will start at midnight on \(formatDate(oneDayfromNow))", preferredStyle: UIAlertControllerStyle.alert)
             
-            startMatchAlert.addAction(UIAlertAction(title: "Start the match!", style: .Default, handler: { (action: UIAlertAction!) in
+            startMatchAlert.addAction(UIAlertAction(title: "Start the match!", style: .default, handler: { (action: UIAlertAction!) in
                 
                 let newMatch = Match(startDate: self.oneDayfromNow, myID: self.oppID, context: (self.delegate.stack?.context)!)
+                
+                
                 newMatch.myAvatar = self.oppAvatar
-                newMatch.myName = NSUserDefaults.standardUserDefaults().objectForKey("fullName") as? String
+                newMatch.myName = UserDefaults.standard.object(forKey: "fullName") as? String
                 newMatch.finished = false
                 newMatch.started = true
                 newMatch.raceLocation = raceID
@@ -71,23 +73,23 @@ class ChooseRouteViewController: ViewControllerMethods {
                 newMatch.winner = nil
                 
                 let onlineRace = CKRecord(recordType: "match")
-                onlineRace["myID"] = myID
+                onlineRace["myID"] = myID as CKRecordValue?
                 onlineRace["oppID"] = nil
                 onlineRace["d" + myID] = nil
                 onlineRace["d" + self.oppID] = nil
-                onlineRace["started"] = "true"
-                onlineRace["finished"] = "false"
-                onlineRace["startDate"] = self.oneDayfromNow
-                onlineRace["finishDate"] = ""
-                onlineRace["winner"] = ""
-                onlineRace["raceLocation"] = raceID
-                onlineRace["rejected"] = "false"
+                onlineRace["started"] = "true" as CKRecordValue?
+                onlineRace["finished"] = "false" as CKRecordValue?
+                onlineRace["startDate"] = self.oneDayfromNow as CKRecordValue?
+                onlineRace["finishDate"] = "" as CKRecordValue?
+                onlineRace["winner"] = "" as CKRecordValue?
+                onlineRace["raceLocation"] = raceID as CKRecordValue?
+                onlineRace["rejected"] = "false" as CKRecordValue?
 
-                let defaultContainer = CKContainer.defaultContainer()
+                let defaultContainer = CKContainer.default()
                 
                 let publicDB = defaultContainer.publicCloudDatabase
                 
-                publicDB.saveRecord(onlineRace) { (record, error) -> Void in
+                publicDB.save(onlineRace, completionHandler: { (record, error) -> Void in
                     guard let record = record else {
                         self.displayAlert("Error saving record:  \(error)")
                         return
@@ -95,41 +97,46 @@ class ChooseRouteViewController: ViewControllerMethods {
                     
                     newMatch.recordID = record.recordID
                     
-                    self.delegate.stack?.context.performBlock{
+                   // self.delegate.stack.context.perform{
+                    self.delegate.stack?.context.perform{
+                        print("saving context")
                         self.delegate.stack?.save()
+                        print("context saved")
                     }
                     
-                }
+                }) 
                 
-                self.delegate.stack?.context.performBlock{
+                self.delegate.stack?.context.perform{
                     self.delegate.stack?.save()
                 }
                 
                 let controller: MainPageViewController
-                controller = self.storyboard!.instantiateViewControllerWithIdentifier("MainPageViewController") as! MainPageViewController
+                controller = self.storyboard!.instantiateViewController(withIdentifier: "MainPageViewController") as! MainPageViewController
                 
                 self.navigationController?.pushViewController(controller, animated: true)
                 
             }))
             
-            startMatchAlert.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: nil))
+            startMatchAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
             
-            self.presentViewController(startMatchAlert, animated: true, completion: nil)
+            self.present(startMatchAlert, animated: true, completion: nil)
             
         } else {
             
-            let myID = NSUserDefaults.standardUserDefaults().objectForKey("myID") as! String
+            let myID = UserDefaults.standard.object(forKey: "myID") as! String
             
-            let startMatchAlert = UIAlertController(title: "Confirm the Start of a New Match", message: "Your new match against \(self.oppName) will start the following day of being accepted at midnight)", preferredStyle: UIAlertControllerStyle.Alert)
-            startMatchAlert.addAction(UIAlertAction(title: "Start the match!", style: .Default, handler: { (action: UIAlertAction!) in
+            let startMatchAlert = UIAlertController(title: "Confirm the Start of a New Match", message: "Your new match against \(self.oppName) will start the day following being accepted at midnight", preferredStyle: UIAlertControllerStyle.alert)
+            startMatchAlert.addAction(UIAlertAction(title: "Send Race Request!", style: .default, handler: { (action: UIAlertAction!) in
                 
                 performUIUpdatesOnMain{
                     self.activityIndicator.startAnimating()
                 }
                 
-                let newMatch = Match(startDate: self.oneDayfromNow, myID: myID, context: (self.delegate.stack?.context)!)
-                newMatch.myName = NSUserDefaults.standardUserDefaults().objectForKey("fullName") as? String
-                newMatch.myAvatar = NSUserDefaults.standardUserDefaults().objectForKey("myAvatar") as? NSData
+                let newMatch = Match(startDate: self.oneDayfromNow, myID: myID, context: (self.delegate.stack!.context))
+   
+                
+                newMatch.myName = UserDefaults.standard.object(forKey: "fullName") as? String
+                newMatch.myAvatar = UserDefaults.standard.object(forKey: "myAvatar") as? Data
                 newMatch.oppID = self.oppID
                 newMatch.oppName = self.oppName
                 newMatch.oppAvatar = self.oppAvatar
@@ -139,28 +146,30 @@ class ChooseRouteViewController: ViewControllerMethods {
                 newMatch.winner = nil
                 newMatch.myFinishDate = nil
                 newMatch.oppFinishDate = nil
+                newMatch.myDistance = 0.0
+                newMatch.oppDistance = 0.0
     
                 let onlineRace = CKRecord(recordType: "match")
-                onlineRace["myID"] = myID
-                onlineRace["oppID"] = self.oppID
-                onlineRace["d" + myID] = 0.0
-                onlineRace["d" + self.oppID] = 0.0
-                onlineRace["u" + self.oppID] = self.oneDayfromNow
-                onlineRace["u" + myID] = self.oneDayfromNow
-                onlineRace["started"] = "false"
-                onlineRace["finished"] = "false"
-                onlineRace["startDate"] = self.oneDayfromNow
-                onlineRace["myFinishDate"] = ""
-                onlineRace["oppFinishDate"] = ""
-                onlineRace["winner"] = ""
-                onlineRace["raceLocation"] = raceID
-                onlineRace["rejected"] = "false"
+                onlineRace["myID"] = myID as CKRecordValue?
+                onlineRace["oppID"] = self.oppID as CKRecordValue?
+                onlineRace["d" + myID] = 0.0 as CKRecordValue?
+                onlineRace["d" + self.oppID] = 0.0 as CKRecordValue?
+                onlineRace["u" + self.oppID] = self.oneDayfromNow as CKRecordValue?
+                onlineRace["u" + myID] = self.oneDayfromNow as CKRecordValue?
+                onlineRace["started"] = "false" as CKRecordValue?
+                onlineRace["finished"] = "false" as CKRecordValue?
+                onlineRace["startDate"] = self.oneDayfromNow as CKRecordValue?
+                onlineRace["myFinishDate"] = "" as CKRecordValue?
+                onlineRace["oppFinishDate"] = "" as CKRecordValue?
+                onlineRace["winner"] = "" as CKRecordValue?
+                onlineRace["raceLocation"] = raceID as CKRecordValue?
+                onlineRace["rejected"] = "false" as CKRecordValue?
                 
-                let defaultContainer = CKContainer.defaultContainer()
+                let defaultContainer = CKContainer.default()
                 
                 let publicDB = defaultContainer.publicCloudDatabase
                 
-                publicDB.saveRecord(onlineRace) { (record, error) -> Void in
+                publicDB.save(onlineRace, completionHandler: { (record, error) -> Void in
                     guard let record = record else {
                         print("Error saving record: ", error)
                         return
@@ -169,18 +178,18 @@ class ChooseRouteViewController: ViewControllerMethods {
                     newMatch.recordID = record.recordID
                     
                     let controller: MainPageViewController
-                    controller = self.storyboard!.instantiateViewControllerWithIdentifier("MainPageViewController") as! MainPageViewController
+                    controller = self.storyboard!.instantiateViewController(withIdentifier: "MainPageViewController") as! MainPageViewController
                     
-                    self.delegate.stack?.context.performBlock {
+                    self.delegate.stack?.context.perform {
                         self.delegate.stack?.save()
                         self.navigationController?.pushViewController(controller, animated: true)
                     }
-                }
+                }) 
             }))
             
-            startMatchAlert.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: nil))
+            startMatchAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
             
-            self.presentViewController(startMatchAlert, animated: true, completion: nil)
+            self.present(startMatchAlert, animated: true, completion: nil)
         }
     }
 }

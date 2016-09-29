@@ -9,89 +9,90 @@
 import Foundation
 
 
-func taskForGetMethod(accessToken: String, completionHandlerForGet: (result: AnyObject!, error: AnyObject?) -> Void) {
+func taskForGetMethod(_ accessToken: String, completionHandlerForGet: @escaping (_ result: AnyObject?, _ error: AnyObject?) -> Void) {
     
     let url = "https://api.fitbit.com/1/user/-/profile.json"
     
     let requestType = "GET"
-    let request = NSMutableURLRequest(URL: NSURL(string: url)!)
-    request.HTTPMethod = requestType
+    let request = NSMutableURLRequest(url: URL(string: url)!)
+    request.httpMethod = requestType
     request.addValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
     
     processRequest(request) { (result, error) in
         
         if error == nil {
-            completionHandlerForGet(result: result, error: nil)
+            completionHandlerForGet(result, nil)
         } else {
-            completionHandlerForGet(result: nil, error: error)
+            completionHandlerForGet(nil, error)
         }
     }
 }
 
-func taskForPostMethod(convertedAuthHeader: String, body: String, completionHandlerForPOST: (result: AnyObject!, error: AnyObject?) -> Void)   {
+func taskForPostMethod(_ convertedAuthHeader: String, body: String, completionHandlerForPOST: @escaping (_ result: AnyObject?, _ error: AnyObject?) -> Void)   {
 
     let url = "https://api.fitbit.com/oauth2/token"
     
     let requestType = "POST"
     
-    let request = NSMutableURLRequest(URL: NSURL(string: url)!)
-    request.HTTPMethod = requestType
+    let request = NSMutableURLRequest(url: URL(string: url)!)
+    request.httpMethod = requestType
     request.addValue("Basic \(convertedAuthHeader)", forHTTPHeaderField: "Authorization")
     request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-    request.HTTPBody = body.dataUsingEncoding(NSUTF8StringEncoding)
+    request.httpBody = body.data(using: String.Encoding.utf8)
     
     processRequest(request) { (result, error) in
         
         if error == nil {
-            completionHandlerForPOST(result: result, error: nil)
+            completionHandlerForPOST(result, nil)
         } else {
-            completionHandlerForPOST(result: nil, error: error)
+            completionHandlerForPOST(nil, error)
         }
     }
 }
 
-func processRequest(request: AnyObject, completionHandlerForProcessing: (result: AnyObject!, error: AnyObject?) -> Void) {
+func processRequest(_ request: AnyObject, completionHandlerForProcessing: @escaping (_ result: AnyObject?, _ error: AnyObject?) -> Void) {
     
     if Reachability.isConnectedToNetwork() {
 
-    let task = NSURLSession.sharedSession().dataTaskWithRequest(request as! NSURLRequest) { (data, response, error) in
+    let task = URLSession.shared.dataTask(with: request as! URLRequest, completionHandler: { (data, response, error) in
 
-        func sendError(error: AnyObject) {
+        func sendError(_ error: AnyObject) {
             print("error \(error)")
-            completionHandlerForProcessing(result: nil, error: error)
+            completionHandlerForProcessing(nil, error)
         }
 
         guard (error == nil) else {
-            sendError((error?.localizedDescription)!)
+            sendError((error?.localizedDescription)! as AnyObject)
             return
         }
 
-        guard let statusCode = (response as? NSHTTPURLResponse)?.statusCode where statusCode >= 200 && statusCode <= 299 else {
+        guard let statusCode = (response as? HTTPURLResponse)?.statusCode , statusCode >= 200 && statusCode <= 299 else {
             
-            sendError(((response as? NSHTTPURLResponse)!.statusCode))
+            sendError(((response as? HTTPURLResponse)!.statusCode as AnyObject))
             return
         }
  
         guard let data = data else {
             
-            sendError("No data was returned by Fitbit")
+            sendError("No data was returned by Fitbit" as AnyObject)
             return
         }
         
         var parsedResult: AnyObject!
         
         do {
-            parsedResult = try NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments)
+            parsedResult = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as AnyObject!
+           // parsedResult = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
         } catch {
-            sendError("parsing Udacity Post method failed")
+            sendError("parsing Udacity Post method failed" as AnyObject)
         }
-        completionHandlerForProcessing(result: parsedResult, error: nil)
-    }
+        completionHandlerForProcessing(parsedResult, nil)
+    }) 
         
     task.resume()
         
     } else {
         
-        completionHandlerForProcessing(result: nil, error: 001)
+        completionHandlerForProcessing(nil, 001 as AnyObject?)
     }
 }

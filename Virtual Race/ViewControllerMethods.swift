@@ -12,13 +12,13 @@ import UIKit
 
 class ViewControllerMethods: UIViewController {
     
-    func displayAlert(text: String) {
-        let networkAlert = UIAlertController(title: "Warning", message: text, preferredStyle: UIAlertControllerStyle.Alert)
+    func displayAlert(_ text: String) {
+        let networkAlert = UIAlertController(title: "Warning", message: text, preferredStyle: UIAlertControllerStyle.alert)
         
-        networkAlert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: { (action: UIAlertAction!) in
+        networkAlert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: { (action: UIAlertAction!) in
             
         }))
         
-        self.presentViewController(networkAlert, animated: true, completion: nil)
+        self.present(networkAlert, animated: true, completion: nil)
     }
 }

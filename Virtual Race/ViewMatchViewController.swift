@@ -15,34 +15,46 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
     
     @IBOutlet weak var tableView: UITableView!
     
+    @IBOutlet weak var noMathesLabel: UILabel!
+    
     var friendList = [[String:AnyObject]]()
     
-    var fetchedResultsController: NSFetchedResultsController!
+  //  var fetchedResultsController: NSFetchedResultsController<Match>!
     
-    var deleteMatchIndexPath: NSIndexPath? = nil
+    var deleteMatchIndexPath: IndexPath? = nil
     
-    let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+    let delegate = UIApplication.shared.delegate as! AppDelegate
     
     var raceList = [Match]()
     
     var requestChecker = false
     
     
-    override func viewWillAppear(animated:Bool) {
+    override func viewWillAppear(_ animated:Bool) {
+    
         
         super.viewWillAppear(animated)
         
-        raceList.removeAll()
+        noMathesLabel.isHidden = true
         
-        let fr = NSFetchRequest(entityName: "Match")
+         raceList.removeAll()
+        
+   //     let fr = NSFetchRequest(entityName: "Match")
+        
+        let fr = NSFetchRequest<Match>(entityName: "Match")
+        
+   //     let fr: NSFetchRequest<Match> = Match.fetchRequest() as! NSFetchRequest<Match>
+
+  //      let fr:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "Match")
+        
         fr.sortDescriptors = [NSSortDescriptor(key: "startDate", ascending: true)]
         fr.sortDescriptors = [NSSortDescriptor(key: "finished", ascending: true)]
         
-        let predicate = NSPredicate(format: "myID = %@", argumentArray: [NSUserDefaults.standardUserDefaults().objectForKey("myID")!])
+        let predicate = NSPredicate(format: "myID = %@", argumentArray: [UserDefaults.standard.object(forKey: "myID")!])
         
         fr.predicate = predicate
         
-        fetchedResultsController = NSFetchedResultsController(fetchRequest: fr, managedObjectContext: (delegate.stack?.context)!, sectionNameKeyPath: nil, cacheName: nil)
+        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fr, managedObjectContext: (delegate.stack?.context)!, sectionNameKeyPath: nil, cacheName: nil)
         
         do {
             try fetchedResultsController.performFetch()
@@ -52,38 +64,40 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
         
         for objects in fetchedResultsController.fetchedObjects! {
             
-            let match = objects as? Match
             
-            if match?.oppID != nil && match?.started == true &&  NSUserDefaults.standardUserDefaults().boolForKey("refresh") == true {
+            let match = objects
+            
+            if match.oppID != nil && match.started == true &&  UserDefaults.standard.bool(forKey: "refresh") == true {
                 
-                dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)) {
-                    self.updateRaces(match!)
-                    NSUserDefaults.standardUserDefaults().setBool(false, forKey: "refresh")
+                DispatchQueue.global(qos: DispatchQoS.QoSClass.background).async {
+                    self.updateRaces(match)
+                    UserDefaults.standard.set(false, forKey: "refresh")
                 }
             }
             
-            if match!.oppID != nil {
+            if match.oppID != nil {
                 
-                let defaultContainer = CKContainer.defaultContainer()
+                let defaultContainer = CKContainer.default()
                 
                 let publicDB = defaultContainer.publicCloudDatabase
-                publicDB.fetchRecordWithID(match!.recordID!) { (record, error) -> Void in
+                publicDB.fetch(withRecordID: match.recordID!) { (record, error) -> Void in
                     
                     guard error == nil else {
                         return
                     }
                     
-                    if record!.objectForKey("started") as? String == "true" && match?.started == false {
-                        match!.started = true
-                        match?.startDate = record?.objectForKey("startDate") as? NSDate
+                    if record!.object(forKey: "started") as? String == "true" && match.started == false {
+                        print("changed from not started to started")
+                        match.started = true
+                        match.startDate = record?.object(forKey: "startDate") as? Date
                         performUIUpdatesOnMain{
                             self.delegate.stack?.save()
                             self.tableView.reloadData()
                         }
                     }
                     
-                    if record!.objectForKey("rejected") as! String == "true" {
-                        match?.rejected = "true"
+                    if record!.object(forKey: "rejected") as! String == "true" {
+                        match.rejected = "true"
                         performUIUpdatesOnMain{
                             self.delegate.stack?.save()
                             self.tableView.reloadData()
@@ -92,17 +106,17 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                 }
             }
             
-            raceList.append(match!)
+            raceList.append(match)
         }
  
         tableView.reloadData()
         
-        searchAllRaces()
+       searchAllRaces()
     }
     
-    func updateRaces(match: Match) {
+    func updateRaces(_ match: Match) {
         
-        let date = NSDate()
+        let date = Date()
             
             let newDistance = RetrieveDistance()
             newDistance.getDistance(formatDate(match.startDate!)){ (result, error) in
@@ -111,43 +125,43 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                     
                     if error as? Int == 401 {
                         
-                        NSUserDefaults.standardUserDefaults().setObject(nil, forKey: "Access Token")
+                        UserDefaults.standard.set(nil, forKey: "Access Token")
                         
                         let controller: MainPageViewController
-                        controller = self.storyboard!.instantiateViewControllerWithIdentifier("MainPageViewController") as! MainPageViewController
+                        controller = self.storyboard!.instantiateViewController(withIdentifier: "MainPageViewController") as! MainPageViewController
                         
                         performUIUpdatesOnMain{
-                            self.presentViewController(controller, animated: false, completion: nil)
+                            self.present(controller, animated: false, completion: nil)
                         }
                     }
                     
                     return
                 }
             
-                match.myDistance = result
+                match.myDistance = result as NSNumber?
                
-                let defaultContainer = CKContainer.defaultContainer()
+                let defaultContainer = CKContainer.default()
                 
                 let publicDB = defaultContainer.publicCloudDatabase
                 
-                publicDB.fetchRecordWithID(match.recordID!) { (record, error) -> Void in
+                publicDB.fetch(withRecordID: match.recordID!) { (record, error) -> Void in
                     guard let record = record else {
                         print("Error fetching record: ", error)
                         return
                     }
                 
-                record.setObject(date, forKey: "u" + match.myID!)
+                record.setObject(date as CKRecordValue?, forKey: "u" + match.myID!)
                     
                     if isICloudContainerAvailable() {
                         
                         record.setObject(match.myDistance, forKey: "d" + match.myID!)
                         
-                        publicDB.saveRecord(record) { (record, error) -> Void in
+                        publicDB.save(record, completionHandler: { (record, error) -> Void in
                             guard let record = record else {
                                 print("Error saving record: ", error)
                                 return
                             }
-                        }
+                        }) 
                     } else {
                         print("no icloud account")
                     }
@@ -157,17 +171,17 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
     
     func searchAllRaces() {
         
-        let defaultContainer = CKContainer.defaultContainer()
+        let defaultContainer = CKContainer.default()
         
         let publicDB = defaultContainer.publicCloudDatabase
         
-        let predicate = NSPredicate(format: "%K == %@", "myID", (NSUserDefaults.standardUserDefaults().objectForKey("myID") as? String!)!)
+        let predicate = NSPredicate(format: "%K == %@", "myID", (UserDefaults.standard.object(forKey: "myID") as? String!)!)
         
-        let predicate2 = NSPredicate(format: "%K == %@", "oppID", (NSUserDefaults.standardUserDefaults().objectForKey("myID") as? String!)!)
+        let predicate2 = NSPredicate(format: "%K == %@", "oppID", (UserDefaults.standard.object(forKey: "myID") as? String!)!)
         
         var query = CKQuery(recordType: "match", predicate: predicate)
         
-        publicDB.performQuery(query, inZoneWithID: nil) {
+        publicDB.perform(query, inZoneWith: nil) {
             (records, error) -> Void in
             guard let records = records else {
                 print("Error querying records: ", error)
@@ -175,7 +189,7 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
             }
                 for record in records {
                     
-                if record.objectForKey("started") as! String == "true" {
+                if record.object(forKey: "started") as! String == "true" {
                 
                 self.checkRacesAgainstMemory(records)
                     
@@ -185,7 +199,7 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
         
         query = CKQuery(recordType: "match", predicate: predicate2)
         
-        publicDB.performQuery(query, inZoneWithID: nil) { (records, error) -> Void in
+        publicDB.perform(query, inZoneWith: nil) { (records, error) -> Void in
             
             guard let records = records else {
                 print("Error querying records: ", error)
@@ -194,7 +208,7 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
             
             for record in records {
                     
-                if record.objectForKey("started") as! String == "true" {
+                if record.object(forKey: "started") as! String == "true" {
                         
                     self.checkRacesAgainstMemory(records)
                 }
@@ -202,16 +216,16 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
         }
     }
     
-    func checkRacesAgainstMemory(record: [CKRecord]) {
+    func checkRacesAgainstMemory(_ record: [CKRecord]) {
         
-        let fr = NSFetchRequest(entityName: "Match")
+        let fr:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "Match")
         fr.sortDescriptors = [NSSortDescriptor(key: "startDate", ascending: true)]
 
         for object in record {
                 
-            if object.objectForKey("rejected") as! String != "true" {
+            if object.object(forKey: "rejected") as! String != "true" {
                 
-                fetchedResultsController = NSFetchedResultsController(fetchRequest: fr, managedObjectContext: (delegate.stack?.context)!, sectionNameKeyPath: nil, cacheName: nil)
+                let fetchedResultsController = NSFetchedResultsController(fetchRequest: fr, managedObjectContext: (delegate.stack?.context)!, sectionNameKeyPath: nil, cacheName: nil)
                 
                 do {
                     try fetchedResultsController.performFetch()
@@ -236,17 +250,19 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
         }
     }
     
-    func addRacetoMemory(record: CKRecord) {
+    func addRacetoMemory(_ record: CKRecord) {
 
-        let newMatch = Match(startDate: (record.objectForKey("startDate") as! NSDate), myID: NSUserDefaults.standardUserDefaults().objectForKey("myID") as! String, context: (self.delegate.stack?.context)!)
-        newMatch.recordID = record.recordID
-        newMatch.myName = NSUserDefaults.standardUserDefaults().objectForKey("fullName") as? String
-        newMatch.myAvatar = NSUserDefaults.standardUserDefaults().objectForKey("myAvatar") as? NSData
-        newMatch.raceLocation = record.objectForKey("raceLocation") as? String
-        newMatch.winner = record.objectForKey("winner") as? String
-        newMatch.finishDate = record.objectForKey("finishDate") as? String
+        let newMatch = Match(startDate: (record.object(forKey: "startDate") as! Date), myID: UserDefaults.standard.object(forKey: "myID") as! String, context: (self.delegate.stack?.context)!)
         
-        let started = record.objectForKey("started") as? String
+        
+        newMatch.recordID = record.recordID
+        newMatch.myName = UserDefaults.standard.object(forKey: "fullName") as? String
+        newMatch.myAvatar = UserDefaults.standard.object(forKey: "myAvatar") as? Data
+        newMatch.raceLocation = record.object(forKey: "raceLocation") as? String
+        newMatch.winner = record.object(forKey: "winner") as? String
+        newMatch.finishDate = record.object(forKey: "finishDate") as? String
+        
+        let started = record.object(forKey: "started") as? String
         
         if started! == "true" {
             
@@ -258,7 +274,7 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
             
         }
         
-        let finished = record.objectForKey("finished") as? String
+        let finished = record.object(forKey: "finished") as? String
         
         if finished! == "true" {
             
@@ -270,16 +286,16 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
             
         }
         
-        if record.objectForKey("myID") as! String == NSUserDefaults.standardUserDefaults().objectForKey("myID") as! String && record.objectForKey("oppID") != nil {
+        if record.object(forKey: "myID") as! String == UserDefaults.standard.object(forKey: "myID") as! String && record.object(forKey: "oppID") != nil {
             
-            let oppID = record.objectForKey("oppID") as! String
+            let oppID = record.object(forKey: "oppID") as! String
             
             newMatch.oppID = oppID
-            newMatch.oppDistance = record.objectForKey("d" + newMatch.oppID!) as! Double
+            newMatch.oppDistance = record.object(forKey: "d" + newMatch.oppID!) as! NSNumber?
             
-        } else if record.objectForKey("oppID") as? String == NSUserDefaults.standardUserDefaults().objectForKey("myID") as? String {
+        } else if record.object(forKey: "oppID") as? String == UserDefaults.standard.object(forKey: "myID") as? String {
             
-            let oppID = record.objectForKey("myID") as! String
+            let oppID = record.object(forKey: "myID") as! String
             
             newMatch.oppID = oppID
         }
@@ -319,9 +335,9 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                         return
                     }
                     
-                    let avatarURL = NSURL(string: avatar)
+                    let avatarURL = URL(string: avatar)
                     
-                    let avatarImage = NSData(contentsOfURL: (avatarURL)!)
+                    let avatarImage = try? Data(contentsOf: (avatarURL)!)
                     
                     newMatch.oppAvatar = avatarImage
                     newMatch.oppName = name
@@ -330,40 +346,41 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                 
             }
             
-            self.delegate.stack?.context.performBlock{
+            self.delegate.stack?.context.perform{
                 self.delegate.stack?.save()
                 self.raceList.append(newMatch)
                 self.tableView.reloadData()
             }
+            
         }
     }
     
-    func confirmDelete(match: Match) {
+    func confirmDelete(_ match: Match) {
         
-        let alert = UIAlertController(title: "Delete Race Request", message: "Are you sure you want to permanently end and delete this race? If this is a two player race, niether you or your opponent will be able to see race details upon its deletion.", preferredStyle: .ActionSheet)
+        let alert = UIAlertController(title: "Delete Race Request", message: "Are you sure you want to permanently end and delete this race? If this is a two player race, niether you or your opponent will be able to see race details upon its deletion.", preferredStyle: .actionSheet)
         
-        let DeleteAction = UIAlertAction(title: "Delete", style: .Destructive, handler: handleDeleteMatch)
+        let DeleteAction = UIAlertAction(title: "Delete", style: .destructive, handler: handleDeleteMatch)
         
-        let CancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: cancelDeleteMatch)
+        let CancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: cancelDeleteMatch)
         
         alert.addAction(DeleteAction)
         
         alert.addAction(CancelAction)
         
-        self.presentViewController(alert, animated: true, completion: nil)
+        self.present(alert, animated: true, completion: nil)
     }
     
-    func handleDeleteMatch(alertAction: UIAlertAction!) -> Void {
+    func handleDeleteMatch(_ alertAction: UIAlertAction!) -> Void {
         
         if let indexPath = deleteMatchIndexPath {
             
-            let defaultContainer = CKContainer.defaultContainer()
+            let defaultContainer = CKContainer.default()
             
             let publicDB = defaultContainer.publicCloudDatabase
             
             if isICloudContainerAvailable()  {
                 
-                publicDB.fetchRecordWithID(raceList[indexPath.row].recordID!) { (record, error) -> Void in
+                publicDB.fetch(withRecordID: raceList[(indexPath as NSIndexPath).row].recordID!) { (record, error) -> Void in
                     
                     guard (error == nil) else {
                         self.displayAlert((error?.localizedDescription)! + " You will not be able to delete this race until the issue is fixed.")
@@ -383,9 +400,9 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                         return
                     }
                     
-                    record.setObject("true", forKey: "rejected")
+                    record.setObject("true" as CKRecordValue?, forKey: "rejected")
                     
-                    publicDB.saveRecord(record) { (record, error) -> Void in
+                    publicDB.save(record, completionHandler: { (record, error) -> Void in
                         guard let record = record else {
                             self.displayAlert((error?.localizedDescription)!)
                             performUIUpdatesOnMain{
@@ -393,20 +410,23 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                             }
                             return
                         }
-                    }
+                    }) 
                     
-                    self.delegate.stack?.context.deleteObject(self.raceList[indexPath.row])
+                    self.delegate.stack?.context.delete(self.raceList[(indexPath as NSIndexPath).row])
                     
-                    self.raceList.removeAtIndex(indexPath.row)
+                    self.raceList.remove(at: (indexPath as NSIndexPath).row)
                     
                     self.delegate.stack?.save()
                     
                     self.deleteMatchIndexPath = nil
                     
                     performUIUpdatesOnMain{
+                        /*
                         self.tableView.beginUpdates()
-                        self.tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+                        self.tableView.deleteRows(at: [indexPath], with: .automatic)
                         self.tableView.endUpdates()
+ */
+                        self.viewWillAppear(false)
                     }
                 }
             } else {
@@ -418,66 +438,77 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
         }
     }
     
-    func cancelDeleteMatch(alertAction: UIAlertAction!) {
+    func cancelDeleteMatch(_ alertAction: UIAlertAction!) {
         deleteMatchIndexPath = nil
     }
     
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 140.0
     }
     
     
-    func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         
-        cell.contentView.backgroundColor = UIColor.clearColor()
+        cell.contentView.backgroundColor = UIColor.clear
         
-        let whiteRoundedView : UIView = UIView(frame: CGRectMake(0, 10, self.view.frame.size.width, 120))
+        let whiteRoundedView : UIView = UIView(frame: CGRect(x: 0, y: 10, width: self.view.frame.size.width, height: 120))
         
-        whiteRoundedView.layer.backgroundColor = CGColorCreate(CGColorSpaceCreateDeviceRGB(), [1.0, 1.0, 1.0, 1.0])
+        whiteRoundedView.layer.backgroundColor = CGColor(colorSpace: CGColorSpaceCreateDeviceRGB(), components: [1.0, 1.0, 1.0, 1.0])
         whiteRoundedView.layer.masksToBounds = false
         whiteRoundedView.layer.cornerRadius = 2.0
-        whiteRoundedView.layer.shadowOffset = CGSizeMake(-1, 1)
+        whiteRoundedView.layer.shadowOffset = CGSize(width: -1, height: 1)
         whiteRoundedView.layer.shadowOpacity = 0.2
         
         cell.contentView.addSubview(whiteRoundedView)
-        cell.contentView.sendSubviewToBack(whiteRoundedView)
+        cell.contentView.sendSubview(toBack: whiteRoundedView)
     }
  
-    
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+ 
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
+        if raceList.count == 0 {
+            noMathesLabel.isHidden = false
+            noMathesLabel.text = "You Currently Have No Races"
+        } else {
+            noMathesLabel.isHidden = true
+        }
         
         return raceList.count
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let extraInfo = MapViewController()
         
-        let cell = tableView.dequeueReusableCellWithIdentifier("currentRaces")!
+        let cell = tableView.dequeueReusableCell(withIdentifier: "currentRaces")!
         
-        let row = raceList[indexPath.row]
+        let row = raceList[(indexPath as NSIndexPath).row]
         
         let raceLocation = extraInfo.chooseRaceCourse(row.raceLocation!)!
         
-        var avatarImage = NSData()
+        var avatarImage = Data()
         
         if row.oppAvatar == nil{
-            avatarImage = row.myAvatar!
+            avatarImage = row.myAvatar! as Data
             cell.textLabel!.text = "\(raceLocation.startingTitle) to \(raceLocation.endingTitle)"
+            cell.textLabel?.font = UIFont.boldSystemFont(ofSize: 14)
             cell.imageView!.image = UIImage(data: avatarImage)
             
         } else {
-            avatarImage = row.oppAvatar!
+            avatarImage = row.oppAvatar! as Data
             cell.textLabel?.text = "Racing \(row.oppName!) from \(raceLocation.startingTitle) to \(raceLocation.endingTitle)"
+            cell.textLabel?.font = UIFont.boldSystemFont(ofSize: 14)
             cell.textLabel!.numberOfLines = 2
             cell.imageView!.image = UIImage(data: avatarImage)
             
         }
-
+        
         switch row {
             
         case let row where row.finished == true && row.oppID == nil:
             cell.detailTextLabel?.text = "The race is over!"
+            cell.detailTextLabel?.textColor = UIColor.red
             
         case let row where row.rejected == "true":
             cell.textLabel?.text = "\(row.oppName!) has declined this race"
@@ -491,83 +522,89 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
         case let row where row.finished == true && row.oppID != nil:
             if row.winner! == "tie" {
                 cell.detailTextLabel?.text = "The race is over! it was a tie"
-                cell.detailTextLabel?.textColor = UIColor.redColor()
+                cell.detailTextLabel?.textColor = UIColor.red
                 
             } else {
                 
                 if row.winner == row.myName! || row.winner == row.oppName! {
                     cell.detailTextLabel?.text = "The race is over! \(row.winner!) finished 1st"
-                    cell.detailTextLabel?.textColor = UIColor(red: 0.0, green: 0.502, blue: 0.004, alpha: 1.0)
+                    cell.detailTextLabel?.textColor = UIColor.red
                 } else {
                     cell.detailTextLabel?.text = "\(row.winner!)"
-                    cell.detailTextLabel?.textColor = UIColor.redColor()
+                    cell.detailTextLabel?.textColor = UIColor(red: 0.8, green: 0.8, blue: 0.0, alpha: 1.0)
+                    
                     cell.detailTextLabel!.numberOfLines = 2
                 }
             }
             
         case let row where row.started == true:
              cell.detailTextLabel!.text = "Race start date: \(formatDate(row.startDate!))"
-            
+             cell.detailTextLabel?.textColor = UIColor(red: 0.0, green: 0.502, blue: 0.004, alpha: 1.0)
+    
         default:
-           
-            let defaultContainer = CKContainer.defaultContainer()
+            
+            let defaultContainer = CKContainer.default()
             
             let publicDB = defaultContainer.publicCloudDatabase
-            publicDB.fetchRecordWithID(row.recordID!) { (record, error) -> Void in
+            publicDB.fetch(withRecordID: row.recordID!) { (record, error) -> Void in
                 
                 guard let record = record else {
                     print("Error fetching record: ", error)
                     return
                 }
                 
-                if record.objectForKey("started") as? String == "false" && self.requestChecker == false {
+                if record.object(forKey: "started") as? String == "false" && self.requestChecker == false {
+                    
+                    
                     performUIUpdatesOnMain{
                         cell.detailTextLabel!.text = "Waiting for your race request to be accepted"
                         self.requestChecker = true
                         self.tableView.reloadData()
                     }
                     
-                } else {
+                } else if record.object(forKey: "started") as? String == "true" {
                     row.started = true
-                    row.startDate = record.objectForKey("startDate") as? NSDate
+                    row.startDate = record.object(forKey: "startDate") as? Date
+                    self.requestChecker = false
                     
                     performUIUpdatesOnMain{
                         cell.detailTextLabel!.text = "Race started on \(formatDate(row.startDate!))"
+                        cell.detailTextLabel?.textColor = UIColor(red: 0.0, green: 0.502, blue: 0.004, alpha: 1.0)
                         self.delegate.stack?.save()
                         self.tableView.reloadData()
                     }
                 }
             }
         }
-        
+ 
         return cell
     }
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        let row = raceList[indexPath.row]
+        let row = raceList[(indexPath as NSIndexPath).row]
         
         if row.started! == true  {
             
             let controller: MapViewController
-            controller = self.storyboard!.instantiateViewControllerWithIdentifier("MapViewController") as! MapViewController
+            controller = self.storyboard!.instantiateViewController(withIdentifier: "MapViewController") as! MapViewController
             
             controller.match = row
             
             self.navigationController?.pushViewController(controller, animated: true)
             
         } else {
-            tableView.deselectRowAtIndexPath(indexPath, animated: true)
+            tableView.deselectRow(at: indexPath, animated: true)
         }
     }
     
-    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         
-        if editingStyle == .Delete {
+        if editingStyle == .delete {
             
             deleteMatchIndexPath = indexPath
             
-            let matchToDelete = raceList[indexPath.row]
+            let matchToDelete = raceList[(indexPath as NSIndexPath).row]
             
             confirmDelete(matchToDelete)
         }

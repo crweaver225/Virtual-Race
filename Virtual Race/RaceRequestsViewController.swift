@@ -13,33 +13,37 @@ import CloudKit
 
 class RaceRequestsViewController: ViewControllerMethods, UITableViewDataSource, UITableViewDelegate {
     
+    @IBOutlet weak var noRequestsLabel: UILabel!
+    
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     @IBOutlet weak var tableView: UITableView!
     
-    @IBAction func refresh(sender: AnyObject) {
+    @IBAction func refresh(_ sender: AnyObject) {
         viewWillAppear(false)
     }
     
-    let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+    let delegate = UIApplication.shared.delegate as! AppDelegate
     
     var requestList = [CKRecord]()
     
     var friendList = [[String:AnyObject]]()
     
-    var imageList = [NSData]()
+    var imageList = [Data]()
     
     var oppName = String()
     
-    var oneDayfromNow: NSDate {
+    var oneDayfromNow: Date {
         
-        let date = NSCalendar.currentCalendar().dateByAddingUnit(.Day, value: 1, toDate: NSDate(), options: [])!
-        return NSCalendar.currentCalendar().dateBySettingHour(0, minute: 0, second: 0, ofDate: date, options: NSCalendarOptions())!
+        let date = (Calendar.current as NSCalendar).date(byAdding: .day, value: 1, to: Date(), options: [])!
+        return (Calendar.current as NSCalendar).date(bySettingHour: 0, minute: 0, second: 0, of: date, options: NSCalendar.Options())!
     }
 
-    override func viewWillAppear(animated:Bool) {
+    override func viewWillAppear(_ animated:Bool) {
         
         super.viewWillAppear(animated)
+        
+        noRequestsLabel.isHidden = true
         
         activityIndicator.startAnimating()
         
@@ -50,13 +54,13 @@ class RaceRequestsViewController: ViewControllerMethods, UITableViewDataSource, 
                 
                 if error as? Int == 401 {
                     
-                    NSUserDefaults.standardUserDefaults().setObject(nil, forKey: "Access Token")
+                    UserDefaults.standard.set(nil, forKey: "Access Token")
                     
                     let controller: MainPageViewController
-                    controller = self.storyboard!.instantiateViewControllerWithIdentifier("MainPageViewController") as! MainPageViewController
+                    controller = self.storyboard!.instantiateViewController(withIdentifier: "MainPageViewController") as! MainPageViewController
                     
                     performUIUpdatesOnMain{
-                        self.presentViewController(controller, animated: false, completion: nil)
+                        self.present(controller, animated: false, completion: nil)
                     }
                     
                 } else if error as? Int == 001 {
@@ -73,23 +77,23 @@ class RaceRequestsViewController: ViewControllerMethods, UITableViewDataSource, 
 
             self.friendList = friendsList!
             
-            let defaultContainer = CKContainer.defaultContainer()
+            let defaultContainer = CKContainer.default()
             
             let publicDB = defaultContainer.publicCloudDatabase
             
-            let predicate1 = NSPredicate(format: "%K == %@", "oppID", (NSUserDefaults.standardUserDefaults().objectForKey("myID") as? String!)!)
+            let predicate1 = NSPredicate(format: "%K == %@", "oppID", (UserDefaults.standard.object(forKey: "myID") as? String!)!)
             
             let predicate2 = NSPredicate(format: "%K == %@", "started", "false")
             
             let predicate3 = NSPredicate(format: "%K == %@", "rejected", "false")
             
-            let andPredicate = NSCompoundPredicate(type: NSCompoundPredicateType.AndPredicateType, subpredicates: [predicate1, predicate2, predicate3])
+            let andPredicate = NSCompoundPredicate(type: NSCompoundPredicate.LogicalType.and, subpredicates: [predicate1, predicate2, predicate3])
             
             let query = CKQuery(recordType: "match", predicate: andPredicate)
             
             if isICloudContainerAvailable() {
             
-                publicDB.performQuery(query, inZoneWithID: nil) {
+                publicDB.perform(query, inZoneWith: nil) {
                     (records, error) -> Void in
                     guard let records = records else {
                         print("Error querying records: ", error)
@@ -99,6 +103,14 @@ class RaceRequestsViewController: ViewControllerMethods, UITableViewDataSource, 
                     }
                 
                     self.requestList = records
+                    
+                    if self.requestList.count == 0 {
+                        performUIUpdatesOnMain {
+
+                        self.noRequestsLabel.isHidden = false
+                        self.noRequestsLabel.text = "You Have No New Race Requests."
+                        }
+                    }
                 
                     performUIUpdatesOnMain{
                         self.tableView.reloadData()
@@ -112,23 +124,27 @@ class RaceRequestsViewController: ViewControllerMethods, UITableViewDataSource, 
             }
         }
     }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 120.0
+    }
 
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         return requestList.count
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         var oppAvatar = String()
         
         let extraInfo = MapViewController()
         
-        let cell = tableView.dequeueReusableCellWithIdentifier("raceRequests")!
+        let cell = tableView.dequeueReusableCell(withIdentifier: "raceRequests")!
         
-        let row = requestList[indexPath.row]
+        let row = requestList[(indexPath as NSIndexPath).row]
         
-        let raceLocation = extraInfo.chooseRaceCourse((row.objectForKey("raceLocation") as? String)!)
+        let raceLocation = extraInfo.chooseRaceCourse((row.object(forKey: "raceLocation") as? String)!)
         
         for i in friendList {
             
@@ -147,7 +163,7 @@ class RaceRequestsViewController: ViewControllerMethods, UITableViewDataSource, 
                 return cell
             }
             
-            if encodedID == row.objectForKey("myID") as! String {
+            if encodedID == row.object(forKey: "myID") as! String {
                 
                 guard let avatar = user["avatar"] as? String else {
                     print("no opp avatar")
@@ -163,11 +179,11 @@ class RaceRequestsViewController: ViewControllerMethods, UITableViewDataSource, 
                 cell.detailTextLabel!.text = "The race would start in \(raceLocation!.startingTitle) and end in \(raceLocation!.endingTitle)"
                 cell.detailTextLabel?.numberOfLines = 2
                 
-                let avatarURL = NSURL(string: oppAvatar)
+                let avatarURL = URL(string: oppAvatar)
                 
-                let avatarImage = NSData(contentsOfURL: (avatarURL)!)
+                let avatarImage = try? Data(contentsOf: (avatarURL)!)
                 
-                self.imageList.insert(avatarImage!, atIndex: indexPath.row)
+                self.imageList.insert(avatarImage!, at: (indexPath as NSIndexPath).row)
                 
                 cell.imageView?.image = UIImage(data: avatarImage!)
             }
@@ -176,19 +192,19 @@ class RaceRequestsViewController: ViewControllerMethods, UITableViewDataSource, 
         return cell
     }
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        let row = requestList[indexPath.row]
+        let row = requestList[(indexPath as NSIndexPath).row]
         
-        let myID = NSUserDefaults.standardUserDefaults().objectForKey("myID") as? String!
+        let myID = UserDefaults.standard.object(forKey: "myID") as? String!
         
-        let defaultContainer = CKContainer.defaultContainer()
+        let defaultContainer = CKContainer.default()
         
         let publicDB = defaultContainer.publicCloudDatabase
         
-        let startMatchAlert = UIAlertController(title: "Confirm the Start of a New Match", message: "your new match against \(self.oppName) will start at midnight on \(formatDate(oneDayfromNow))", preferredStyle: UIAlertControllerStyle.Alert)
+        let startMatchAlert = UIAlertController(title: "Confirm the Start of a New Match", message: "your new match against \(self.oppName) will start at midnight on \(formatDate(oneDayfromNow))", preferredStyle: UIAlertControllerStyle.alert)
         
-        startMatchAlert.addAction(UIAlertAction(title: "Confirm", style: .Default, handler: {(action: UIAlertAction!) in
+        startMatchAlert.addAction(UIAlertAction(title: "Confirm", style: .default, handler: {(action: UIAlertAction!) in
             
             if isICloudContainerAvailable() {
                 
@@ -209,33 +225,37 @@ class RaceRequestsViewController: ViewControllerMethods, UITableViewDataSource, 
                         return
                     }
                     
-                    if encodedID == row.objectForKey("myID") as? String {
+                    if encodedID == row.object(forKey: "myID") as? String {
                         
                         let newMatch = Match(startDate: self.oneDayfromNow, myID: myID! , context: (self.delegate.stack?.context)!)
-                        newMatch.myName = NSUserDefaults.standardUserDefaults().objectForKey("fullName") as? String
-                        newMatch.myAvatar = NSUserDefaults.standardUserDefaults().objectForKey("myAvatar") as? NSData
+                        
+                        
+                        newMatch.myName = UserDefaults.standard.object(forKey: "fullName") as? String
+                        newMatch.myAvatar = UserDefaults.standard.object(forKey: "myAvatar") as? Data
                         newMatch.oppID = encodedID
                         newMatch.oppName = name
-                        newMatch.oppAvatar = self.imageList[indexPath.row]
+                        newMatch.oppAvatar = self.imageList[(indexPath as NSIndexPath).row]
                         newMatch.finished = false
                         newMatch.started = true
                         newMatch.recordID = row.recordID
-                        newMatch.raceLocation = row.objectForKey("raceLocation") as? String
+                        newMatch.raceLocation = row.object(forKey: "raceLocation") as? String
+                        newMatch.oppDistance = 0.0
+                        newMatch.myDistance = 0.0
                         
-                        row.setObject("true", forKey: "started")
-                        row.setObject(self.oneDayfromNow, forKey: "startDate")
+                        row.setObject("true" as CKRecordValue?, forKey: "started")
+                        row.setObject(self.oneDayfromNow as CKRecordValue?, forKey: "startDate")
                         
-                        publicDB.saveRecord(row) { (record, error) -> Void in
+                        publicDB.save(row, completionHandler: { (record, error) -> Void in
                             guard let record = record else {
                                 print("Error saving record: ", error)
                                 return
                             }
-                        }
+                        }) 
                         
                         self.delegate.stack?.save()
                         
-                        let controller: LoginViewController
-                        controller = self.storyboard!.instantiateViewControllerWithIdentifier("LoginViewController") as! LoginViewController
+                        let controller: MainPageViewController
+                        controller = self.storyboard!.instantiateViewController(withIdentifier: "MainPageViewController") as! MainPageViewController
                         
                         self.navigationController?.pushViewController(controller, animated: true)
                         
@@ -251,23 +271,23 @@ class RaceRequestsViewController: ViewControllerMethods, UITableViewDataSource, 
             
         }))
         
-        startMatchAlert.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: nil))
+        startMatchAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         
-        startMatchAlert.addAction(UIAlertAction(title: "Deny", style: .Default, handler: {(action: UIAlertAction!) in
+        startMatchAlert.addAction(UIAlertAction(title: "Deny", style: .default, handler: {(action: UIAlertAction!) in
             
             if isICloudContainerAvailable() {
                 
-                row.setObject("true", forKey: "rejected")
+                row.setObject("true" as CKRecordValue?, forKey: "rejected")
                 
-                publicDB.saveRecord(row) { (record, error) -> Void in
+                publicDB.save(row, completionHandler: { (record, error) -> Void in
                     guard let record = record else {
                         print("Error saving record: ", error)
                         return
                     }
-                }
+                }) 
                 
                 performUIUpdatesOnMain{
-                    self.requestList.removeAtIndex(indexPath.row)
+                    self.requestList.remove(at: (indexPath as NSIndexPath).row)
                     self.tableView.reloadData()
                 }
                 
@@ -279,7 +299,7 @@ class RaceRequestsViewController: ViewControllerMethods, UITableViewDataSource, 
             
         }))
         
-        self.presentViewController(startMatchAlert, animated: true, completion: nil)
+        self.present(startMatchAlert, animated: true, completion: nil)
         
     }
 }

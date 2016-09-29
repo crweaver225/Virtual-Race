@@ -10,16 +10,16 @@ import Foundation
 
 class RetrieveDistance {
     
-    func getFinishDate(distance: Double, date: String, completionHandler: (result: String?, error: AnyObject?) -> Void) {
+    func getFinishDate(_ distance: Double, date: String, completionHandler: @escaping (_ result: String?, _ error: AnyObject?) -> Void) {
         
         var tempDistance = 0.0
         
-        let accessToken = NSUserDefaults.standardUserDefaults().objectForKey("Access Token") as? String
+        let accessToken = UserDefaults.standard.object(forKey: "Access Token") as? String
         
         let url = "https://api.fitbit.com/1/user/-/activities/tracker/distance/date/\(date)/today.json"
         
-        let request = NSMutableURLRequest(URL: NSURL(string: url)!)
-        request.HTTPMethod = "GET"
+        let request = NSMutableURLRequest(url: URL(string: url)!)
+        request.httpMethod = "GET"
         request.addValue("Bearer \(accessToken!)", forHTTPHeaderField: "Authorization")
         request.addValue("en_US", forHTTPHeaderField: "Accept-Language")
         
@@ -29,17 +29,17 @@ class RetrieveDistance {
                 
                 if error as? Int == 401 {
                     
-                    completionHandler(result: nil, error: 401)
+                    completionHandler(nil, 401 as AnyObject?)
                     
                 } else {
                     
-                    completionHandler(result: nil, error: error)
+                    completionHandler(nil, error)
                 }
                 
                 return
             }
 
-            guard let dates = result["activities-tracker-distance"] as? [[String: AnyObject]] else {
+            guard let dates = result?["activities-tracker-distance"] as? [[String: AnyObject]] else {
                 
                 return
             }
@@ -58,7 +58,7 @@ class RetrieveDistance {
                 tempDistance += Double(fbDistance)!
                 
                 if tempDistance >= distance {
-                    completionHandler(result: fbDate, error: nil)
+                    completionHandler(fbDate, nil)
                     break
                 }
             }
@@ -66,16 +66,16 @@ class RetrieveDistance {
     }
     
     
-    func getDistance(date: String,  completionHandler: (result: Double?, error: AnyObject?) -> Void) {
+    func getDistance(_ date: String,  completionHandler: @escaping (_ result: Double?, _ error: AnyObject?) -> Void) {
         
-        let accessToken = NSUserDefaults.standardUserDefaults().objectForKey("Access Token") as? String
+        let accessToken = UserDefaults.standard.object(forKey: "Access Token") as? String
         
         var distance = 0.0
         
        let url = "https://api.fitbit.com/1/user/-/activities/tracker/distance/date/\(date)/today.json"
 
-        let request = NSMutableURLRequest(URL: NSURL(string: url)!)
-        request.HTTPMethod = "GET"
+        let request = NSMutableURLRequest(url: URL(string: url)!)
+        request.httpMethod = "GET"
         request.addValue("Bearer \(accessToken!)", forHTTPHeaderField: "Authorization")
         request.addValue("en_US", forHTTPHeaderField: "Accept-Language")
         
@@ -85,19 +85,19 @@ class RetrieveDistance {
                 
                 if error as? Int == 401 {
                     
-                    completionHandler(result: nil, error: 401)
+                    completionHandler(nil, 401 as AnyObject?)
                     
                 } else {
                     
-                    completionHandler(result: nil, error: error)
+                    completionHandler(nil, error)
                 }
                 
                 return
             }
         
-            guard let dates = result["activities-tracker-distance"] as? [[String: AnyObject]] else {
+            guard let dates = result?["activities-tracker-distance"] as? [[String: AnyObject]] else {
                 
-                completionHandler(result: 0.0, error: nil)
+                completionHandler(0.0, nil)
                 return
             }
             
@@ -111,7 +111,7 @@ class RetrieveDistance {
                 distance += Double(fbDistance)!
             }
             
-            completionHandler(result: distance, error: nil)
+            completionHandler(distance, nil)
             
         }
     }

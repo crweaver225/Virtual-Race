@@ -15,49 +15,49 @@ let kCloseSafariViewControllerNotification = "kCloseSafariViewControllerNotifica
 
 class LoginViewController: ViewControllerMethods, SFSafariViewControllerDelegate {
     
-    let authURL = NSURL(string: "https://www.fitbit.com/oauth2/authorize?response_type=token&client_id=227ST9&scope=activity%20profile%20social&expires_in=31536000&prompt=consent")
+    let authURL = URL(string: "https://www.fitbit.com/oauth2/authorize?response_type=token&client_id=227ST9&scope=activity%20profile%20social&expires_in=31536000&prompt=consent")
     
     var safariVC: SFSafariViewController!
     
-    @IBAction func permitAccess(sender: AnyObject) {
+    @IBAction func permitAccess(_ sender: AnyObject) {
         
         openSafari()
     }
     
     override func viewDidLoad() {
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "safariLogin:", name: kCloseSafariViewControllerNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(LoginViewController.safariLogin(_:)), name: NSNotification.Name(rawValue: kCloseSafariViewControllerNotification), object: nil)
         
-        NSUserDefaults.standardUserDefaults().setBool(true, forKey: "refresh")
+        UserDefaults.standard.set(true, forKey: "refresh")
     }
     
     func openSafari() {
         
-        safariVC = SFSafariViewController(URL: authURL!)
+        safariVC = SFSafariViewController(url: authURL!)
         
-        self.presentViewController(safariVC!, animated: true, completion: nil)
+        self.present(safariVC!, animated: true, completion: nil)
         
     }
     
-    func safariLogin(notification: NSNotification) {
+    func safariLogin(_ notification: Notification) {
         
-        let url = notification.object as! NSURL
+        let url = notification.object as! URL
         
-        let urlAuthorizationCode = String(url)
+        let urlAuthorizationCode = String(describing: url)
         
-        let findStartingIndex = urlAuthorizationCode.rangeOfString("=")
+        let findStartingIndex = urlAuthorizationCode.range(of: "=")
         
-        let startingIndex = findStartingIndex?.endIndex
+        let startingIndex = findStartingIndex?.upperBound
         
-        let modifiedURLAuthorizationCode = urlAuthorizationCode.substringFromIndex(startingIndex!)
+        let modifiedURLAuthorizationCode = urlAuthorizationCode.substring(from: startingIndex!)
         
-        let findEndingIndex = modifiedURLAuthorizationCode.rangeOfString("&")
+        let findEndingIndex = modifiedURLAuthorizationCode.range(of: "&")
         
-        let endingIndex = findEndingIndex?.startIndex
+        let endingIndex = findEndingIndex?.lowerBound
         
-        let authorizationCode = modifiedURLAuthorizationCode.substringToIndex(endingIndex!)
+        let authorizationCode = modifiedURLAuthorizationCode.substring(to: endingIndex!)
         
-        NSUserDefaults.standardUserDefaults().setObject(authorizationCode, forKey: "Access Token")
+        UserDefaults.standard.set(authorizationCode, forKey: "Access Token")
         
         let dataRet = RetrieveAccessToken()
         dataRet.retrieveData() { (success, error) in
@@ -75,12 +75,12 @@ class LoginViewController: ViewControllerMethods, SFSafariViewControllerDelegate
                 
                 performUIUpdatesOnMain{
                     
-                    self.dismissViewControllerAnimated(false, completion: nil)
+                    self.dismiss(animated: false, completion: nil)
                     
                     let controller: UINavigationController
-                    controller = self.storyboard!.instantiateViewControllerWithIdentifier("NavigationController") as! UINavigationController
+                    controller = self.storyboard!.instantiateViewController(withIdentifier: "NavigationController") as! UINavigationController
                     
-                    self.presentViewController(controller, animated: true, completion: nil)
+                    self.present(controller, animated: true, completion: nil)
                     
                 }
             }

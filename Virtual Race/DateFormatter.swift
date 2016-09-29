@@ -9,21 +9,21 @@
 import Foundation
 
 
-func formatDate(date: NSDate) -> String {
+func formatDate(_ date: Date) -> String {
     
-    let dateFormatter = NSDateFormatter()
-    dateFormatter.locale = NSLocale.currentLocale()
+    let dateFormatter = DateFormatter()
+    dateFormatter.locale = Locale.current
     dateFormatter.dateFormat = "yyyy-MM-dd"
-    let convertedDate = dateFormatter.stringFromDate(date)
+    let convertedDate = dateFormatter.string(from: date)
     
     return convertedDate
 }
 
-func dateConverter(date: String) -> NSDate {
-    let dateFormatter = NSDateFormatter()
+func dateConverter(_ date: String) -> Date {
+    let dateFormatter = DateFormatter()
     dateFormatter.dateFormat = "yyyy/MM/dd"
     
-    let convertedDate = dateFormatter.dateFromString(date)
+    let convertedDate = dateFormatter.date(from: date)
     
     return convertedDate!
 }

@@ -10,9 +10,9 @@ import Foundation
 
 class RetrieveAccessToken {
     
-    func retrieveData(completionHandler: (success: Bool?, error: AnyObject?) -> Void) {
+    func retrieveData(_ completionHandler: @escaping (_ success: Bool?, _ error: AnyObject?) -> Void) {
         
-       let accessToken = NSUserDefaults.standardUserDefaults().objectForKey("Access Token") as? String
+       let accessToken = UserDefaults.standard.object(forKey: "Access Token") as? String
         
         taskForGetMethod((accessToken)!) { (result, error) in
             
@@ -20,15 +20,15 @@ class RetrieveAccessToken {
             guard (error == nil) else {
                 
                 if error as? Int == 401 {
-                    completionHandler(success: nil, error: 401)
+                    completionHandler(nil, 401 as AnyObject?)
                 } else {
-                    completionHandler(success: nil, error: error)
+                    completionHandler(nil, error)
                 }
                 
                 return
             }
             
-            guard let user = result["user"] as? [String:AnyObject] else {
+            guard let user = result?["user"] as? [String:AnyObject] else {
                 print("could not find user")
                 return
             }
@@ -48,15 +48,15 @@ class RetrieveAccessToken {
                 return
             }
             
-            let convertedAvatar = NSData(contentsOfURL: NSURL(string: avatar)!)
-            let urlAvatar = NSURL(string: avatar)!
+            let convertedAvatar = try? Data(contentsOf: URL(string: avatar)!)
+            let urlAvatar = URL(string: avatar)!
             
-            NSUserDefaults.standardUserDefaults().setObject(convertedAvatar, forKey: "myAvatar")
-            NSUserDefaults.standardUserDefaults().setURL(urlAvatar, forKey: "avatar")
-            NSUserDefaults.standardUserDefaults().setObject(fullName, forKey: "fullName")
-            NSUserDefaults.standardUserDefaults().setObject(encodedID, forKey: "myID")
+            UserDefaults.standard.set(convertedAvatar, forKey: "myAvatar")
+            UserDefaults.standard.set(urlAvatar, forKey: "avatar")
+            UserDefaults.standard.set(fullName, forKey: "fullName")
+            UserDefaults.standard.set(encodedID, forKey: "myID")
             
-            completionHandler(success: true, error: nil)
+            completionHandler(true, nil)
             
         }
     }

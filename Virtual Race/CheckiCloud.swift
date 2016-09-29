@@ -11,7 +11,7 @@ import Foundation
 
 
 func isICloudContainerAvailable()->Bool {
-    if let currentToken = NSFileManager.defaultManager().ubiquityIdentityToken {
+    if let currentToken = FileManager.default.ubiquityIdentityToken {
         return true
     }
     else {

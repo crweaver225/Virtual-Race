@@ -13,53 +13,56 @@ import CloudKit
 
 class MainPageViewController: ViewControllerMethods {
     
+    @IBOutlet weak var startRaceButton: UIButton!
+    
     @IBOutlet weak var userNameTextView: UITextView!
     
-    @IBAction func logOut(sender: AnyObject) {
+    @IBAction func logOut(_ sender: AnyObject) {
         
-        let logOutAlert = UIAlertController(title: "Warning - You are about to log out of your fitbit account", message: "Virtual Race requires users to be logged into a fibit account through Virtual Race. By Logging out the user must log in again with a fitbit account to continue using the Virtual Race app", preferredStyle: UIAlertControllerStyle.Alert)
+        let logOutAlert = UIAlertController(title: "Warning - You are about to log out of your fitbit account", message: "Virtual Race requires users to be logged into a fibit account through Virtual Race. By Logging out the user must log in again with a fitbit account to continue using the Virtual Race app", preferredStyle: UIAlertControllerStyle.alert)
         
-        logOutAlert.addAction(UIAlertAction(title: "log out", style: .Default, handler: { (action: UIAlertAction) in
+        logOutAlert.addAction(UIAlertAction(title: "log out", style: .default, handler: { (action: UIAlertAction) in
             
-            NSUserDefaults.standardUserDefaults().setObject(nil, forKey: "Access Token")
+            UserDefaults.standard.set(nil, forKey: "Access Token")
             
             let controller: LoginViewController
-            controller = self.storyboard!.instantiateViewControllerWithIdentifier("LoginViewController") as! LoginViewController
+            controller = self.storyboard!.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
             
-            self.presentViewController(controller, animated: true, completion: nil)
+            self.present(controller, animated: true, completion: nil)
             
         }))
         
-        logOutAlert.addAction(UIAlertAction(title: "cancel", style: .Cancel, handler: nil))
+        logOutAlert.addAction(UIAlertAction(title: "cancel", style: .cancel, handler: nil))
         
-        self.presentViewController(logOutAlert, animated: false, completion: nil)
+        self.present(logOutAlert, animated: false, completion: nil)
         
     }
     
     @IBOutlet weak var raceRequestButton: UIButton!
     
-    @IBAction func raceRequestsButton(sender: AnyObject) {
+    @IBAction func raceRequestsButton(_ sender: AnyObject) {
         
         let controller: UITabBarController
-        controller = self.storyboard!.instantiateViewControllerWithIdentifier("RacesViewController") as! UITabBarController
+        controller = self.storyboard!.instantiateViewController(withIdentifier: "RacesViewController") as! UITabBarController
         controller.selectedIndex = 1
         
         self.navigationController?.pushViewController(controller, animated: true)
         
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         
-            if (NSUserDefaults.standardUserDefaults().objectForKey("Access Token") == nil) {
+        
+            if (UserDefaults.standard.object(forKey: "Access Token") == nil) {
                 
                 let controller: LoginViewController
-                controller = self.storyboard!.instantiateViewControllerWithIdentifier("LoginViewController") as! LoginViewController
+                controller = self.storyboard!.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
                 
-                self.presentViewController(controller, animated: true, completion: nil)
+                self.present(controller, animated: true, completion: nil)
 
             } else {
                 
-                self.userNameTextView.text = NSUserDefaults.standardUserDefaults().objectForKey("fullName") as? String
+                self.userNameTextView.text = UserDefaults.standard.object(forKey: "fullName") as? String
               
                 checkRaceRequests()
             }
@@ -67,23 +70,23 @@ class MainPageViewController: ViewControllerMethods {
     
     func checkRaceRequests() {
         
-        let defaultContainer = CKContainer.defaultContainer()
+        let defaultContainer = CKContainer.default()
         
         let publicDB = defaultContainer.publicCloudDatabase
         
-        let predicate1 = NSPredicate(format: "%K == %@", "oppID", (NSUserDefaults.standardUserDefaults().objectForKey("myID") as? String!)!)
+        let predicate1 = NSPredicate(format: "%K == %@", "oppID", (UserDefaults.standard.object(forKey: "myID") as? String!)!)
         
         let predicate2 = NSPredicate(format: "%K == %@", "started", "false")
         
         let predicate3 = NSPredicate(format: "%K == %@", "rejected", "false")
         
-        let andPredicate = NSCompoundPredicate(type: NSCompoundPredicateType.AndPredicateType, subpredicates: [predicate1, predicate2, predicate3])
+        let andPredicate = NSCompoundPredicate(type: NSCompoundPredicate.LogicalType.and, subpredicates: [predicate1, predicate2, predicate3])
         
         let query = CKQuery(recordType: "match", predicate: andPredicate)
         
         if isICloudContainerAvailable() {
             
-            publicDB.performQuery(query, inZoneWithID: nil) {
+            publicDB.perform(query, inZoneWith: nil) {
                 (records, error) -> Void in
                 guard let records = records else {
                     print("Error querying records: ", error)

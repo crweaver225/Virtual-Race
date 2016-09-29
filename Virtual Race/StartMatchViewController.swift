@@ -19,11 +19,13 @@ class StartMatchViewController: ViewControllerMethods, UITableViewDataSource, UI
     
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
-    var friendList = [[String:AnyObject]]()
+  //  var friendList = [[String:AnyObject]]()
     
-    var imageList = [NSData]()
+    var friendList = [[String:Any]]()
     
-    override func viewWillAppear(animated:Bool) {
+    var imageList = [Data]()
+    
+    override func viewWillAppear(_ animated:Bool) {
         
         super.viewWillAppear(animated)
         
@@ -37,13 +39,13 @@ class StartMatchViewController: ViewControllerMethods, UITableViewDataSource, UI
                 
                 if error as? Int == 401 {
                     
-                    NSUserDefaults.standardUserDefaults().setObject(nil, forKey: "Access Token")
+                    UserDefaults.standard.set(nil, forKey: "Access Token")
                     
                     let controller: MainPageViewController
-                    controller = self.storyboard!.instantiateViewControllerWithIdentifier("MainPageViewController") as! MainPageViewController
+                    controller = self.storyboard!.instantiateViewController(withIdentifier: "MainPageViewController") as! MainPageViewController
                     
                     performUIUpdatesOnMain{
-                        self.presentViewController(controller, animated: false, completion: nil)
+                        self.present(controller, animated: false, completion: nil)
                     }
                     
                 } else if error as? Int == 001 {
@@ -59,11 +61,13 @@ class StartMatchViewController: ViewControllerMethods, UITableViewDataSource, UI
 
             self.friendList = friendsList!
             
-            let avatar = String(NSUserDefaults.standardUserDefaults().URLForKey("avatar")!)
+            let avatar = String(describing: UserDefaults.standard.url(forKey: "avatar")!)
             
-            let encodedID = NSUserDefaults.standardUserDefaults().objectForKey("myID") as! String
+            let encodedID = UserDefaults.standard.object(forKey: "myID") as! String
             
-            self.friendList.insert((["user": ["avatar": avatar, "displayName" : "Start a new race with yourself", "encodedId": encodedID]]), atIndex: 0)
+       //     self.friendList.insert((["user": ["avatar": avatar, "displayName" : "Start a new race with yourself", "encodedId": encodedID]]), at: 0)
+            
+            self.friendList.insert((["user": ["avatar": avatar as AnyObject, "displayName" : "Start a new race with yourself" as AnyObject, "encodedId": encodedID as AnyObject]]), at: 0)
             
             if self.imageList.count != self.friendList.count {
                 self.loadPictures()
@@ -90,29 +94,29 @@ class StartMatchViewController: ViewControllerMethods, UITableViewDataSource, UI
                 return
             }
             
-            let avatarURL = NSURL(string: avatar)
+            let avatarURL = URL(string: avatar)
             
-            let avatarImage = NSData(contentsOfURL: (avatarURL)!)
+            let avatarImage = try? Data(contentsOf: (avatarURL)!)
             
             self.imageList.append(avatarImage!)
         }
     }
     
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 120.0
     }
     
    
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         return friendList.count
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCellWithIdentifier("startRace")!
+        let cell = tableView.dequeueReusableCell(withIdentifier: "startRace")!
         
-        let row = friendList[indexPath.row]
+        let row = friendList[(indexPath as NSIndexPath).row]
         
         guard let user = row["user"] as? [String:AnyObject] else {
             print("could not get user")
@@ -134,16 +138,16 @@ class StartMatchViewController: ViewControllerMethods, UITableViewDataSource, UI
             return cell
         }
         
-        cell.imageView!.image = UIImage(data: self.imageList[indexPath.row])
+        cell.imageView!.image = UIImage(data: self.imageList[(indexPath as NSIndexPath).row])
         
         cell.textLabel?.text = name
         
         return cell
     }
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        let row = friendList[indexPath.row]
+        let row = friendList[(indexPath as NSIndexPath).row]
         
         guard let user = row["user"] as? [String:AnyObject] else {
             print("could not get user")
@@ -163,20 +167,20 @@ class StartMatchViewController: ViewControllerMethods, UITableViewDataSource, UI
         if isICloudContainerAvailable() {
             
             let controller: ChooseRouteViewController
-            controller = self.storyboard!.instantiateViewControllerWithIdentifier("ChooseRouteViewController") as! ChooseRouteViewController
+            controller = self.storyboard!.instantiateViewController(withIdentifier: "ChooseRouteViewController") as! ChooseRouteViewController
             controller.oppName = name
-            controller.oppAvatar = self.imageList[indexPath.row]
+            controller.oppAvatar = self.imageList[(indexPath as NSIndexPath).row]
             controller.oppID = encodedID
             
             self.navigationController!.pushViewController(controller, animated: true)
             
         } else {
             
-            let iCloudAlert = UIAlertController(title: "Action Denied", message: "Your IOS device must be signed into an iCloud account in order to create a new race. Exit the Virtual Race app > go to settings > sign into your iCloud > make sure Virtual Race has permission to use your iCloud account in the iCloud Drive settings. Virtual Race will not store any data on user's personal iCloud accounts.", preferredStyle: UIAlertControllerStyle.Alert)
+            let iCloudAlert = UIAlertController(title: "Action Denied", message: "Your IOS device must be signed into an iCloud account in order to create a new race. Exit the Virtual Race app > go to settings > sign into your iCloud > make sure Virtual Race has permission to use your iCloud account in the iCloud Drive settings. Virtual Race will not store any data on user's personal iCloud accounts.", preferredStyle: UIAlertControllerStyle.alert)
             
-            iCloudAlert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
+            iCloudAlert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
             
-            self.presentViewController(iCloudAlert, animated: true, completion: nil)
+            self.present(iCloudAlert, animated: true, completion: nil)
         }
     }
 }

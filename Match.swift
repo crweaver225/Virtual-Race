@@ -11,10 +11,11 @@ import CoreData
 
 
 class Match: NSManagedObject {
-
-    convenience init(startDate: NSDate, myID: String, context: NSManagedObjectContext) {
-        if let ent = NSEntityDescription.entityForName("Match", inManagedObjectContext: context){
-            self.init(entity: ent, insertIntoManagedObjectContext: context)
+    
+    convenience init(startDate: Date, myID: String, context: NSManagedObjectContext) {
+        if let ent = NSEntityDescription.entity(forEntityName: "Match", in: context){
+            print("iii")
+            self.init(entity: ent, insertInto: context)
             self.startDate = startDate
             self.myID = myID
         } else {
