@@ -175,6 +175,9 @@ class RaceRequestsViewController: ViewControllerMethods, UITableViewDataSource, 
                 oppAvatar = avatar
                 
                 cell.textLabel?.text = "\(name) has challenged you to a race"
+                cell.textLabel?.font = UIFont.boldSystemFont(ofSize: 14)
+                cell.textLabel?.numberOfLines = 2
+                
                 
                 cell.detailTextLabel!.text = "The race would start in \(raceLocation!.startingTitle) and end in \(raceLocation!.endingTitle)"
                 cell.detailTextLabel?.numberOfLines = 2
@@ -229,7 +232,6 @@ class RaceRequestsViewController: ViewControllerMethods, UITableViewDataSource, 
                         
                         let newMatch = Match(startDate: self.oneDayfromNow, myID: myID! , context: (self.delegate.stack?.context)!)
                         
-                        
                         newMatch.myName = UserDefaults.standard.object(forKey: "fullName") as? String
                         newMatch.myAvatar = UserDefaults.standard.object(forKey: "myAvatar") as? Data
                         newMatch.oppID = encodedID
@@ -239,8 +241,6 @@ class RaceRequestsViewController: ViewControllerMethods, UITableViewDataSource, 
                         newMatch.started = true
                         newMatch.recordID = row.recordID
                         newMatch.raceLocation = row.object(forKey: "raceLocation") as? String
-                        newMatch.oppDistance = 0.0
-                        newMatch.myDistance = 0.0
                         
                         row.setObject("true" as CKRecordValue?, forKey: "started")
                         row.setObject(self.oneDayfromNow as CKRecordValue?, forKey: "startDate")

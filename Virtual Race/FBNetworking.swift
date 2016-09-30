@@ -82,7 +82,6 @@ func processRequest(_ request: AnyObject, completionHandlerForProcessing: @escap
         
         do {
             parsedResult = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as AnyObject!
-           // parsedResult = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
         } catch {
             sendError("parsing Udacity Post method failed" as AnyObject)
         }

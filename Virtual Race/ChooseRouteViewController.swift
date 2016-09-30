@@ -35,8 +35,6 @@ class ChooseRouteViewController: ViewControllerMethods {
         self.present(controller, animated: false, completion: nil)
     }
     
-//    var fetchedResultsController: NSFetchedResultsController<AnyObject>!
-    
     let delegate = UIApplication.shared.delegate as! AppDelegate
     
     var oppName = String()
@@ -62,8 +60,6 @@ class ChooseRouteViewController: ViewControllerMethods {
             startMatchAlert.addAction(UIAlertAction(title: "Start the match!", style: .default, handler: { (action: UIAlertAction!) in
                 
                 let newMatch = Match(startDate: self.oneDayfromNow, myID: self.oppID, context: (self.delegate.stack?.context)!)
-                
-                
                 newMatch.myAvatar = self.oppAvatar
                 newMatch.myName = UserDefaults.standard.object(forKey: "fullName") as? String
                 newMatch.finished = false
@@ -71,12 +67,13 @@ class ChooseRouteViewController: ViewControllerMethods {
                 newMatch.raceLocation = raceID
                 newMatch.finishDate = nil
                 newMatch.winner = nil
+                newMatch.rejected = nil
                 
                 let onlineRace = CKRecord(recordType: "match")
                 onlineRace["myID"] = myID as CKRecordValue?
-                onlineRace["oppID"] = nil
-                onlineRace["d" + myID] = nil
-                onlineRace["d" + self.oppID] = nil
+                onlineRace["oppID"] = nil as CKRecordValue?
+                onlineRace["d" + myID] = 0.0 as CKRecordValue?
+                onlineRace["d" + self.oppID] = nil as CKRecordValue?
                 onlineRace["started"] = "true" as CKRecordValue?
                 onlineRace["finished"] = "false" as CKRecordValue?
                 onlineRace["startDate"] = self.oneDayfromNow as CKRecordValue?
@@ -97,7 +94,6 @@ class ChooseRouteViewController: ViewControllerMethods {
                     
                     newMatch.recordID = record.recordID
                     
-                   // self.delegate.stack.context.perform{
                     self.delegate.stack?.context.perform{
                         print("saving context")
                         self.delegate.stack?.save()
@@ -133,8 +129,6 @@ class ChooseRouteViewController: ViewControllerMethods {
                 }
                 
                 let newMatch = Match(startDate: self.oneDayfromNow, myID: myID, context: (self.delegate.stack!.context))
-   
-                
                 newMatch.myName = UserDefaults.standard.object(forKey: "fullName") as? String
                 newMatch.myAvatar = UserDefaults.standard.object(forKey: "myAvatar") as? Data
                 newMatch.oppID = self.oppID
@@ -146,8 +140,6 @@ class ChooseRouteViewController: ViewControllerMethods {
                 newMatch.winner = nil
                 newMatch.myFinishDate = nil
                 newMatch.oppFinishDate = nil
-                newMatch.myDistance = 0.0
-                newMatch.oppDistance = 0.0
     
                 let onlineRace = CKRecord(recordType: "match")
                 onlineRace["myID"] = myID as CKRecordValue?

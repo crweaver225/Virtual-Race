@@ -19,8 +19,6 @@ class StartMatchViewController: ViewControllerMethods, UITableViewDataSource, UI
     
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
-  //  var friendList = [[String:AnyObject]]()
-    
     var friendList = [[String:Any]]()
     
     var imageList = [Data]()
@@ -64,8 +62,6 @@ class StartMatchViewController: ViewControllerMethods, UITableViewDataSource, UI
             let avatar = String(describing: UserDefaults.standard.url(forKey: "avatar")!)
             
             let encodedID = UserDefaults.standard.object(forKey: "myID") as! String
-            
-       //     self.friendList.insert((["user": ["avatar": avatar, "displayName" : "Start a new race with yourself", "encodedId": encodedID]]), at: 0)
             
             self.friendList.insert((["user": ["avatar": avatar as AnyObject, "displayName" : "Start a new race with yourself" as AnyObject, "encodedId": encodedID as AnyObject]]), at: 0)
             

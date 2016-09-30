@@ -28,7 +28,6 @@ class LoginViewController: ViewControllerMethods, SFSafariViewControllerDelegate
         
         NotificationCenter.default.addObserver(self, selector: #selector(LoginViewController.safariLogin(_:)), name: NSNotification.Name(rawValue: kCloseSafariViewControllerNotification), object: nil)
         
-        UserDefaults.standard.set(true, forKey: "refresh")
     }
     
     func openSafari() {
@@ -72,6 +71,8 @@ class LoginViewController: ViewControllerMethods, SFSafariViewControllerDelegate
             }
             
             if (success != nil) {
+                
+                UserDefaults.standard.set(true, forKey: "refresh")
                 
                 performUIUpdatesOnMain{
                     

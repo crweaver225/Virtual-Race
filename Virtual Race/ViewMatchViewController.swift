@@ -19,8 +19,6 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
     
     var friendList = [[String:AnyObject]]()
     
-  //  var fetchedResultsController: NSFetchedResultsController<Match>!
-    
     var deleteMatchIndexPath: IndexPath? = nil
     
     let delegate = UIApplication.shared.delegate as! AppDelegate
@@ -32,21 +30,13 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
     
     override func viewWillAppear(_ animated:Bool) {
     
-        
         super.viewWillAppear(animated)
         
         noMathesLabel.isHidden = true
         
-         raceList.removeAll()
-        
-   //     let fr = NSFetchRequest(entityName: "Match")
+        raceList.removeAll()
         
         let fr = NSFetchRequest<Match>(entityName: "Match")
-        
-   //     let fr: NSFetchRequest<Match> = Match.fetchRequest() as! NSFetchRequest<Match>
-
-  //      let fr:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "Match")
-        
         fr.sortDescriptors = [NSSortDescriptor(key: "startDate", ascending: true)]
         fr.sortDescriptors = [NSSortDescriptor(key: "finished", ascending: true)]
         
@@ -64,7 +54,6 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
         
         for objects in fetchedResultsController.fetchedObjects! {
             
-            
             let match = objects
             
             if match.oppID != nil && match.started == true &&  UserDefaults.standard.bool(forKey: "refresh") == true {
@@ -72,6 +61,27 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                 DispatchQueue.global(qos: DispatchQoS.QoSClass.background).async {
                     self.updateRaces(match)
                     UserDefaults.standard.set(false, forKey: "refresh")
+                }
+            }
+            
+            if match.oppID == nil {
+                
+                let defaultContainer = CKContainer.default()
+                
+                let publicDB = defaultContainer.publicCloudDatabase
+                publicDB.fetch(withRecordID: match.recordID!) { (record, error) -> Void in
+                    
+                    guard error == nil else {
+                        return
+                    }
+                    
+                    if record!.object(forKey: "rejected") as! String == "true" {
+                        match.rejected = "true"
+                        performUIUpdatesOnMain{
+                            self.delegate.stack?.save()
+                            self.tableView.reloadData()
+                        }
+                    }
                 }
             }
             
@@ -87,9 +97,10 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                     }
                     
                     if record!.object(forKey: "started") as? String == "true" && match.started == false {
-                        print("changed from not started to started")
+
                         match.started = true
                         match.startDate = record?.object(forKey: "startDate") as? Date
+                        
                         performUIUpdatesOnMain{
                             self.delegate.stack?.save()
                             self.tableView.reloadData()
@@ -111,12 +122,14 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
  
         tableView.reloadData()
         
-       searchAllRaces()
+        searchAllRaces()
     }
     
     func updateRaces(_ match: Match) {
         
         let date = Date()
+        
+        if match.startDate!.compare(date) == ComparisonResult.orderedAscending {
             
             let newDistance = RetrieveDistance()
             newDistance.getDistance(formatDate(match.startDate!)){ (result, error) in
@@ -138,8 +151,10 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                     return
                 }
             
-                match.myDistance = result as NSNumber?
-               
+                let myDistance = result! as Double * 1609.344
+                
+                match.myDistance = myDistance as NSNumber?
+                
                 let defaultContainer = CKContainer.default()
                 
                 let publicDB = defaultContainer.publicCloudDatabase
@@ -161,16 +176,18 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                                 print("Error saving record: ", error)
                                 return
                             }
-                        }) 
+                        })
+                        
                     } else {
                         print("no icloud account")
                     }
                 }
             }
         }
+    }
     
     func searchAllRaces() {
-        
+    
         let defaultContainer = CKContainer.default()
         
         let publicDB = defaultContainer.publicCloudDatabase
@@ -189,7 +206,7 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
             }
                 for record in records {
                     
-                if record.object(forKey: "started") as! String == "true" {
+                    if record.object(forKey: "started") as! String == "true" {
                 
                 self.checkRacesAgainstMemory(records)
                     
@@ -218,12 +235,12 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
     
     func checkRacesAgainstMemory(_ record: [CKRecord]) {
         
-        let fr:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "Match")
+        let fr = NSFetchRequest<Match>(entityName: "Match")
         fr.sortDescriptors = [NSSortDescriptor(key: "startDate", ascending: true)]
 
-        for object in record {
+        for recordObject in record {
                 
-            if object.object(forKey: "rejected") as! String != "true" {
+            if recordObject.object(forKey: "rejected") as! String != "true" {
                 
                 let fetchedResultsController = NSFetchedResultsController(fetchRequest: fr, managedObjectContext: (delegate.stack?.context)!, sectionNameKeyPath: nil, cacheName: nil)
                 
@@ -235,26 +252,23 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                     
                 var counter = 0
                     
-                for objects in fetchedResultsController.fetchedObjects! {
+                for match in fetchedResultsController.fetchedObjects! {
                     
-                    let match = objects as! Match
-                    
-                    if match.recordID?.recordName == object.recordID.recordName {
+                    if match.recordID?.recordName == recordObject.recordID.recordName {
                         counter += 1
                     }
                 }
+                
                 if counter == 0 {
-                    addRacetoMemory(object)
+                    addRacetoMemory(recordObject)
                 }
             }
         }
     }
     
     func addRacetoMemory(_ record: CKRecord) {
-
+        
         let newMatch = Match(startDate: (record.object(forKey: "startDate") as! Date), myID: UserDefaults.standard.object(forKey: "myID") as! String, context: (self.delegate.stack?.context)!)
-        
-        
         newMatch.recordID = record.recordID
         newMatch.myName = UserDefaults.standard.object(forKey: "fullName") as? String
         newMatch.myAvatar = UserDefaults.standard.object(forKey: "myAvatar") as? Data
@@ -421,11 +435,6 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                     self.deleteMatchIndexPath = nil
                     
                     performUIUpdatesOnMain{
-                        /*
-                        self.tableView.beginUpdates()
-                        self.tableView.deleteRows(at: [indexPath], with: .automatic)
-                        self.tableView.endUpdates()
- */
                         self.viewWillAppear(false)
                     }
                 }
@@ -453,7 +462,6 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
         cell.contentView.backgroundColor = UIColor.clear
         
         let whiteRoundedView : UIView = UIView(frame: CGRect(x: 0, y: 10, width: self.view.frame.size.width, height: 120))
-        
         whiteRoundedView.layer.backgroundColor = CGColor(colorSpace: CGColorSpaceCreateDeviceRGB(), components: [1.0, 1.0, 1.0, 1.0])
         whiteRoundedView.layer.masksToBounds = false
         whiteRoundedView.layer.cornerRadius = 2.0
@@ -511,8 +519,13 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
             cell.detailTextLabel?.textColor = UIColor.red
             
         case let row where row.rejected == "true":
+            if row.oppID != nil {
             cell.textLabel?.text = "\(row.oppName!) has declined this race"
             cell.detailTextLabel?.text = "The race was from \(raceLocation.startingTitle) to \(raceLocation.endingTitle)"
+            } else {
+                cell.textLabel?.text = "This race has been ended"
+                cell.detailTextLabel?.text = "The race was from \(raceLocation.startingTitle) to \(raceLocation.endingTitle)"
+            }
             
         case let row where row.rejected == "true" && row.started == true && row.finished == false:
             cell.textLabel?.text = "\(row.oppName!) is no longer participating in the race"
@@ -584,7 +597,7 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
         
         let row = raceList[(indexPath as NSIndexPath).row]
         
-        if row.started! == true  {
+        if row.started! == true && row.rejected != "true"  {
             
             let controller: MapViewController
             controller = self.storyboard!.instantiateViewController(withIdentifier: "MapViewController") as! MapViewController
@@ -609,5 +622,4 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
             confirmDelete(matchToDelete)
         }
     }
-
 }

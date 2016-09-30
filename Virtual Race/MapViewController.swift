@@ -31,8 +31,6 @@ fileprivate func >= <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
   }
 }
 
-
-
 class MapViewController: ViewControllerMethods, MKMapViewDelegate {
     
     @IBOutlet weak var mapView: MKMapView!
@@ -67,7 +65,6 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
     var match: Match!
     
     let delegate = UIApplication.shared.delegate as! AppDelegate
-    
     
     override func viewDidLoad() {
         
@@ -113,6 +110,8 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
                                 return
                             }
                             
+                            print("zzz\(record.object(forKey: "d" + self.match.oppID!))")
+                            
                             if self.match.startDate!.compare(date) == ComparisonResult.orderedDescending {
                                 self.match.oppDistance = 0.0
                             } else {
@@ -157,8 +156,6 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
     func processSinglePlayerDistance(_ startDate: String, date: Date, raceCourse: RaceCourses, completionHandler: (_ success: Bool) -> Void) {
         
         let calendar = Calendar.current
-        
-     //   let components = (calendar as NSCalendar).components([.day], from: self.match?.startDate! as! Date, to: date, options: [])
         
         let components = (calendar as NSCalendar).components(.day, from: self.match.startDate! as Date, to: date, options: [])
         
@@ -217,8 +214,6 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
     
     func processMultiplayerDistance(_ record: CKRecord, completionHandler: (_ success: Bool) -> Void) {
         
-        
-        
         if self.match.oppDistance as? Double >= self.distance && self.match.myDistance as? Double >= self.distance {
             
             self.match.oppDistance = self.distance as NSNumber?
@@ -266,23 +261,15 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
             
         }
     
-
-        
         performUIUpdatesOnMain{
-            
-            print(self.match.oppDistance)
-            print(self.match.myDistance)
-            print(self.distance)
             
             self.oppNameTextView.text = self.match.oppName
             
             self.oppProgressGraph.progress = Float((self.match.oppDistance as! Double) / self.distance!)
             
-            print("opp \(self.oppProgressGraph.progress)")
-            print(self.match.oppDistance)
-            
             if self.match.oppFinishDate == nil {
                 self.oppDistanceNumber.text = String("\(Double(round((100 * (self.match.oppDistance as! Double / 1609.344))) / 100)) Miles")
+                print(self.oppDistanceNumber.text)
             } else {
                 self.oppDistanceNumber.text = "Finished: \(self.match.oppFinishDate!)"
             }

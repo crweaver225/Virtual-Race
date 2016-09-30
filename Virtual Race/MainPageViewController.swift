@@ -52,7 +52,6 @@ class MainPageViewController: ViewControllerMethods {
     
     override func viewDidAppear(_ animated: Bool) {
         
-        
             if (UserDefaults.standard.object(forKey: "Access Token") == nil) {
                 
                 let controller: LoginViewController
