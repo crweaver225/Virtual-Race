@@ -54,7 +54,7 @@ class RaceRequestsViewController: ViewControllerMethods, UITableViewDataSource, 
                 
                 if error as? Int == 401 {
                     
-                    UserDefaults.standard.set(nil, forKey: "Access Token")
+                    UserDefaults.standard.removeObject(forKey: "Access Token")
                     
                     let controller: MainPageViewController
                     controller = self.storyboard!.instantiateViewController(withIdentifier: "MainPageViewController") as! MainPageViewController
@@ -241,24 +241,32 @@ class RaceRequestsViewController: ViewControllerMethods, UITableViewDataSource, 
                         newMatch.started = true
                         newMatch.recordID = row.recordID
                         newMatch.raceLocation = row.object(forKey: "raceLocation") as? String
+                        newMatch.rejected = nil
                         
                         row.setObject("true" as CKRecordValue?, forKey: "started")
                         row.setObject(self.oneDayfromNow as CKRecordValue?, forKey: "startDate")
                         
                         publicDB.save(row, completionHandler: { (record, error) -> Void in
                             guard let record = record else {
-                                print("Error saving record: ", error)
+                                self.displayAlert("Virtual Race was unable to accept this race at this time, please try again later")
                                 return
                             }
+                            
+                            performUIUpdatesOnMain {
+                                
+                                self.delegate.stack?.save()
+                                
+                                self.requestList.remove(at: (indexPath as NSIndexPath).row)
+                                
+                                self.tableView.reloadData()
+                                /*
+                                let controller: MainPageViewController
+                                controller = self.storyboard!.instantiateViewController(withIdentifier: "MainPageViewController") as! MainPageViewController
+                                
+                                self.navigationController?.pushViewController(controller, animated: true)
+ */
+                            }
                         }) 
-                        
-                        self.delegate.stack?.save()
-                        
-                        let controller: MainPageViewController
-                        controller = self.storyboard!.instantiateViewController(withIdentifier: "MainPageViewController") as! MainPageViewController
-                        
-                        self.navigationController?.pushViewController(controller, animated: true)
-                        
                     }
                 }
                 

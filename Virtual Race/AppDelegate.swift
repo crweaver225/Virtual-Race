@@ -25,7 +25,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UINavigationBar.appearance().isTranslucent = false
         UINavigationBar.appearance().clipsToBounds = false
         
-    //    NSUserDefaults.standardUserDefaults().setObject(nil, forKey: "Access Token")
+    //    UserDefaults.standard.removeObject(forKey: "Access Token")
         
         // Override point for customization after application launch.
         return true

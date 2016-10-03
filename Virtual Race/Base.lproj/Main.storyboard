@@ -263,7 +263,7 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="justified" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0pD-lW-kOT">
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFit" editable="NO" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0pD-lW-kOT">
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -294,13 +294,13 @@
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="justified" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dxm-78-NMe">
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFill" editable="NO" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dxm-78-NMe">
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="80" id="MOU-MS-zEC"/>
+                                    <constraint firstAttribute="width" constant="96" id="MOU-MS-zEC"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no"/>
                             </textView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -323,7 +323,7 @@
                             <constraint firstItem="g2g-Q8-JuG" firstAttribute="leading" secondItem="LKS-oZ-ewb" secondAttribute="leading" id="Q9O-3V-shy"/>
                             <constraint firstItem="pBa-Jn-vLC" firstAttribute="centerX" secondItem="4h4-gh-hNi" secondAttribute="centerX" id="UJu-zM-mQt"/>
                             <constraint firstItem="pBa-Jn-vLC" firstAttribute="top" secondItem="hqS-tb-jhD" secondAttribute="bottom" constant="2" id="VE8-ar-yD0"/>
-                            <constraint firstItem="dxm-78-NMe" firstAttribute="trailing" secondItem="S1l-Tp-mPn" secondAttribute="trailingMargin" id="a3a-2S-kW3"/>
+                            <constraint firstItem="dxm-78-NMe" firstAttribute="trailing" secondItem="S1l-Tp-mPn" secondAttribute="trailingMargin" constant="16" id="a3a-2S-kW3"/>
                             <constraint firstItem="jud-qu-JKD" firstAttribute="centerY" secondItem="dxm-78-NMe" secondAttribute="centerY" constant="-6" id="bV6-0W-vo5"/>
                             <constraint firstItem="dxm-78-NMe" firstAttribute="trailing" secondItem="0pD-lW-kOT" secondAttribute="trailing" id="bX2-It-HZI"/>
                             <constraint firstItem="jud-qu-JKD" firstAttribute="top" secondItem="4h4-gh-hNi" secondAttribute="bottom" constant="22" id="hXA-hd-UFM"/>
@@ -383,21 +383,21 @@
                                 <color key="separatorColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="raceRequests" textLabel="0pY-hd-43o" detailTextLabel="1oR-x3-L3Q" rowHeight="75" style="IBUITableViewCellStyleSubtitle" id="uWl-TP-8Sg">
-                                        <rect key="frame" x="0.0" y="92" width="1000" height="75"/>
+                                        <rect key="frame" x="0.0" y="92" width="379" height="75"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" tableViewCell="uWl-TP-8Sg" id="9PH-Eh-Ru3">
-                                            <frame key="frameInset" width="1000" height="75"/>
+                                            <frame key="frameInset" width="379" height="75"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="5" id="0pY-hd-43o">
-                                                    <frame key="frameInset" minX="164" minY="23" width="28.5" height="17"/>
+                                                    <frame key="frameInset" minX="15" minY="22" width="29" height="17"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="5" id="1oR-x3-L3Q">
-                                                    <frame key="frameInset" minX="164" minY="40" width="40.5" height="13.5"/>
+                                                    <frame key="frameInset" minX="15" minY="39" width="41" height="14"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="11"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -476,7 +476,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="xYO-Ub-i1E">
-                                                    <frame key="frameInset" minX="15" minY="40" width="40.5" height="13.5"/>
+                                                    <frame key="frameInset" minX="15" minY="40" width="41" height="14"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="11"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -539,10 +539,10 @@
                                 <color key="separatorColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="startRace" rowHeight="75" id="dvI-3S-c6Y">
-                                        <rect key="frame" x="0.0" y="92" width="1000" height="75"/>
+                                        <rect key="frame" x="0.0" y="92" width="383" height="75"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="dvI-3S-c6Y" id="xoP-Ng-8Ee">
-                                            <frame key="frameInset" width="1000" height="75"/>
+                                            <frame key="frameInset" width="383" height="75"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </tableViewCellContentView>
                                     </tableViewCell>

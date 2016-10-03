@@ -56,7 +56,7 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
             
             let match = objects
             
-            if match.oppID != nil && match.started == true &&  UserDefaults.standard.bool(forKey: "refresh") == true {
+            if match.oppID != nil && match.started == true && UserDefaults.standard.bool(forKey: "refresh") == true {
                 
                 DispatchQueue.global(qos: DispatchQoS.QoSClass.background).async {
                     self.updateRaces(match)
@@ -118,11 +118,12 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
             }
             
             raceList.append(match)
+            
         }
- 
-        tableView.reloadData()
         
         searchAllRaces()
+        
+        tableView.reloadData()
     }
     
     func updateRaces(_ match: Match) {
@@ -138,7 +139,7 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                     
                     if error as? Int == 401 {
                         
-                        UserDefaults.standard.set(nil, forKey: "Access Token")
+                        UserDefaults.standard.removeObject(forKey: "Access Token")
                         
                         let controller: MainPageViewController
                         controller = self.storyboard!.instantiateViewController(withIdentifier: "MainPageViewController") as! MainPageViewController
@@ -199,6 +200,7 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
         var query = CKQuery(recordType: "match", predicate: predicate)
         
         publicDB.perform(query, inZoneWith: nil) {
+            
             (records, error) -> Void in
             guard let records = records else {
                 print("Error querying records: ", error)
@@ -206,7 +208,7 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
             }
                 for record in records {
                     
-                    if record.object(forKey: "started") as! String == "true" {
+                    if record.object(forKey: "started") as! String == "true"  {
                 
                 self.checkRacesAgainstMemory(records)
                     
@@ -225,7 +227,7 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
             
             for record in records {
                     
-                if record.object(forKey: "started") as! String == "true" {
+                if record.object(forKey: "started") as! String == "true"  {
                         
                     self.checkRacesAgainstMemory(records)
                 }
@@ -234,6 +236,8 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
     }
     
     func checkRacesAgainstMemory(_ record: [CKRecord]) {
+        
+    //    print("tytlol \(record)")
         
         let fr = NSFetchRequest<Match>(entityName: "Match")
         fr.sortDescriptors = [NSSortDescriptor(key: "startDate", ascending: true)]
@@ -255,6 +259,7 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                 for match in fetchedResultsController.fetchedObjects! {
                     
                     if match.recordID?.recordName == recordObject.recordID.recordName {
+                        
                         counter += 1
                     }
                 }
@@ -435,6 +440,7 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                     self.deleteMatchIndexPath = nil
                     
                     performUIUpdatesOnMain{
+                    
                         self.viewWillAppear(false)
                     }
                 }
@@ -458,6 +464,8 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
     
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        
+        
         
         cell.contentView.backgroundColor = UIColor.clear
         

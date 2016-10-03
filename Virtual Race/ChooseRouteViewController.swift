@@ -81,6 +81,7 @@ class ChooseRouteViewController: ViewControllerMethods {
                 onlineRace["winner"] = "" as CKRecordValue?
                 onlineRace["raceLocation"] = raceID as CKRecordValue?
                 onlineRace["rejected"] = "false" as CKRecordValue?
+                onlineRace["started"] = "true" as CKRecordValue?
 
                 let defaultContainer = CKContainer.default()
                 
@@ -140,6 +141,7 @@ class ChooseRouteViewController: ViewControllerMethods {
                 newMatch.winner = nil
                 newMatch.myFinishDate = nil
                 newMatch.oppFinishDate = nil
+                newMatch.rejected = nil
     
                 let onlineRace = CKRecord(recordType: "match")
                 onlineRace["myID"] = myID as CKRecordValue?

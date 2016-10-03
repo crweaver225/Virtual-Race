@@ -195,8 +195,6 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
             
             self.myProgressGraph.progress = Float((self.match.myDistance as? Double)! / self.distance!)
             
-            print(self.myProgressGraph.progress)
-            
             if self.match.myFinishDate == nil {
                 
                 self.myDistanceNumber.text = String("\(Double(round((100 * (self.match.myDistance as! Double / 1609.344))) / 100)) Miles")
@@ -316,7 +314,7 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
                 
                 if error as? Int == 401 {
                     
-                    UserDefaults.standard.set(nil, forKey: "Access Token")
+                    UserDefaults.standard.removeObject(forKey: "Access Token")
                     
                     let controller: MainPageViewController
                     controller = self.storyboard!.instantiateViewController(withIdentifier: "MainPageViewController") as! MainPageViewController
@@ -355,7 +353,7 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
                 
                 if error as? Int == 401 {
                     
-                    UserDefaults.standard.set(nil, forKey: "Access Token")
+                    UserDefaults.standard.removeObject(forKey: "Access Token")
                     
                     let controller: MainPageViewController
                     controller = self.storyboard!.instantiateViewController(withIdentifier: "MainPageViewController") as! MainPageViewController
@@ -462,6 +460,10 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
         for coordinate in self.coords {
             if currentDistance < userDistance {
                 currentDistance += self.distance(lastLocation, to: coordinate)
+                lastLocation = coordinate
+            }
+            else if currentDistance >= self.distance {
+                print(currentDistance)
                 lastLocation = coordinate
             }
         }

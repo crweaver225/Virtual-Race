@@ -52,6 +52,8 @@ class MainPageViewController: ViewControllerMethods {
     
     override func viewDidAppear(_ animated: Bool) {
         
+            self.raceRequestButton.imageView?.image = UIImage(named: "Notification")
+        
             if (UserDefaults.standard.object(forKey: "Access Token") == nil) {
                 
                 let controller: LoginViewController
@@ -95,6 +97,7 @@ class MainPageViewController: ViewControllerMethods {
                 if records.count > 0 {
                     
                     performUIUpdatesOnMain{
+                        
                         self.raceRequestButton.imageView?.image = UIImage(named: "Notification_Exists")
                     }
                 }

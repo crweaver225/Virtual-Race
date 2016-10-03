@@ -37,7 +37,7 @@ class StartMatchViewController: ViewControllerMethods, UITableViewDataSource, UI
                 
                 if error as? Int == 401 {
                     
-                    UserDefaults.standard.set(nil, forKey: "Access Token")
+                    UserDefaults.standard.removeObject(forKey: "Access Token")
                     
                     let controller: MainPageViewController
                     controller = self.storyboard!.instantiateViewController(withIdentifier: "MainPageViewController") as! MainPageViewController
