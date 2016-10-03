@@ -465,7 +465,7 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         
-        
+        if cell.contentView.backgroundColor != UIColor.clear {
         
         cell.contentView.backgroundColor = UIColor.clear
         
@@ -478,6 +478,8 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
         
         cell.contentView.addSubview(whiteRoundedView)
         cell.contentView.sendSubview(toBack: whiteRoundedView)
+            
+        }
     }
  
  
