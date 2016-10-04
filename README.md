@@ -14,11 +14,11 @@ You have the option to only race yourself to see how quickly you can finish the 
 
 ## Requirements to Use the App:
 
-- There are two requirements to using the app.
+- Upon entering the app, users will be asked for permission to access their Fitbit accounts and then temporarily redirected to Fitbit's servers to grant permission. Permission is granted for 1 year at a time and must be renewed every year.
 
-- For the first requirement, upon entering the app, users will be asked for permission to access their Fitbit accounts and then temporarily redirected to Fitbit\'92s servers to grant permission. Permission is granted for 1 year at a time and must be renewed every year.
+- User's must have an iCloud account set up with Apple. Your phone must be signed into iCloud and Virtual Race must be given permission to use iCloud information in the iCloud Drive settings. Without being signed into iCloud, users will not be able to create new races, check the progress of their opponents, or update their progress against opponents. But, users will be able to check their progress in any specific race, although they will not be able to see the progress of their opponents or update their progress in the race on the servers. 
 
-- The second requirement is that you have an iCloud account set up with Apple. Your phone must be signed into iCloud and Virtual Race must be given permission to use iCloud information in the iCloud Drive settings. Without being signed into iCloud, users will not be able to create new races, check the progress of their opponents, or update their progress against opponents. But, users will be able to check their progress in any specific race, although they will not be able to see the progress of their opponents or update their progress in the race on the servers. 
+- Viewing races currently require an internet connection in order for the app to generate the route and place user avatars on the route. If no network connection exists, the app will let the user know. 
 
 
 ##Other Things to Know:
@@ -37,7 +37,7 @@ You have the option to only race yourself to see how quickly you can finish the 
 
 MIT License
 
-Copyright (c) [year] [fullname]
+Copyright (c) [2016] [Christopher Weaver]
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
