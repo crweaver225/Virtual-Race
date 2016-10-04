@@ -6,10 +6,10 @@
 Virtual Race is an IOS application designed to let Fitbit users race themselves and their friends across the map. This app provides users with three unique race options:
 
 - New York City to Los Angeles
-- Atlanta, GA to Savannah, GA
+- U.S. Cellular Field to Wrigley Field in Chicago, IL
 - Philadelphia, PA to Washington, D.C.
 
-You have the option to only race yourself to see how quickly you can finish the race, or you can challenge your Fitbit friends to races to see who can finish first. 
+You have the option to race yourself to see how quickly you can finish the race, or you can challenge your Fitbit friends to races to see who can finish first. 
 
 
 ## Requirements to Use the App:
