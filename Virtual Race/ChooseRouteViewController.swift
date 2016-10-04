@@ -27,6 +27,7 @@ class ChooseRouteViewController: ViewControllerMethods {
         chooseRace("3")
     }
     
+    /*
     @IBAction func returnButton(_ sender: AnyObject) {
         
         let controller: UITabBarController
@@ -34,6 +35,7 @@ class ChooseRouteViewController: ViewControllerMethods {
         
         self.present(controller, animated: false, completion: nil)
     }
+ */
     
     let delegate = UIApplication.shared.delegate as! AppDelegate
     
@@ -67,11 +69,12 @@ class ChooseRouteViewController: ViewControllerMethods {
                 newMatch.raceLocation = raceID
                 newMatch.finishDate = nil
                 newMatch.winner = nil
-                newMatch.rejected = nil
+                newMatch.rejected = "false"
+                newMatch.oppID = nil
                 
                 let onlineRace = CKRecord(recordType: "match")
                 onlineRace["myID"] = myID as CKRecordValue?
-                onlineRace["oppID"] = nil as CKRecordValue?
+                onlineRace["oppID"] = "" as CKRecordValue?
                 onlineRace["d" + myID] = 0.0 as CKRecordValue?
                 onlineRace["d" + self.oppID] = nil as CKRecordValue?
                 onlineRace["started"] = "true" as CKRecordValue?
@@ -99,18 +102,17 @@ class ChooseRouteViewController: ViewControllerMethods {
                         print("saving context")
                         self.delegate.stack?.save()
                         print("context saved")
+                        
+                        let controller: MainPageViewController
+                        controller = self.storyboard!.instantiateViewController(withIdentifier: "MainPageViewController") as! MainPageViewController
+                        
+                        self.navigationController?.pushViewController(controller, animated: true)
+
                     }
                     
                 }) 
                 
-                self.delegate.stack?.context.perform{
-                    self.delegate.stack?.save()
-                }
-                
-                let controller: MainPageViewController
-                controller = self.storyboard!.instantiateViewController(withIdentifier: "MainPageViewController") as! MainPageViewController
-                
-                self.navigationController?.pushViewController(controller, animated: true)
+               
                 
             }))
             
@@ -141,7 +143,7 @@ class ChooseRouteViewController: ViewControllerMethods {
                 newMatch.winner = nil
                 newMatch.myFinishDate = nil
                 newMatch.oppFinishDate = nil
-                newMatch.rejected = nil
+                newMatch.rejected = "false"
     
                 let onlineRace = CKRecord(recordType: "match")
                 onlineRace["myID"] = myID as CKRecordValue?
@@ -171,14 +173,16 @@ class ChooseRouteViewController: ViewControllerMethods {
                     
                     newMatch.recordID = record.recordID
                     
-                    let controller: MainPageViewController
-                    controller = self.storyboard!.instantiateViewController(withIdentifier: "MainPageViewController") as! MainPageViewController
-                    
                     self.delegate.stack?.context.perform {
+                        let controller: MainPageViewController
+                        controller = self.storyboard!.instantiateViewController(withIdentifier: "MainPageViewController") as! MainPageViewController
                         self.delegate.stack?.save()
                         self.navigationController?.pushViewController(controller, animated: true)
+
                     }
-                }) 
+                })
+                
+                
             }))
             
             startMatchAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))

@@ -25,12 +25,11 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
     
     var raceList = [Match]()
     
-    var requestChecker = false
-    
-    
     override func viewWillAppear(_ animated:Bool) {
     
         super.viewWillAppear(animated)
+        
+        self.searchAllRaces()
         
         noMathesLabel.isHidden = true
         
@@ -121,9 +120,6 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
             
         }
         
-        searchAllRaces()
-        
-        tableView.reloadData()
     }
     
     func updateRaces(_ match: Match) {
@@ -188,29 +184,33 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
     }
     
     func searchAllRaces() {
+        
+        let myID = UserDefaults.standard.object(forKey: "myID") as? String
     
         let defaultContainer = CKContainer.default()
         
         let publicDB = defaultContainer.publicCloudDatabase
         
-        let predicate = NSPredicate(format: "%K == %@", "myID", (UserDefaults.standard.object(forKey: "myID") as? String!)!)
+        let predicate = NSPredicate(format: "%K = %@", "myID", myID!)
         
-        let predicate2 = NSPredicate(format: "%K == %@", "oppID", (UserDefaults.standard.object(forKey: "myID") as? String!)!)
+        let predicate2 = NSPredicate(format: "%K = %@", "oppID", myID!)
         
         var query = CKQuery(recordType: "match", predicate: predicate)
         
-        publicDB.perform(query, inZoneWith: nil) {
+        publicDB.perform(query, inZoneWith: nil) { (records, error) -> Void in
             
-            (records, error) -> Void in
             guard let records = records else {
                 print("Error querying records: ", error)
                 return
             }
+            
+            print("ooo \(records.count)")
+            
                 for record in records {
                     
                     if record.object(forKey: "started") as! String == "true"  {
                 
-                self.checkRacesAgainstMemory(records)
+                self.checkRacesAgainstMemory(record)
                     
                 }
             }
@@ -226,23 +226,21 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
             }
             
             for record in records {
-                    
+                
                 if record.object(forKey: "started") as! String == "true"  {
                         
-                    self.checkRacesAgainstMemory(records)
+                    self.checkRacesAgainstMemory(record)
                 }
             }
         }
     }
     
-    func checkRacesAgainstMemory(_ record: [CKRecord]) {
-        
-    //    print("tytlol \(record)")
-        
+    func checkRacesAgainstMemory(_ record: CKRecord) {
+
         let fr = NSFetchRequest<Match>(entityName: "Match")
         fr.sortDescriptors = [NSSortDescriptor(key: "startDate", ascending: true)]
 
-        for recordObject in record {
+        let recordObject = record
                 
             if recordObject.object(forKey: "rejected") as! String != "true" {
                 
@@ -257,7 +255,7 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                 var counter = 0
                     
                 for match in fetchedResultsController.fetchedObjects! {
-                    
+
                     if match.recordID?.recordName == recordObject.recordID.recordName {
                         
                         counter += 1
@@ -268,11 +266,11 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                     addRacetoMemory(recordObject)
                 }
             }
-        }
+        
     }
     
     func addRacetoMemory(_ record: CKRecord) {
-        
+
         let newMatch = Match(startDate: (record.object(forKey: "startDate") as! Date), myID: UserDefaults.standard.object(forKey: "myID") as! String, context: (self.delegate.stack?.context)!)
         newMatch.recordID = record.recordID
         newMatch.myName = UserDefaults.standard.object(forKey: "fullName") as? String
@@ -360,17 +358,16 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                     
                     newMatch.oppAvatar = avatarImage
                     newMatch.oppName = name
-                    
                 }
-                
             }
             
             self.delegate.stack?.context.perform{
                 self.delegate.stack?.save()
                 self.raceList.append(newMatch)
+            }
+            performUIUpdatesOnMain{
                 self.tableView.reloadData()
             }
-            
         }
     }
     
@@ -441,9 +438,10 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                     
                     performUIUpdatesOnMain{
                     
-                        self.viewWillAppear(false)
+                        self.tableView.reloadData()
                     }
                 }
+                
             } else {
                 performUIUpdatesOnMain{
                     self.displayAlert("You cannot delete this race without being signed into an iCloud account")
@@ -576,25 +574,25 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                     return
                 }
                 
-                if record.object(forKey: "started") as? String == "false" && self.requestChecker == false {
+                if record.object(forKey: "started") as? String == "false" {
                     
-                    
-                    performUIUpdatesOnMain{
-                        cell.detailTextLabel!.text = "Waiting for your race request to be accepted"
-                        self.requestChecker = true
-                        self.tableView.reloadData()
+                    if cell.detailTextLabel?.text != "Waiting for your race request to be accepted" {
+                        performUIUpdatesOnMain{
+                            cell.detailTextLabel!.text = "Waiting for your race request to be accepted"
+                            self.tableView.reloadData()
                     }
-                    
+                }
+                
                 } else if record.object(forKey: "started") as? String == "true" {
                     row.started = true
                     row.startDate = record.object(forKey: "startDate") as? Date
-                    self.requestChecker = false
-                    
+                   
                     performUIUpdatesOnMain{
                         cell.detailTextLabel!.text = "Race started on \(formatDate(row.startDate!))"
                         cell.detailTextLabel?.textColor = UIColor(red: 0.0, green: 0.502, blue: 0.004, alpha: 1.0)
                         self.delegate.stack?.save()
                         self.tableView.reloadData()
+                        
                     }
                 }
             }
