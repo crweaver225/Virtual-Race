@@ -3,6 +3,8 @@
 
 ## About the App:
 
+Now on the App Store!
+
 Virtual Race is an IOS application designed to let Fitbit users race themselves and their friends across the map. This app provides users with three unique race options:
 
 - New York City to Los Angeles
