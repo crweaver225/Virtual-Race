@@ -36,6 +36,8 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
         raceList.removeAll()
         friendList.removeAll()
         
+        self.tableView.reloadData()
+        
         let fr = NSFetchRequest<Match>(entityName: "Match")
         fr.sortDescriptors = [NSSortDescriptor(key: "startDate", ascending: true)]
         fr.sortDescriptors = [NSSortDescriptor(key: "finished", ascending: true)]
@@ -121,6 +123,7 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                 raceList.append(match)
             }
         }
+        self.tableView.reloadData()
     }
     
     func updateRaces(_ match: Match) {

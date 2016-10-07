@@ -18,4 +18,5 @@ struct RaceCourses {
     let endingLong: Double
     let startingTitle: String
     let endingTitle: String
+    let distance: Double
 }

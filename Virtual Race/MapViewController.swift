@@ -316,15 +316,15 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
         switch raceID {
             
         case "1":
-            let NewYorktoLA = RaceCourses(startingLat: 40.7589, startingLong: -73.9851, endingLat: 34.0522, endingLong: -118.243683, startingTitle: "New York", endingTitle: "Los Angeles")
+            let NewYorktoLA = RaceCourses(startingLat: 40.7589, startingLong: -73.9851, endingLat: 34.0522, endingLong: -118.243683, startingTitle: "New York", endingTitle: "Los Angeles", distance: 4498492.0)
             return NewYorktoLA
             
         case "2":
-            let CrossTownClassic = RaceCourses(startingLat: 41.8299, startingLong: -87.6338, endingLat: 41.9484, endingLong: -87.6553, startingTitle: "U.S. Cellular Field", endingTitle: "Wrigley Field")
+            let CrossTownClassic = RaceCourses(startingLat: 41.8299, startingLong: -87.6338, endingLat: 41.9484, endingLong: -87.6553, startingTitle: "U.S. Cellular Field", endingTitle: "Wrigley Field", distance: 17970)
             return CrossTownClassic
             
         case "3":
-            let LibertyTrail = RaceCourses(startingLat: 39.9526, startingLong: -75.1652, endingLat: 38.9072, endingLong: -77.0369, startingTitle: "Philadelphia", endingTitle: "Washington D.C.")
+            let LibertyTrail = RaceCourses(startingLat: 39.9526, startingLong: -75.1652, endingLat: 38.9072, endingLong: -77.0369, startingTitle: "Philadelphia", endingTitle: "Washington D.C.", distance: 224855.0)
             return LibertyTrail
   
         default:
@@ -444,6 +444,7 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
         directionRequest.source = sourceMapItem
         directionRequest.destination = destinationMapItem
         directionRequest.transportType = .automobile
+        directionRequest.requestsAlternateRoutes = true
         
         let directions = MKDirections(request: directionRequest)
         
@@ -457,8 +458,17 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
                 return
             }
             
-            let route = response.routes[0]
-        
+            var route = MKRoute()
+            
+            for i in response.routes {
+
+                if i.distance == self.chooseRaceCourse(self.match.raceLocation!)?.distance {
+                     route = i
+                } else {
+                     route = response.routes[0]
+                }
+            }
+            
             self.mapView.add((route.polyline), level: MKOverlayLevel.aboveRoads)
             
             self.distance = route.distance
