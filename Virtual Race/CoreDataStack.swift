@@ -152,7 +152,6 @@ extension CoreDataStack {
         }
     }
     
-    
     func autoSave(_ delayInSeconds : Int){
         
         if delayInSeconds > 0 {

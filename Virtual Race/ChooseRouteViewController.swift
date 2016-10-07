@@ -27,16 +27,6 @@ class ChooseRouteViewController: ViewControllerMethods {
         chooseRace("3")
     }
     
-    /*
-    @IBAction func returnButton(_ sender: AnyObject) {
-        
-        let controller: UITabBarController
-        controller = self.storyboard!.instantiateViewController(withIdentifier: "RacesViewController") as! UITabBarController
-        
-        self.present(controller, animated: false, completion: nil)
-    }
- */
-    
     let delegate = UIApplication.shared.delegate as! AppDelegate
     
     var oppName = String()
@@ -47,7 +37,10 @@ class ChooseRouteViewController: ViewControllerMethods {
     
     var oneDayfromNow: Date {
         
-        let date = (Calendar.current as NSCalendar).date(byAdding: .day, value: 1, to: Date(), options: [])!
+      //  let date = (Calendar.current as NSCalendar).date(byAdding: .day, value: 1, to: Date(), options: [])!
+        
+        let date = (Calendar.current as NSCalendar).date(byAdding: .day, value: -5, to: Date(), options: [])!
+        
         return (Calendar.current as NSCalendar).date(bySettingHour: 0, minute: 0, second: 0, of: date, options: NSCalendar.Options())!
     }
 
@@ -99,9 +92,8 @@ class ChooseRouteViewController: ViewControllerMethods {
                     newMatch.recordID = record.recordID
                     
                     self.delegate.stack?.context.perform{
-                        print("saving context")
+
                         self.delegate.stack?.save()
-                        print("context saved")
                         
                         let controller: MainPageViewController
                         controller = self.storyboard!.instantiateViewController(withIdentifier: "MainPageViewController") as! MainPageViewController
@@ -111,8 +103,6 @@ class ChooseRouteViewController: ViewControllerMethods {
                     }
                     
                 }) 
-                
-               
                 
             }))
             

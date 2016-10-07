@@ -21,6 +21,8 @@ class StartMatchViewController: ViewControllerMethods, UITableViewDataSource, UI
     
     var friendList = [[String:Any]]()
     
+    var checkerList = [[String:Any]]()
+    
     var imageList = [Data]()
     
     override func viewWillAppear(_ animated:Bool) {
@@ -75,7 +77,7 @@ class StartMatchViewController: ViewControllerMethods, UITableViewDataSource, UI
             }
         }
     }
-
+    
     func loadPictures() {
         
         for image in friendList {
@@ -102,7 +104,6 @@ class StartMatchViewController: ViewControllerMethods, UITableViewDataSource, UI
         return 120.0
     }
     
-   
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         return friendList.count

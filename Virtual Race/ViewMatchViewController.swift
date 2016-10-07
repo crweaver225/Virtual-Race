@@ -34,6 +34,7 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
         noMathesLabel.isHidden = true
         
         raceList.removeAll()
+        friendList.removeAll()
         
         let fr = NSFetchRequest<Match>(entityName: "Match")
         fr.sortDescriptors = [NSSortDescriptor(key: "startDate", ascending: true)]
@@ -100,9 +101,9 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                         match.started = true
                         match.startDate = record?.object(forKey: "startDate") as? Date
                         
-                        performUIUpdatesOnMain{
+                        performUIUpdatesOnMain {
                             self.delegate.stack?.save()
-                            self.tableView.reloadData()
+                            self.viewWillAppear(true)
                         }
                     }
                     
@@ -116,10 +117,10 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                 }
             }
             
-            raceList.append(match)
-            
+            if match.started == true {
+                raceList.append(match)
+            }
         }
-        
     }
     
     func updateRaces(_ match: Match) {
@@ -203,8 +204,6 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                 print("Error querying records: ", error)
                 return
             }
-            
-            print("ooo \(records.count)")
             
                 for record in records {
                     
@@ -455,11 +454,9 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
         deleteMatchIndexPath = nil
     }
     
-    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 140.0
     }
-    
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         
@@ -479,7 +476,6 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
             
         }
     }
- 
  
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
@@ -515,7 +511,7 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
             avatarImage = row.oppAvatar! as Data
             cell.textLabel?.text = "Racing \(row.oppName!) from \(raceLocation.startingTitle) to \(raceLocation.endingTitle)"
             cell.textLabel?.font = UIFont.boldSystemFont(ofSize: 14)
-            cell.textLabel!.numberOfLines = 2
+            cell.textLabel!.numberOfLines = 3
             cell.imageView!.image = UIImage(data: avatarImage)
             
         }
@@ -526,20 +522,18 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
             cell.detailTextLabel?.text = "The race is over!"
             cell.detailTextLabel?.textColor = UIColor.red
             
-        case let row where row.rejected == "true":
+        case let row where row.rejected == "true" && row.finished == false:
             if row.oppID != nil {
-            cell.textLabel?.text = "\(row.oppName!) has declined this race"
-            cell.detailTextLabel?.text = "The race was from \(raceLocation.startingTitle) to \(raceLocation.endingTitle)"
+                cell.textLabel?.text = "\(row.oppName!) is no longer participating in the race"
+                cell.textLabel?.numberOfLines = 3
+                cell.detailTextLabel?.text = "The race was from \(raceLocation.startingTitle) to \(raceLocation.endingTitle)"
+                cell.detailTextLabel?.numberOfLines = 3
             } else {
                 cell.textLabel?.text = "This race has been ended"
                 cell.detailTextLabel?.text = "The race was from \(raceLocation.startingTitle) to \(raceLocation.endingTitle)"
+                cell.detailTextLabel?.numberOfLines = 3
             }
-            
-        case let row where row.rejected == "true" && row.started == true && row.finished == false:
-            cell.textLabel?.text = "\(row.oppName!) is no longer participating in the race"
-            cell.textLabel?.numberOfLines = 2
-            cell.detailTextLabel?.text = "The race was from \(raceLocation.startingTitle) to \(raceLocation.endingTitle)"
-            
+
         case let row where row.finished == true && row.oppID != nil:
             if row.winner! == "tie" {
                 cell.detailTextLabel?.text = "The race is over! it was a tie"
@@ -550,11 +544,12 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                 if row.winner == row.myName! || row.winner == row.oppName! {
                     cell.detailTextLabel?.text = "The race is over! \(row.winner!) finished 1st"
                     cell.detailTextLabel?.textColor = UIColor.red
+                    cell.detailTextLabel!.numberOfLines = 3
                 } else {
                     cell.detailTextLabel?.text = "\(row.winner!)"
                     cell.detailTextLabel?.textColor = UIColor(red: 0.8, green: 0.8, blue: 0.0, alpha: 1.0)
                     
-                    cell.detailTextLabel!.numberOfLines = 2
+                    cell.detailTextLabel!.numberOfLines = 3
                 }
             }
             
@@ -563,39 +558,7 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
              cell.detailTextLabel?.textColor = UIColor(red: 0.0, green: 0.502, blue: 0.004, alpha: 1.0)
     
         default:
-            
-            let defaultContainer = CKContainer.default()
-            
-            let publicDB = defaultContainer.publicCloudDatabase
-            publicDB.fetch(withRecordID: row.recordID!) { (record, error) -> Void in
-                
-                guard let record = record else {
-                    print("Error fetching record: ", error)
-                    return
-                }
-                
-                if record.object(forKey: "started") as? String == "false" {
-                    
-                    if cell.detailTextLabel?.text != "Waiting for your race request to be accepted" {
-                        performUIUpdatesOnMain{
-                            cell.detailTextLabel!.text = "Waiting for your race request to be accepted"
-                            self.tableView.reloadData()
-                    }
-                }
-                
-                } else if record.object(forKey: "started") as? String == "true" {
-                    row.started = true
-                    row.startDate = record.object(forKey: "startDate") as? Date
-                   
-                    performUIUpdatesOnMain{
-                        cell.detailTextLabel!.text = "Race started on \(formatDate(row.startDate!))"
-                        cell.detailTextLabel?.textColor = UIColor(red: 0.0, green: 0.502, blue: 0.004, alpha: 1.0)
-                        self.delegate.stack?.save()
-                        self.tableView.reloadData()
-                        
-                    }
-                }
-            }
+            print("default")
         }
  
         return cell

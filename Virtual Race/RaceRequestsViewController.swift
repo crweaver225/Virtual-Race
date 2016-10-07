@@ -230,6 +230,8 @@ class RaceRequestsViewController: ViewControllerMethods, UITableViewDataSource, 
                     
                     if encodedID == row.object(forKey: "myID") as? String {
                         
+                        self.navigationItem.hidesBackButton = true
+                        
                         let newMatch = Match(startDate: self.oneDayfromNow, myID: myID! , context: (self.delegate.stack?.context)!)
                         
                         newMatch.myName = UserDefaults.standard.object(forKey: "fullName") as? String
@@ -259,12 +261,9 @@ class RaceRequestsViewController: ViewControllerMethods, UITableViewDataSource, 
                                 self.requestList.remove(at: (indexPath as NSIndexPath).row)
                                 
                                 self.tableView.reloadData()
-                                /*
-                                let controller: MainPageViewController
-                                controller = self.storyboard!.instantiateViewController(withIdentifier: "MainPageViewController") as! MainPageViewController
                                 
-                                self.navigationController?.pushViewController(controller, animated: true)
- */
+                                self.navigationItem.hidesBackButton = false
+
                             }
                         }) 
                     }
@@ -275,7 +274,6 @@ class RaceRequestsViewController: ViewControllerMethods, UITableViewDataSource, 
                 self.displayAlert("You are not currently signed into your iCloud account or have not permitted Virtual Race to access your iCloud account. Please be sure both of these things are done")
                 self.activityIndicator.stopAnimating()
             }
-            
             
         }))
         
@@ -308,6 +306,5 @@ class RaceRequestsViewController: ViewControllerMethods, UITableViewDataSource, 
         }))
         
         self.present(startMatchAlert, animated: true, completion: nil)
-        
     }
 }

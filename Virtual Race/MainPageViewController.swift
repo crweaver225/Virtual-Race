@@ -42,9 +42,8 @@ class MainPageViewController: ViewControllerMethods {
     
     @IBAction func raceRequestsButton(_ sender: AnyObject) {
         
-        let controller: UITabBarController
-        controller = self.storyboard!.instantiateViewController(withIdentifier: "RacesViewController") as! UITabBarController
-        controller.selectedIndex = 1
+        let controller: RaceRequestsViewController
+        controller = self.storyboard!.instantiateViewController(withIdentifier: "RaceRequestsViewController") as! RaceRequestsViewController
         
         self.navigationController?.pushViewController(controller, animated: true)
         
