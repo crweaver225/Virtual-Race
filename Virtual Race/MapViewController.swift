@@ -316,7 +316,7 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
         switch raceID {
             
         case "1":
-            let NewYorktoLA = RaceCourses(startingLat: 40.7589, startingLong: -73.9851, endingLat: 34.0522, endingLong: -118.243683, startingTitle: "New York", endingTitle: "Los Angeles", distance: 4498492.0)
+            let NewYorktoLA = RaceCourses(startingLat: 40.7589, startingLong: -73.9851, endingLat: 34.0522, endingLong: -118.243683, startingTitle: "New York", endingTitle: "Los Angeles", distance: 4478626.0)
             return NewYorktoLA
             
         case "2":
@@ -463,7 +463,8 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
             for i in response.routes {
 
                 if i.distance == self.chooseRaceCourse(self.match.raceLocation!)?.distance {
-                     route = i
+                    route = i
+                    break
                 } else {
                      route = response.routes[0]
                 }
