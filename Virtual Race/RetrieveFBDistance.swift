@@ -98,11 +98,13 @@ class RetrieveDistance {
             guard let dates = result?["activities-tracker-distance"] as? [[String: AnyObject]] else {
                 
                 completionHandler(0.0, nil)
+                
                 return
             }
             
             
             for i in dates {
+                
                 guard let fbDistance = i["value"] as? String else {
                     
                     return

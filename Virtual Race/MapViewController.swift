@@ -118,7 +118,7 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
                                 }
                             }
 
-                            self.processMultiplayerDistance(record){ (success) in
+                            self.processMultiplayerDistance(record, date: date){ (success) in
                                 
                                 self.addPlayerToMap(self.match.oppID!, userDistance: (self.match.oppDistance as? Double)!, raceLocation: raceCourse!)
                                 
@@ -219,11 +219,15 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
         completionHandler(true)
     }
     
-    func processMultiplayerDistance(_ record: CKRecord, completionHandler: (_ success: Bool) -> Void) {
+    func processMultiplayerDistance(_ record: CKRecord, date: Date, completionHandler: (_ success: Bool) -> Void) {
+        
+        let calendar = Calendar.current
+
+        let components = (calendar as NSCalendar).components(.day, from: self.match.startDate! as Date, to: date, options: [])
+        
+        let daysBetween = components.day! + 1
         
         if self.match.oppDistance as? Double >= self.distance && self.match.myDistance as? Double >= self.distance {
-            
-            let calendar = Calendar.current
             
             let components1 = (calendar as NSCalendar).components(.day, from: self.match.startDate! as Date, to: (dateConverter(self.match.myFinishDate!)), options: [])
             
@@ -270,6 +274,8 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
             
         } else if self.match.winner == self.match.myName {
             
+            self.raceLengthLabel.text = "Day \(daysBetween) of the Race"
+            
             let lastOppUpdate = record.object(forKey: "u" + (self.match.oppID!)) as? Date
             
             if dateConverter(self.match.myFinishDate!).compare(lastOppUpdate!) == ComparisonResult.orderedAscending {
@@ -284,6 +290,9 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
             }
   
         } else if self.match.oppDistance as? Double >= self.distance {
+            
+            self.raceLengthLabel.text = "Day \(daysBetween) of the Race"
+            
             self.match.finished = true
             self.match.winner = self.match.oppName
             self.match.oppFinishDate = record.object(forKey: "finishDate") as? String

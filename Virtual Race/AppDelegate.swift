@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import CloudKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -25,9 +26,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UINavigationBar.appearance().isTranslucent = false
         UINavigationBar.appearance().clipsToBounds = false
         
-    //    UserDefaults.standard.removeObject(forKey: "Access Token")
+     // UserDefaults.standard.removeObject(forKey: "Access Token")
         
-        // Override point for customization after application launch.
         return true
     }
 
@@ -52,8 +52,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
     }
     
-
-
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
@@ -64,6 +62,84 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         NotificationCenter.default.post(name: Notification.Name(rawValue: kCloseSafariViewControllerNotification), object: url)
  
         return true
+    }
+    
+    func application(_ application: UIApplication, performFetchWithCompletionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        
+        let fr = NSFetchRequest<Match>(entityName: "Match")
+        fr.sortDescriptors = [NSSortDescriptor(key: "startDate", ascending: true)]
+        fr.sortDescriptors = [NSSortDescriptor(key: "finished", ascending: true)]
+        
+        let predicate = NSPredicate(format: "myID = %@", argumentArray: [UserDefaults.standard.object(forKey: "myID")!])
+        
+        fr.predicate = predicate
+        
+        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fr, managedObjectContext: (stack?.context)!, sectionNameKeyPath: nil, cacheName: nil)
+        
+        do {
+            try fetchedResultsController.performFetch()
+        } catch {
+            print("could not perform fetch")
+        }
+        
+        for objects in fetchedResultsController.fetchedObjects! {
+            
+            let match = objects
+            
+            if match.oppID != nil && match.started == true {
+
+                let date = Date()
+        
+                if match.startDate!.compare(date) == ComparisonResult.orderedAscending {
+            
+                    let newDistance = RetrieveDistance()
+                    newDistance.getDistance(formatDate(match.startDate!)){ (result, error) in
+                
+                        guard (error == nil) else {
+                            return
+                        }
+                
+                        let myDistance = result! as Double * 1609.344
+                
+                        match.myDistance = myDistance as NSNumber?
+                
+                        let defaultContainer = CKContainer.default()
+                
+                        let publicDB = defaultContainer.publicCloudDatabase
+                
+                        publicDB.fetch(withRecordID: match.recordID!) { (record, error) -> Void in
+                            guard let record = record else {
+                                print("Error fetching record: ", error)
+                                return
+                            }
+                    
+                            if isICloudContainerAvailable() {
+                                
+                                record.setObject(date as CKRecordValue?, forKey: "u" + match.myID!)
+                        
+                                record.setObject(match.myDistance, forKey: "d" + match.myID!)
+                                
+                                publicDB.save(record, completionHandler: { (record, error) -> Void in
+                                    guard let record = record else {
+                                        print("Error saving record: ", error)
+                                        return
+                                    }
+                            
+                                    performFetchWithCompletionHandler(UIBackgroundFetchResult.newData)
+                                })
+                        
+                            } else {
+                                print("no icloud account")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        performFetchWithCompletionHandler(UIBackgroundFetchResult.noData)
+        
+        return
     }
 }
 
