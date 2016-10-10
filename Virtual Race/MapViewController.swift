@@ -174,14 +174,14 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
                     
                     let components2 = (calendar as NSCalendar).components(.day, from: self.match.startDate! as Date, to: (dateConverter(self.match.myFinishDate!)), options: [])
                     
-                    let daysOfFinishedRace = components2.day! + 1
+                    let finishDate = components2.day! + 1
                 
                     self.delegate.stack?.context.perform{
                         self.delegate.stack?.save()
-                        self.myDistanceNumber.text = "Finished: \(self.match.myFinishDate!)"
+                        self.myDistanceNumber.text = "Finished in \(finishDate) days"
                         
                         if self.match.oppID == nil {
-                            self.raceLengthLabel.text = "The Race Lasted \(daysOfFinishedRace) Days"
+                            self.raceLengthLabel.text = "The Race Lasted \(finishDate) Days"
                         }
                     }
                 }
@@ -264,11 +264,14 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
                 
             } else {
                 
-                self.match.winner = "tie"
-                record.setObject("tie" as CKRecordValue?, forKey: "winner")
+                if self.match.winner != self.match.myName && self.match.winner != self.match.oppName {
+                    
+                    self.match.winner = "tie"
+                    record.setObject("tie" as CKRecordValue?, forKey: "winner")
                 
-                performUIUpdatesOnMain{
-                    self.raceLengthLabel.text = "The Race Lasted \(daysOfFinishedRace1) Days"
+                    performUIUpdatesOnMain{
+                        self.raceLengthLabel.text = "The Race Lasted \(daysOfFinishedRace1) Days"
+                    }
                 }
             }
             
@@ -309,7 +312,12 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
                 self.oppDistanceNumber.text = String("\(Double(round((100 * (self.match.oppDistance as! Double / 1609.344))) / 100)) Miles")
                 print(self.oppDistanceNumber.text)
             } else {
-                self.oppDistanceNumber.text = "Finished: \(self.match.oppFinishDate!)"
+                
+                let components2 = (calendar as NSCalendar).components(.day, from: self.match.startDate! as Date, to: (dateConverter(self.match.oppFinishDate!)), options: [])
+                
+                let daysOfFinishedRace2 = components2.day! + 1
+                
+                self.oppDistanceNumber.text = "Finished in \(daysOfFinishedRace2)"
             }
             
             self.oppDistanceNumber.isHidden = false
