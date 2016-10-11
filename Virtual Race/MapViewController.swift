@@ -51,6 +51,8 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
     
     @IBOutlet weak var oppNameTextView: UITextView!
     
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    
     @IBAction func refreshButton(_ sender: AnyObject) {
         self.mapView.removeAnnotations(mapView.annotations)
         self.mapView.removeOverlays(mapView.overlays)
@@ -73,6 +75,10 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
         self.oppNameTextView.isHidden = true
         
         self.oppProgressGraph.isHidden = true
+        
+        self.myProgressGraph.isHidden = true
+        
+        self.activityIndicator.startAnimating()
         
         let date = Date()
         
@@ -162,8 +168,12 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
         if self.match.myDistance as? Double >= self.distance {
             
             self.match.finished = true
-            self.match.winner = self.match.myName
+            
             self.match.myDistance = self.distance as NSNumber?
+            
+            if self.match.oppName == nil {
+                self.match.winner = self.match.myName
+            }
             
             self.getFinishDate(startDate, distance: (self.match.myDistance as? Double)! / 1609.344) { (result) in
                 
@@ -190,6 +200,8 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
         
         performUIUpdatesOnMain{
             
+            self.activityIndicator.stopAnimating()
+            
             if self.match.startDate!.compare(date) == ComparisonResult.orderedAscending {
                 if self.match.finished != true {
                     self.raceLengthLabel.text = "Day \(daysBetween) of the Race"
@@ -201,6 +213,8 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
             self.totalDistanceLabel.text = "Race Distance: \(Double(round((100 * (self.distance! / 1609.344))) / 100)) miles"
             
             self.myNameTextView.text = self.match.myName
+            
+            self.myProgressGraph.isHidden = false
             
             self.myProgressGraph.progress = Float((self.match.myDistance as? Double)! / self.distance!)
             
@@ -275,7 +289,7 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
                 }
             }
             
-        } else if self.match.winner == self.match.myName {
+        } else if self.match.myDistance as? Double >= self.distance && !(self.match.oppDistance as? Double >= self.distance) {
             
             self.raceLengthLabel.text = "Day \(daysBetween) of the Race"
             
@@ -292,7 +306,7 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
                 self.match.winner = "\(self.match.myName!) has finished, awaiting \(self.match.oppName!) to update before confirmation of victory"
             }
   
-        } else if self.match.oppDistance as? Double >= self.distance {
+        } else if self.match.oppDistance as? Double >= self.distance && !(self.match.myDistance as? Double >= self.distance) {
             
             self.raceLengthLabel.text = "Day \(daysBetween) of the Race"
             

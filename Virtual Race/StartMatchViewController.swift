@@ -59,7 +59,61 @@ class StartMatchViewController: ViewControllerMethods, UITableViewDataSource, UI
                 return
             }
 
-            self.friendList = friendsList!
+            self.checkerList = friendsList!
+            
+            var numm = 0
+            
+            for friends in self.checkerList {
+                
+                guard let user = friends["user"] as? [String:AnyObject] else {
+                    print("could not get user")
+                    return
+                }
+                
+                guard let encodedID = user["encodedId"] as? String else {
+                    print("no encoded ID")
+                    return
+                }
+                
+                let defaultContainer = CKContainer.default()
+                
+                let publicDB = defaultContainer.publicCloudDatabase
+                
+                let predicate = NSPredicate(format: "%K == %@", "userID", encodedID)
+                
+                let query = CKQuery(recordType: "user", predicate: predicate)
+                
+                if isICloudContainerAvailable() {
+                    
+                    publicDB.perform(query, inZoneWith: nil) {
+                        (records, error) -> Void in
+                        guard let records = records else {
+                            print("Error querying records: ", error)
+                            return
+                        }
+                        
+                        if records.count != 0 {
+                            
+                            guard let avatar = user["avatar"] as? String else {
+                                print("could not get avatar")
+                                return
+                            }
+                            
+                            let avatarURL = URL(string: avatar)
+                            
+                            let avatarImage = try? Data(contentsOf: (avatarURL)!)
+                            
+                            self.imageList.append(avatarImage!)
+                            
+                            self.friendList.append(friends)
+
+                            performUIUpdatesOnMain{
+                                self.TableView.reloadData()
+                            }
+                        }
+                    }
+                }
+            }
             
             let avatar = String(describing: UserDefaults.standard.url(forKey: "avatar")!)
             
@@ -79,6 +133,8 @@ class StartMatchViewController: ViewControllerMethods, UITableViewDataSource, UI
     }
     
     func loadPictures() {
+        
+        self.imageList.removeAll()
         
         for image in friendList {
             
@@ -138,6 +194,7 @@ class StartMatchViewController: ViewControllerMethods, UITableViewDataSource, UI
         cell.imageView!.image = UIImage(data: self.imageList[(indexPath as NSIndexPath).row])
         
         cell.textLabel?.text = name
+        cell.textLabel?.numberOfLines = 2
         
         return cell
     }

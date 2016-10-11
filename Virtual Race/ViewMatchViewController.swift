@@ -109,6 +109,13 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                         }
                     }
                     
+                    print("yyy \(record!.object(forKey: "winner"))")
+                    
+                    if record!.object(forKey: "winner") as? String != "" && match.winner == nil {
+                        match.finished = true
+                        match.winner = "Your opponent has finished the race"
+                    }
+                    
                     if record!.object(forKey: "rejected") as! String == "true" {
                         match.rejected = "true"
                         performUIUpdatesOnMain{
@@ -155,6 +162,11 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                 let myDistance = result! as Double * 1609.344
                 
                 match.myDistance = myDistance as NSNumber?
+                
+                if (match.raceLocation == "1" && myDistance >= 4478626.0) || (match.raceLocation == "2" && myDistance >= 17970) || (match.raceLocation == "3" && myDistance >= 224855.0) {
+                    match.finished = true
+                    match.winner = "You have finished the race"
+                }
                 
                 let defaultContainer = CKContainer.default()
                 

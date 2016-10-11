@@ -302,6 +302,7 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no"/>
                             </textView>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="Yhe-HN-x8q"/>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -310,6 +311,7 @@
                             <constraint firstItem="g2g-Q8-JuG" firstAttribute="top" secondItem="dxm-78-NMe" secondAttribute="top" constant="-5" id="33B-v8-whw"/>
                             <constraint firstItem="4h4-gh-hNi" firstAttribute="leading" secondItem="S1l-Tp-mPn" secondAttribute="leading" id="7rE-mV-HTE"/>
                             <constraint firstAttribute="trailing" secondItem="4h4-gh-hNi" secondAttribute="trailing" id="7vA-CF-h01"/>
+                            <constraint firstItem="Yhe-HN-x8q" firstAttribute="top" secondItem="ef6-Hg-kD5" secondAttribute="bottom" constant="36" id="9CY-Uu-sT4"/>
                             <constraint firstItem="dxm-78-NMe" firstAttribute="leading" secondItem="0pD-lW-kOT" secondAttribute="leading" id="9ux-tN-Bko"/>
                             <constraint firstItem="g2g-Q8-JuG" firstAttribute="leading" secondItem="S1l-Tp-mPn" secondAttribute="leadingMargin" id="AWn-sH-FPg"/>
                             <constraint firstItem="g2g-Q8-JuG" firstAttribute="top" secondItem="4h4-gh-hNi" secondAttribute="bottom" constant="3" id="DQG-AO-beg"/>
@@ -318,6 +320,7 @@
                             <constraint firstItem="Hos-qu-IGo" firstAttribute="top" secondItem="fHy-H8-1q7" secondAttribute="bottom" constant="28" id="JcX-5L-hdI"/>
                             <constraint firstItem="jud-qu-JKD" firstAttribute="trailing" secondItem="fHy-H8-1q7" secondAttribute="trailing" id="LAb-Ax-ooP"/>
                             <constraint firstItem="LKS-oZ-ewb" firstAttribute="top" secondItem="g2g-Q8-JuG" secondAttribute="bottom" constant="9" id="M25-Q4-WgG"/>
+                            <constraint firstItem="Yhe-HN-x8q" firstAttribute="leading" secondItem="S1l-Tp-mPn" secondAttribute="leadingMargin" constant="161" id="NjG-c2-zcA"/>
                             <constraint firstItem="jud-qu-JKD" firstAttribute="leading" secondItem="fHy-H8-1q7" secondAttribute="leading" id="PR0-Hd-zzy"/>
                             <constraint firstItem="fHy-H8-1q7" firstAttribute="centerY" secondItem="0pD-lW-kOT" secondAttribute="centerY" constant="-7" id="Pdq-U4-y7m"/>
                             <constraint firstItem="g2g-Q8-JuG" firstAttribute="leading" secondItem="LKS-oZ-ewb" secondAttribute="leading" id="Q9O-3V-shy"/>
@@ -326,6 +329,8 @@
                             <constraint firstItem="dxm-78-NMe" firstAttribute="trailing" secondItem="S1l-Tp-mPn" secondAttribute="trailingMargin" constant="16" id="a3a-2S-kW3"/>
                             <constraint firstItem="jud-qu-JKD" firstAttribute="centerY" secondItem="dxm-78-NMe" secondAttribute="centerY" constant="-6" id="bV6-0W-vo5"/>
                             <constraint firstItem="dxm-78-NMe" firstAttribute="trailing" secondItem="0pD-lW-kOT" secondAttribute="trailing" id="bX2-It-HZI"/>
+                            <constraint firstItem="4h4-gh-hNi" firstAttribute="top" secondItem="Yhe-HN-x8q" secondAttribute="bottom" constant="6" id="fpm-Rc-buD"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="Yhe-HN-x8q" secondAttribute="trailing" constant="162" id="ghJ-uL-pr4"/>
                             <constraint firstItem="jud-qu-JKD" firstAttribute="top" secondItem="4h4-gh-hNi" secondAttribute="bottom" constant="22" id="hXA-hd-UFM"/>
                             <constraint firstItem="LKS-oZ-ewb" firstAttribute="top" secondItem="0pD-lW-kOT" secondAttribute="top" id="jVu-86-1y0"/>
                             <constraint firstItem="0pD-lW-kOT" firstAttribute="bottom" secondItem="Hos-qu-IGo" secondAttribute="top" id="k3C-tI-9cl"/>
@@ -351,6 +356,7 @@
                     </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
+                        <outlet property="activityIndicator" destination="Yhe-HN-x8q" id="bXu-e7-isD"/>
                         <outlet property="mapView" destination="4h4-gh-hNi" id="u9P-jd-2nH"/>
                         <outlet property="myDistanceNumber" destination="dxm-78-NMe" id="WuG-Pl-G8O"/>
                         <outlet property="myNameTextView" destination="g2g-Q8-JuG" id="yQj-B8-pKL"/>
