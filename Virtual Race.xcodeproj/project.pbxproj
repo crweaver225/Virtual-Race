@@ -24,6 +24,7 @@
 		2E5DB2DD1D99B5F20028350B /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E5DB2DC1D99B5F20028350B /* LoginViewController.swift */; };
 		2E6048BD1D8701A600A18A76 /* DateFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E6048BC1D8701A600A18A76 /* DateFormatter.swift */; };
 		2E6048BF1D87511200A18A76 /* RaceCourses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E6048BE1D87511200A18A76 /* RaceCourses.swift */; };
+		2E7C619C1DAD7BA00067A0E9 /* RaceTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E7C619B1DAD7BA00067A0E9 /* RaceTableViewCell.swift */; };
 		2E7CD6271D81AFF300B9ACB5 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2E7CD6251D81AFF200B9ACB5 /* Model.xcdatamodeld */; };
 		2E7CD62A1D81B36C00B9ACB5 /* Match+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E7CD6281D81B36C00B9ACB5 /* Match+CoreDataProperties.swift */; };
 		2E7CD62B1D81B36C00B9ACB5 /* Match.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E7CD6291D81B36C00B9ACB5 /* Match.swift */; };
@@ -82,6 +83,7 @@
 		2E5DB2DC1D99B5F20028350B /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		2E6048BC1D8701A600A18A76 /* DateFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateFormatter.swift; sourceTree = "<group>"; };
 		2E6048BE1D87511200A18A76 /* RaceCourses.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RaceCourses.swift; sourceTree = "<group>"; };
+		2E7C619B1DAD7BA00067A0E9 /* RaceTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RaceTableViewCell.swift; sourceTree = "<group>"; };
 		2E7CD6261D81AFF300B9ACB5 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		2E7CD6281D81B36C00B9ACB5 /* Match+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Match+CoreDataProperties.swift"; path = "../Match+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		2E7CD6291D81B36C00B9ACB5 /* Match.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Match.swift; path = ../Match.swift; sourceTree = "<group>"; };
@@ -199,6 +201,7 @@
 			children = (
 				2E80436C1D9415F200DFBB4B /* Main.storyboard */,
 				2E1F7AD11D806075003BC6FB /* LaunchScreen.storyboard */,
+				2E7C619B1DAD7BA00067A0E9 /* RaceTableViewCell.swift */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -371,6 +374,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2E7C619C1DAD7BA00067A0E9 /* RaceTableViewCell.swift in Sources */,
 				2E8043631D9414A700DFBB4B /* CoreDataStack.swift in Sources */,
 				2E4C37E31DA7546D005510C9 /* PendingRacesViewController.swift in Sources */,
 				2E6048BD1D8701A600A18A76 /* DateFormatter.swift in Sources */,

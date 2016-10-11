@@ -11,21 +11,11 @@ import UIKit
 import CoreData
 import CloudKit
 
-class ChooseRouteViewController: ViewControllerMethods {
+class ChooseRouteViewController: ViewControllerMethods, UITableViewDataSource, UITableViewDelegate {
     
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
-    @IBAction func nyToLA(_ sender: AnyObject) {
-        chooseRace("1")
-    }
-    
-    @IBAction func crossTownClassic(_ sender: AnyObject) {
-        chooseRace("2")
-    }
-    
-    @IBAction func libertyTrail(_ sender: AnyObject) {
-        chooseRace("3")
-    }
+    let courses = ["2","4","1","3"]
     
     let delegate = UIApplication.shared.delegate as! AppDelegate
     
@@ -37,11 +27,11 @@ class ChooseRouteViewController: ViewControllerMethods {
     
     var oneDayfromNow: Date {
         
-       let date = (Calendar.current as NSCalendar).date(byAdding: .day, value: 1, to: Date(), options: [])!
+        let date = (Calendar.current as NSCalendar).date(byAdding: .day, value: 1, to: Date(), options: [])!
         
         return (Calendar.current as NSCalendar).date(bySettingHour: 0, minute: 0, second: 0, of: date, options: NSCalendar.Options())!
     }
-
+    
     func chooseRace(_ raceID: String) {
         
         if oppID == UserDefaults.standard.object(forKey: "myID") as? String {
@@ -76,7 +66,7 @@ class ChooseRouteViewController: ViewControllerMethods {
                 onlineRace["raceLocation"] = raceID as CKRecordValue?
                 onlineRace["rejected"] = "false" as CKRecordValue?
                 onlineRace["started"] = "true" as CKRecordValue?
-
+                
                 let defaultContainer = CKContainer.default()
                 
                 let publicDB = defaultContainer.publicCloudDatabase
@@ -90,17 +80,17 @@ class ChooseRouteViewController: ViewControllerMethods {
                     newMatch.recordID = record.recordID
                     
                     self.delegate.stack?.context.perform{
-
+                        
                         self.delegate.stack?.save()
                         
                         let controller: MainPageViewController
                         controller = self.storyboard!.instantiateViewController(withIdentifier: "MainPageViewController") as! MainPageViewController
                         
                         self.navigationController?.pushViewController(controller, animated: true)
-
+                        
                     }
                     
-                }) 
+                })
                 
             }))
             
@@ -132,7 +122,7 @@ class ChooseRouteViewController: ViewControllerMethods {
                 newMatch.myFinishDate = nil
                 newMatch.oppFinishDate = nil
                 newMatch.rejected = "false"
-    
+                
                 let onlineRace = CKRecord(recordType: "match")
                 onlineRace["myID"] = myID as CKRecordValue?
                 onlineRace["oppID"] = self.oppID as CKRecordValue?
@@ -166,7 +156,7 @@ class ChooseRouteViewController: ViewControllerMethods {
                         controller = self.storyboard!.instantiateViewController(withIdentifier: "MainPageViewController") as! MainPageViewController
                         self.delegate.stack?.save()
                         self.navigationController?.pushViewController(controller, animated: true)
-
+                        
                     }
                 })
                 
@@ -178,4 +168,40 @@ class ChooseRouteViewController: ViewControllerMethods {
             self.present(startMatchAlert, animated: true, completion: nil)
         }
     }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
+        return 4
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: "CourseType", for: indexPath) as! RaceTableViewCell
+        
+        let row = courses[indexPath.row]
+        
+        switch row {
+        case "2":
+            cell.raceImage.image = UIImage(named: "Cross_Town_Class")
+        case "1":
+            cell.raceImage.image = UIImage(named: "NY-LA")
+        case "3":
+            cell.raceImage.image = UIImage(named: "Liberty-Run")
+        case "4":
+            cell.raceImage.image = UIImage(named: "mardiGrasShuffle")
+        default:
+            print("default")
+        }
+        
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        let row = courses[indexPath.row]
+        
+        chooseRace(row)
+        
+    }
 }
+
