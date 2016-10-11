@@ -291,7 +291,9 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
             
         } else if self.match.myDistance as? Double >= self.distance && !(self.match.oppDistance as? Double >= self.distance) {
             
-            self.raceLengthLabel.text = "Day \(daysBetween) of the Race"
+            performUIUpdatesOnMain{
+                self.raceLengthLabel.text = "Day \(daysBetween) of the Race"
+            }
             
             let lastOppUpdate = record.object(forKey: "u" + (self.match.oppID!)) as? Date
             
@@ -308,7 +310,9 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
   
         } else if self.match.oppDistance as? Double >= self.distance && !(self.match.myDistance as? Double >= self.distance) {
             
-            self.raceLengthLabel.text = "Day \(daysBetween) of the Race"
+            performUIUpdatesOnMain {
+                self.raceLengthLabel.text = "Day \(daysBetween) of the Race"
+            }
             
             self.match.finished = true
             self.match.winner = self.match.oppName
@@ -357,6 +361,9 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
         case "3":
             let LibertyTrail = RaceCourses(startingLat: 39.9526, startingLong: -75.1652, endingLat: 38.9072, endingLong: -77.0369, startingTitle: "Philadelphia", endingTitle: "Washington D.C.", distance: 224855.0)
             return LibertyTrail
+        case "4":
+            let mardiShuffle = RaceCourses(startingLat: 30.4583, startingLong: -91.1403, endingLat: 29.9511, endingLong: -90.0715, startingTitle: "Baton Rouge", endingTitle: "New Orleans", distance: 129181.0)
+            return mardiShuffle
   
         default:
             print("no race course was choosen in the switch")

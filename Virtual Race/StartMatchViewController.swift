@@ -27,6 +27,10 @@ class StartMatchViewController: ViewControllerMethods, UITableViewDataSource, UI
     
     override func viewWillAppear(_ animated:Bool) {
         
+        checkerList.removeAll()
+        friendList.removeAll()
+        imageList.removeAll()
+        
         super.viewWillAppear(animated)
         
         self.activityIndicator.startAnimating()

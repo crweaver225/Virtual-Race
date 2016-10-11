@@ -58,7 +58,7 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
             
             let match = objects
             
-            if match.oppID != nil && match.started == true && UserDefaults.standard.bool(forKey: "refresh") == true {
+            if match.oppID != nil && match.started == true && UserDefaults.standard.bool(forKey: "refresh") == true && match.myFinishDate == nil {
                 
                 DispatchQueue.global(qos: DispatchQoS.QoSClass.background).async {
                     self.updateRaces(match)
@@ -108,8 +108,6 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                             self.viewWillAppear(true)
                         }
                     }
-                    
-                    print("yyy \(record!.object(forKey: "winner"))")
                     
                     if record!.object(forKey: "winner") as? String != "" && match.winner == nil {
                         match.finished = true
@@ -163,9 +161,16 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                 
                 match.myDistance = myDistance as NSNumber?
                 
-                if (match.raceLocation == "1" && myDistance >= 4478626.0) || (match.raceLocation == "2" && myDistance >= 17970) || (match.raceLocation == "3" && myDistance >= 224855.0) {
-                    match.finished = true
-                    match.winner = "You have finished the race"
+                let extraInfo = MapViewController()
+                
+                let raceLocation = extraInfo.chooseRaceCourse(match.raceLocation!)!
+                
+                if myDistance >= raceLocation.distance {
+                    if match.finished == false {
+                        match.finished = true
+                        match.winner = "You have finished the race"
+                    }
+                    match.myDistance = raceLocation.distance as NSNumber?
                 }
                 
                 let defaultContainer = CKContainer.default()
