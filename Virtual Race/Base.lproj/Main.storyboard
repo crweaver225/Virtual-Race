@@ -655,85 +655,6 @@
             </objects>
             <point key="canvasLocation" x="569" y="-356"/>
         </scene>
-        <!--Choose Route View Controller-->
-        <scene sceneID="SGt-vJ-Xf0">
-            <objects>
-                <viewController storyboardIdentifier="ChooseRouteViewController" id="wen-N0-2wD" customClass="ChooseRouteViewController" customModule="Virtual_Race" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="p5g-uD-irD"/>
-                        <viewControllerLayoutGuide type="bottom" id="Pi8-1g-oKX"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="YOZ-8f-OfR">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kTh-10-bd6">
-                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="95" id="fcr-WA-yl1"/>
-                                </constraints>
-                                <state key="normal" image="NY-LA">
-                                    <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                </state>
-                                <connections>
-                                    <action selector="nyToLA:" destination="wen-N0-2wD" eventType="touchUpInside" id="UhC-R3-9KM"/>
-                                </connections>
-                            </button>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" text="Select Your Route!" textAlignment="center" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ytt-Fa-jET">
-                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="39" id="PxT-oy-I4w"/>
-                                </constraints>
-                                <color key="textColor" red="1" green="0.50196081400000003" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <fontDescription key="fontDescription" name="TrebuchetMS-Italic" family="Trebuchet MS" pointSize="26"/>
-                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                            </textView>
-                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="Whg-Q7-V2m"/>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Cgr-db-dgz">
-                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <state key="normal" image="Liberty-Run">
-                                    <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                </state>
-                                <connections>
-                                    <action selector="libertyTrail:" destination="wen-N0-2wD" eventType="touchUpInside" id="Z7n-SE-CIX"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qt6-I2-9W1">
-                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                <state key="normal" title="Button" image="Cross_Town_Class"/>
-                                <connections>
-                                    <action selector="crossTownClassic:" destination="wen-N0-2wD" eventType="touchUpInside" id="bLU-Kv-j01"/>
-                                </connections>
-                            </button>
-                        </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <constraints>
-                            <constraint firstItem="Cgr-db-dgz" firstAttribute="top" secondItem="kTh-10-bd6" secondAttribute="bottom" constant="14" id="58O-cV-VST"/>
-                            <constraint firstItem="kTh-10-bd6" firstAttribute="trailing" secondItem="Cgr-db-dgz" secondAttribute="trailing" id="5Bs-ZE-zws"/>
-                            <constraint firstItem="Ytt-Fa-jET" firstAttribute="centerX" secondItem="Whg-Q7-V2m" secondAttribute="centerX" id="Bg8-Bl-gO0"/>
-                            <constraint firstItem="Whg-Q7-V2m" firstAttribute="top" secondItem="Ytt-Fa-jET" secondAttribute="bottom" constant="8" symbolic="YES" id="BsG-Tq-JfN"/>
-                            <constraint firstItem="Ytt-Fa-jET" firstAttribute="top" secondItem="p5g-uD-irD" secondAttribute="bottom" constant="8" symbolic="YES" id="Dix-DZ-23s"/>
-                            <constraint firstItem="kTh-10-bd6" firstAttribute="top" secondItem="Qt6-I2-9W1" secondAttribute="bottom" constant="18" id="EXr-8U-Gh7"/>
-                            <constraint firstItem="Qt6-I2-9W1" firstAttribute="trailing" secondItem="kTh-10-bd6" secondAttribute="trailing" id="HEC-Lt-9lS"/>
-                            <constraint firstItem="Qt6-I2-9W1" firstAttribute="leading" secondItem="YOZ-8f-OfR" secondAttribute="leadingMargin" id="KxG-KQ-Brq"/>
-                            <constraint firstItem="kTh-10-bd6" firstAttribute="leading" secondItem="Cgr-db-dgz" secondAttribute="leading" id="Yr8-rg-ZEx"/>
-                            <constraint firstItem="Whg-Q7-V2m" firstAttribute="centerX" secondItem="YOZ-8f-OfR" secondAttribute="centerX" id="YuI-6B-Fdm"/>
-                            <constraint firstItem="Whg-Q7-V2m" firstAttribute="centerX" secondItem="kTh-10-bd6" secondAttribute="centerX" id="evc-EH-wdL"/>
-                            <constraint firstAttribute="trailing" secondItem="Qt6-I2-9W1" secondAttribute="trailing" constant="16" id="fWv-oS-QWl"/>
-                            <constraint firstItem="Qt6-I2-9W1" firstAttribute="top" secondItem="Whg-Q7-V2m" secondAttribute="bottom" constant="28" id="iMV-qC-zMR"/>
-                            <constraint firstItem="Ytt-Fa-jET" firstAttribute="leading" secondItem="YOZ-8f-OfR" secondAttribute="leadingMargin" constant="9" id="r1i-Sq-uqw"/>
-                        </constraints>
-                    </view>
-                    <toolbarItems/>
-                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
-                    <connections>
-                        <outlet property="activityIndicator" destination="Whg-Q7-V2m" id="A4Q-r2-7H9"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="HYu-GJ-VxD" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2176.8000000000002" y="564.46776611694156"/>
-        </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="Tgb-V3-rtA">
             <objects>
@@ -755,11 +676,84 @@
             </objects>
             <point key="canvasLocation" x="497" y="296"/>
         </scene>
+        <!--Choose Route View Controller-->
+        <scene sceneID="cFV-rw-l6Y">
+            <objects>
+                <viewController storyboardIdentifier="ChooseRouteViewController" id="yzj-F0-Tks" customClass="ChooseRouteViewController" customModule="Virtual_Race" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="1su-Ao-WZT"/>
+                        <viewControllerLayoutGuide type="bottom" id="m5l-J8-94O"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="x4I-ZE-gxf">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" text="Select Your Route!" textAlignment="center" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CeG-uK-Kmv">
+                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="39" id="4PC-0S-tQ1"/>
+                                </constraints>
+                                <color key="textColor" red="1" green="0.50196081400000003" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <fontDescription key="fontDescription" name="TrebuchetMS-Italic" family="Trebuchet MS" pointSize="26"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="150" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="WjQ-SM-imM">
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" shouldIndentWhileEditing="NO" reuseIdentifier="CourseType" rowHeight="150" id="mi1-wy-NTh" customClass="RaceTableViewCell" customModule="Virtual_Race" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="28" width="375" height="150"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" tableViewCell="mi1-wy-NTh" id="gQz-bn-c6N">
+                                            <frame key="frameInset" width="375" height="150"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="3WF-Ho-K2M"/>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="3WF-Ho-K2M" firstAttribute="top" secondItem="gQz-bn-c6N" secondAttribute="top" id="27s-JJ-Ezb"/>
+                                                <constraint firstAttribute="bottom" secondItem="3WF-Ho-K2M" secondAttribute="bottom" constant="35" id="B6k-KH-NYU"/>
+                                                <constraint firstItem="3WF-Ho-K2M" firstAttribute="leading" secondItem="gQz-bn-c6N" secondAttribute="leading" constant="8" id="ee0-iP-2xK"/>
+                                                <constraint firstAttribute="trailing" secondItem="3WF-Ho-K2M" secondAttribute="trailing" constant="8" id="vub-kF-d0H"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="raceImage" destination="3WF-Ho-K2M" id="akz-VU-n0g"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </prototypes>
+                                <sections/>
+                                <connections>
+                                    <outlet property="dataSource" destination="yzj-F0-Tks" id="YXh-Qx-Jxg"/>
+                                    <outlet property="delegate" destination="yzj-F0-Tks" id="yWO-8t-gzk"/>
+                                </connections>
+                            </tableView>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="rxB-TE-RTY"/>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="CeG-uK-Kmv" firstAttribute="centerX" secondItem="WjQ-SM-imM" secondAttribute="centerX" id="8Ng-Jf-JhW"/>
+                            <constraint firstItem="CeG-uK-Kmv" firstAttribute="centerX" secondItem="x4I-ZE-gxf" secondAttribute="centerX" id="V3x-IQ-89L"/>
+                            <constraint firstItem="CeG-uK-Kmv" firstAttribute="top" secondItem="1su-Ao-WZT" secondAttribute="bottom" id="Z0g-0d-tQI"/>
+                            <constraint firstItem="WjQ-SM-imM" firstAttribute="top" secondItem="rxB-TE-RTY" secondAttribute="bottom" constant="8" symbolic="YES" id="bLU-Hz-cAw"/>
+                            <constraint firstItem="CeG-uK-Kmv" firstAttribute="leading" secondItem="x4I-ZE-gxf" secondAttribute="leadingMargin" constant="8" id="bMy-Uk-Xhi"/>
+                            <constraint firstItem="WjQ-SM-imM" firstAttribute="top" secondItem="CeG-uK-Kmv" secondAttribute="bottom" constant="36" id="cf6-ZJ-FhS"/>
+                            <constraint firstItem="CeG-uK-Kmv" firstAttribute="centerX" secondItem="rxB-TE-RTY" secondAttribute="centerX" id="hnW-Bw-61F"/>
+                            <constraint firstItem="WjQ-SM-imM" firstAttribute="leading" secondItem="x4I-ZE-gxf" secondAttribute="leading" id="rqg-kY-eR4"/>
+                            <constraint firstAttribute="bottom" secondItem="WjQ-SM-imM" secondAttribute="bottom" id="ytV-D6-Q6z"/>
+                        </constraints>
+                    </view>
+                    <toolbarItems/>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
+                    <connections>
+                        <outlet property="activityIndicator" destination="rxB-TE-RTY" id="gwL-8u-giY"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="PlX-wp-WaM" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2239" y="673"/>
+        </scene>
     </scenes>
     <resources>
-        <image name="Cross_Town_Class" width="370" height="95"/>
-        <image name="Liberty-Run" width="370" height="94"/>
-        <image name="NY-LA" width="370" height="95"/>
         <image name="Notification" width="32" height="32"/>
         <image name="Runner" width="300" height="235"/>
     </resources>

@@ -11,4 +11,5 @@ import UIKit
 
 class RaceTableViewCell: UITableViewCell {
     
+    @IBOutlet weak var raceImage: UIImageView!
 }
