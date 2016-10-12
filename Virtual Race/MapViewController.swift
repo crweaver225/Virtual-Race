@@ -120,7 +120,11 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
                                 self.match.oppDistance = 0.0
                             } else {
                                 if let result = result {
-                                    self.match.oppDistance = record.object(forKey: "d" + self.match.oppID!) as! NSNumber?
+                                    if self.match.initializer == true {
+                                        self.match.oppDistance = record.object(forKey: "racerDistance2") as! NSNumber?
+                                    } else {
+                                        self.match.oppDistance = record.object(forKey: "racerDistance1") as! NSNumber?
+                                    }
                                 }
                             }
 
@@ -128,16 +132,21 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
                                 
                                 self.addPlayerToMap(self.match.oppID!, userDistance: (self.match.oppDistance as? Double)!, raceLocation: raceCourse!)
                                 
-                                record.setObject(date as CKRecordValue?, forKey: "u" + self.match.myID!)
+                                if self.match.initializer == true {
+                                    record.setObject(date as CKRecordValue?, forKey: "racerUpdate1")
+                                    record.setObject(self.match.myDistance, forKey: "racerDistance1")
+                                    
+                                } else {
+                                    record.setObject(date as CKRecordValue?, forKey: "racerUpdate2")
+                                    record.setObject(self.match.myDistance, forKey: "racerDistance2")
+                                }
                                 
                                 self.delegate.stack?.context.perform{
                                     self.delegate.stack?.save()
                                 }
                                 
                                 if isICloudContainerAvailable() {
-                                    
-                                    record.setObject(self.match.myDistance, forKey: "d" + self.match.myID!)
-                                    
+                            
                                     publicDB.save(record, completionHandler: { (record, error) -> Void in
                                         guard let record = record else {
                                             print("Error saving record: ", error)
@@ -295,9 +304,15 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
                 self.raceLengthLabel.text = "Day \(daysBetween) of the Race"
             }
             
-            let lastOppUpdate = record.object(forKey: "u" + (self.match.oppID!)) as? Date
+            var lastOppUpdate = Date()
             
-            if dateConverter(self.match.myFinishDate!).compare(lastOppUpdate!) == ComparisonResult.orderedAscending {
+            if self.match.initializer == true {
+                lastOppUpdate = record.object(forKey: "racerUpdate2") as! Date
+            } else {
+                lastOppUpdate = record.object(forKey: "racerUpdate1") as! Date
+            }
+            
+            if dateConverter(self.match.myFinishDate!).compare(lastOppUpdate) == ComparisonResult.orderedAscending {
                 
                 record.setObject("true" as CKRecordValue?, forKey: "finished")
                 record.setObject(self.match.winner as CKRecordValue?, forKey: "winner")

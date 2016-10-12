@@ -33,4 +33,5 @@ extension Match {
     @NSManaged var rejected: String?
     @NSManaged var myFinishDate: String?
     @NSManaged var oppFinishDate: String?
+    @NSManaged var initializer: NSNumber?
 }

@@ -244,6 +244,7 @@ class RaceRequestsViewController: ViewControllerMethods, UITableViewDataSource, 
                         newMatch.recordID = row.recordID
                         newMatch.raceLocation = row.object(forKey: "raceLocation") as? String
                         newMatch.rejected = nil
+                        newMatch.initializer = false
                         
                         row.setObject("true" as CKRecordValue?, forKey: "started")
                         row.setObject(self.oneDayfromNow as CKRecordValue?, forKey: "startDate")

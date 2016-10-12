@@ -3,6 +3,7 @@
     <entity name="Match" representedClassName=".Match" syncable="YES">
         <attribute name="finishDate" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="finished" attributeType="Boolean" usesScalarValueType="NO" indexed="YES" syncable="YES"/>
+        <attribute name="initializer" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="myAvatar" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES" indexed="YES" syncable="YES"/>
         <attribute name="myDistance" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO" indexed="YES" syncable="YES"/>
         <attribute name="myFinishDate" optional="YES" attributeType="String" syncable="YES"/>
@@ -16,7 +17,6 @@
         <attribute name="raceLocation" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="recordID" optional="YES" attributeType="Transformable" syncable="YES"/>
         <attribute name="rejected" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="route" optional="YES" attributeType="Transformable" syncable="YES"/>
         <attribute name="startDate" attributeType="Date" usesScalarValueType="NO" indexed="YES" syncable="YES"/>
         <attribute name="started" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="winner" optional="YES" attributeType="String" syncable="YES"/>

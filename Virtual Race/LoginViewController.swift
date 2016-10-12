@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 import SafariServices
-
+import CloudKit
 
 let kCloseSafariViewControllerNotification = "kCloseSafariViewControllerNotification"
 
@@ -71,6 +71,27 @@ class LoginViewController: ViewControllerMethods, SFSafariViewControllerDelegate
             }
             
             if (success != nil) {
+                
+                if UserDefaults.standard.object(forKey: "appUser") as? Bool != true {
+                    
+                    let userID = UserDefaults.standard.object(forKey: "myID") as! String
+                    
+                    let newUser = CKRecord(recordType: "user")
+                    newUser["userID"] = userID as CKRecordValue?
+                    
+                    let defaultContainer = CKContainer.default()
+                    
+                    let publicDB = defaultContainer.publicCloudDatabase
+                    
+                    publicDB.save(newUser, completionHandler: { (record, error) -> Void in
+                        guard let record = record else {
+                            self.displayAlert("Error saving record:  \(error)")
+                            return
+                        }
+                        
+                        UserDefaults.standard.set(true, forKey: "appUser")
+                    })
+                }
                 
                 UserDefaults.standard.set(true, forKey: "refresh")
                 

@@ -71,6 +71,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         print("eeee")
         
+        if Reachability.isConnectedToNetwork() {
+        
         let fr = NSFetchRequest<Match>(entityName: "Match")
         fr.sortDescriptors = [NSSortDescriptor(key: "startDate", ascending: true)]
         fr.sortDescriptors = [NSSortDescriptor(key: "finished", ascending: true)]
@@ -132,9 +134,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                             
                             if isICloudContainerAvailable() {
                                 
-                                record.setObject(date as CKRecordValue?, forKey: "u" + match.myID!)
-                                
-                                record.setObject(match.myDistance, forKey: "d" + match.myID!)
+                                if match.initializer == true {
+                                    record.setObject(match.myDistance, forKey: "racerDistance1")
+                                    record.setObject(date as CKRecordValue?, forKey: "racerUpdate1")
+                                } else {
+                                    record.setObject(match.myDistance, forKey: "racerDistance2")
+                                    record.setObject(date as CKRecordValue?, forKey: "racerUpdate2")
+                                }
                                 
                                 publicDB.save(record, completionHandler: { (record, error) -> Void in
                                     guard let record = record else {
@@ -158,6 +164,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         return
     }
-
+    }
 }
 

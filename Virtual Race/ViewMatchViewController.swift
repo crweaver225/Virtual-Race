@@ -29,8 +29,6 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
     
         super.viewWillAppear(animated)
         
-        self.searchAllRaces()
-        
         noMathesLabel.isHidden = true
         
         raceList.removeAll()
@@ -187,7 +185,13 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                     
                     if isICloudContainerAvailable() {
                         
-                        record.setObject(match.myDistance, forKey: "d" + match.myID!)
+                        if match.initializer == true {
+                            record.setObject(match.myDistance, forKey: "racerDistance1")
+                            record.setObject(date as CKRecordValue?, forKey: "racerUpdate1")
+                        } else {
+                            record.setObject(match.myDistance, forKey: "racerDistance2")
+                            record.setObject(date as CKRecordValue?, forKey: "racerUpdate2")
+                        }
                         
                         publicDB.save(record, completionHandler: { (record, error) -> Void in
                             guard let record = record else {
@@ -200,192 +204,6 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                         print("no icloud account")
                     }
                 }
-            }
-        }
-    }
-    
-    func searchAllRaces() {
-        
-        let myID = UserDefaults.standard.object(forKey: "myID") as? String
-    
-        let defaultContainer = CKContainer.default()
-        
-        let publicDB = defaultContainer.publicCloudDatabase
-        
-        let predicate = NSPredicate(format: "%K = %@", "myID", myID!)
-        
-        let predicate2 = NSPredicate(format: "%K = %@", "oppID", myID!)
-        
-        var query = CKQuery(recordType: "match", predicate: predicate)
-        
-        publicDB.perform(query, inZoneWith: nil) { (records, error) -> Void in
-            
-            guard let records = records else {
-                print("Error querying records: ", error)
-                return
-            }
-            
-                for record in records {
-                    
-                    if record.object(forKey: "started") as! String == "true"  {
-                
-                self.checkRacesAgainstMemory(record)
-                    
-                }
-            }
-        }
-        
-        query = CKQuery(recordType: "match", predicate: predicate2)
-        
-        publicDB.perform(query, inZoneWith: nil) { (records, error) -> Void in
-            
-            guard let records = records else {
-                print("Error querying records: ", error)
-                return
-            }
-            
-            for record in records {
-                
-                if record.object(forKey: "started") as! String == "true"  {
-                        
-                    self.checkRacesAgainstMemory(record)
-                }
-            }
-        }
-    }
-    
-    func checkRacesAgainstMemory(_ record: CKRecord) {
-
-        let fr = NSFetchRequest<Match>(entityName: "Match")
-        fr.sortDescriptors = [NSSortDescriptor(key: "startDate", ascending: true)]
-
-        let recordObject = record
-                
-            if recordObject.object(forKey: "rejected") as! String != "true" {
-                
-                let fetchedResultsController = NSFetchedResultsController(fetchRequest: fr, managedObjectContext: (delegate.stack?.context)!, sectionNameKeyPath: nil, cacheName: nil)
-                
-                do {
-                    try fetchedResultsController.performFetch()
-                } catch {
-                    print("could not perform fetch")
-                }
-                    
-                var counter = 0
-                    
-                for match in fetchedResultsController.fetchedObjects! {
-
-                    if match.recordID?.recordName == recordObject.recordID.recordName {
-                        
-                        counter += 1
-                    }
-                }
-                
-                if counter == 0 {
-                    addRacetoMemory(recordObject)
-                }
-            }
-        
-    }
-    
-    func addRacetoMemory(_ record: CKRecord) {
-
-        let newMatch = Match(startDate: (record.object(forKey: "startDate") as! Date), myID: UserDefaults.standard.object(forKey: "myID") as! String, context: (self.delegate.stack?.context)!)
-        newMatch.recordID = record.recordID
-        newMatch.myName = UserDefaults.standard.object(forKey: "fullName") as? String
-        newMatch.myAvatar = UserDefaults.standard.object(forKey: "myAvatar") as? Data
-        newMatch.raceLocation = record.object(forKey: "raceLocation") as? String
-        newMatch.winner = record.object(forKey: "winner") as? String
-        newMatch.finishDate = record.object(forKey: "finishDate") as? String
-        
-        let started = record.object(forKey: "started") as? String
-        
-        if started! == "true" {
-            
-            newMatch.started = true
-            
-        } else {
-            
-            newMatch.started = false
-            
-        }
-        
-        let finished = record.object(forKey: "finished") as? String
-        
-        if finished! == "true" {
-            
-            newMatch.finished = true
-            
-        } else {
-            
-            newMatch.finished = false
-            
-        }
-        
-        if record.object(forKey: "myID") as! String == UserDefaults.standard.object(forKey: "myID") as! String && record.object(forKey: "oppID") != nil {
-            
-            let oppID = record.object(forKey: "oppID") as! String
-            
-            newMatch.oppID = oppID
-            newMatch.oppDistance = record.object(forKey: "d" + newMatch.oppID!) as! NSNumber?
-            
-        } else if record.object(forKey: "oppID") as? String == UserDefaults.standard.object(forKey: "myID") as? String {
-            
-            let oppID = record.object(forKey: "myID") as! String
-            
-            newMatch.oppID = oppID
-        }
-        
-        let friends = retrieveFBFriends()
-        
-        friends.getFriends() { (friendsList, error) in
-            
-            guard (error == nil) else {
-                print("There was an error with your request: \(error)")
-                return
-            }
-            
-            self.friendList = friendsList!
-            
-            for i in self.friendList {
-                
-                guard let user = i["user"] as? [String:AnyObject] else {
-                    print("could not get user")
-                    return
-                }
-                
-                guard let encodedID = user["encodedId"] as? String else {
-                    print("no encoded ID")
-                    return
-                }
-                
-                guard let name = user["displayName"] as? String else {
-                    print("could not get name")
-                    return
-                }
-                
-                if encodedID == newMatch.oppID {
-                
-                    guard let avatar = user["avatar"] as? String else {
-                        print("no opp avatar")
-                        return
-                    }
-                    
-                    let avatarURL = URL(string: avatar)
-                    
-                    let avatarImage = try? Data(contentsOf: (avatarURL)!)
-                    
-                    newMatch.oppAvatar = avatarImage
-                    newMatch.oppName = name
-                }
-            }
-            
-            self.delegate.stack?.context.perform{
-                self.delegate.stack?.save()
-                self.raceList.append(newMatch)
-            }
-            performUIUpdatesOnMain{
-                self.tableView.reloadData()
             }
         }
     }

@@ -52,12 +52,13 @@ class ChooseRouteViewController: ViewControllerMethods, UITableViewDataSource, U
                 newMatch.winner = nil
                 newMatch.rejected = "false"
                 newMatch.oppID = nil
+                newMatch.initializer = true
                 
                 let onlineRace = CKRecord(recordType: "match")
                 onlineRace["myID"] = myID as CKRecordValue?
                 onlineRace["oppID"] = "" as CKRecordValue?
-                onlineRace["d" + myID] = 0.0 as CKRecordValue?
-                onlineRace["d" + self.oppID] = nil as CKRecordValue?
+                onlineRace["racerDistance1"] = 0.0 as CKRecordValue?
+                onlineRace["racerUpdate1"] = nil as CKRecordValue?
                 onlineRace["started"] = "true" as CKRecordValue?
                 onlineRace["finished"] = "false" as CKRecordValue?
                 onlineRace["startDate"] = self.oneDayfromNow as CKRecordValue?
@@ -122,14 +123,16 @@ class ChooseRouteViewController: ViewControllerMethods, UITableViewDataSource, U
                 newMatch.myFinishDate = nil
                 newMatch.oppFinishDate = nil
                 newMatch.rejected = "false"
+                newMatch.initializer = true
+                
                 
                 let onlineRace = CKRecord(recordType: "match")
                 onlineRace["myID"] = myID as CKRecordValue?
                 onlineRace["oppID"] = self.oppID as CKRecordValue?
-                onlineRace["d" + myID] = 0.0 as CKRecordValue?
-                onlineRace["d" + self.oppID] = 0.0 as CKRecordValue?
-                onlineRace["u" + self.oppID] = self.oneDayfromNow as CKRecordValue?
-                onlineRace["u" + myID] = self.oneDayfromNow as CKRecordValue?
+                onlineRace["racerDistance1"] = 0.0 as CKRecordValue?
+                onlineRace["racerDistance2"] = 0.0 as CKRecordValue?
+                onlineRace["racerUpdate1"] = self.oneDayfromNow as CKRecordValue?
+                onlineRace["racerUpdate2"] = self.oneDayfromNow as CKRecordValue?
                 onlineRace["started"] = "false" as CKRecordValue?
                 onlineRace["finished"] = "false" as CKRecordValue?
                 onlineRace["startDate"] = self.oneDayfromNow as CKRecordValue?

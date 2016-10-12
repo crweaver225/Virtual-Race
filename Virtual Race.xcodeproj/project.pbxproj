@@ -676,7 +676,7 @@
 				2E7CD62F1D81C3AB00B9ACB5 /* Model 2.xcdatamodel */,
 				2E7CD6261D81AFF300B9ACB5 /* Model.xcdatamodel */,
 			);
-			currentVersion = 2E22A67B1D8DC9D6009E71B2 /* Model 5.xcdatamodel */;
+			currentVersion = 2EF1BFFD1D906313002F2115 /* Model 6.xcdatamodel */;
 			path = Model.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
