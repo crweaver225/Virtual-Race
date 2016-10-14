@@ -69,13 +69,19 @@ class StartMatchViewController: ViewControllerMethods, UITableViewDataSource, UI
             
             for friends in self.checkerList {
                 
+                performUIUpdatesOnMain {
+                    self.activityIndicator.startAnimating()
+                }
+                
                 guard let user = friends["user"] as? [String:AnyObject] else {
                     print("could not get user")
+                    self.activityIndicator.stopAnimating()
                     return
                 }
                 
                 guard let encodedID = user["encodedId"] as? String else {
                     print("no encoded ID")
+                    self.activityIndicator.stopAnimating()
                     return
                 }
                 
@@ -93,6 +99,7 @@ class StartMatchViewController: ViewControllerMethods, UITableViewDataSource, UI
                         (records, error) -> Void in
                         guard let records = records else {
                             print("Error querying records: ", error)
+                            self.activityIndicator.stopAnimating()
                             return
                         }
                         
@@ -113,6 +120,7 @@ class StartMatchViewController: ViewControllerMethods, UITableViewDataSource, UI
 
                             performUIUpdatesOnMain{
                                 self.TableView.reloadData()
+                                self.activityIndicator.stopAnimating()
                             }
                         }
                     }
@@ -130,7 +138,7 @@ class StartMatchViewController: ViewControllerMethods, UITableViewDataSource, UI
             }
             
             performUIUpdatesOnMain{
-                self.activityIndicator.stopAnimating()
+               // self.activityIndicator.stopAnimating()
                 self.TableView.reloadData()
             }
         }

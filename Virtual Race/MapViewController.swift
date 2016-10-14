@@ -270,7 +270,7 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
             
             if myFinishDate.compare(oppFinishDate) == ComparisonResult.orderedAscending {
                 
-                record.setObject(self.match.winner as CKRecordValue?, forKey: "winner")
+                record.setObject(self.match.myName as CKRecordValue?, forKey: "winner")
                 record.setObject(self.match.myFinishDate as CKRecordValue?, forKey: "finishDate")
                 
                 performUIUpdatesOnMain {
@@ -345,7 +345,6 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
                 self.oppDistanceNumber.text = String("\(Double(round((100 * (self.match.oppDistance as! Double / 1609.344))) / 100)) Miles")
                 print(self.oppDistanceNumber.text)
             } else {
-                
                 let components2 = (calendar as NSCalendar).components(.day, from: self.match.startDate! as Date, to: (dateConverter(self.match.oppFinishDate!)), options: [])
                 
                 let daysOfFinishedRace2 = components2.day! + 1
@@ -366,11 +365,11 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
         switch raceID {
             
         case "1":
-            let NewYorktoLA = RaceCourses(startingLat: 40.7589, startingLong: -73.9851, endingLat: 34.0522, endingLong: -118.243683, startingTitle: "New York", endingTitle: "Los Angeles", distance: 4478626.0)
+            let NewYorktoLA = RaceCourses(startingLat: 40.7589, startingLong: -73.9851, endingLat: 34.0522, endingLong: -118.243683, startingTitle: "New York", endingTitle: "Los Angeles", distance: 4476461.0)
             return NewYorktoLA
             
         case "2":
-            let CrossTownClassic = RaceCourses(startingLat: 41.8299, startingLong: -87.6338, endingLat: 41.9484, endingLong: -87.6553, startingTitle: "U.S. Cellular Field", endingTitle: "Wrigley Field", distance: 17970)
+            let CrossTownClassic = RaceCourses(startingLat: 41.8299, startingLong: -87.6338, endingLat: 41.9484, endingLong: -87.6553, startingTitle: "U.S. Cellular Field", endingTitle: "Wrigley Field", distance: 17970.0)
             return CrossTownClassic
             
         case "3":
@@ -514,11 +513,15 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
             var route = MKRoute()
             
             for i in response.routes {
+                
+                print(i.distance)
 
                 if i.distance == self.chooseRaceCourse(self.match.raceLocation!)?.distance {
                     route = i
+                    print("gggg")
                     break
                 } else {
+                    print("lll")
                      route = response.routes[0]
                 }
             }

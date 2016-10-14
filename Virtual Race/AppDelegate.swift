@@ -26,7 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UINavigationBar.appearance().isTranslucent = false
         UINavigationBar.appearance().clipsToBounds = false
         
-    //    UserDefaults.standard.removeObject(forKey: "Access Token")
+        UIApplication.shared.setMinimumBackgroundFetchInterval(UIApplicationBackgroundFetchIntervalMinimum)
         
         // Override point for customization after application launch.
         return true
@@ -87,6 +87,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             try fetchedResultsController.performFetch()
         } catch {
             print("could not perform fetch")
+            performFetchWithCompletionHandler(UIBackgroundFetchResult.noData)
         }
         
         for objects in fetchedResultsController.fetchedObjects! {
@@ -103,6 +104,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     newDistance.getDistance(formatDate(match.startDate!)){ (result, error) in
                         
                         guard (error == nil) else {
+                            performFetchWithCompletionHandler(UIBackgroundFetchResult.noData)
                             return
                         }
                         
@@ -129,6 +131,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                         publicDB.fetch(withRecordID: match.recordID!) { (record, error) -> Void in
                             guard let record = record else {
                                 print("Error fetching record: ", error)
+                                performFetchWithCompletionHandler(UIBackgroundFetchResult.noData)
                                 return
                             }
                             
@@ -144,15 +147,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                 
                                 publicDB.save(record, completionHandler: { (record, error) -> Void in
                                     guard let record = record else {
-                                        print("Error saving record: ", error)
+                                    print("Error saving record: ", error)
+                                    performFetchWithCompletionHandler(UIBackgroundFetchResult.noData)
                                         return
                                     }
                                     
+                                    print("iii")
                                     performFetchWithCompletionHandler(UIBackgroundFetchResult.newData)
                                 })
                                 
                             } else {
                                 print("no icloud account")
+                                performFetchWithCompletionHandler(UIBackgroundFetchResult.noData)
                             }
                         }
                     }
@@ -160,10 +166,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         
-        performFetchWithCompletionHandler(UIBackgroundFetchResult.noData)
-        
         return
+        } else {
+            performFetchWithCompletionHandler(UIBackgroundFetchResult.noData)
+        }
+        
     }
-    }
+    
 }
 

@@ -198,6 +198,7 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                                 print("Error saving record: ", error)
                                 return
                             }
+                            
                         })
                         
                     } else {
