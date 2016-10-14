@@ -9,7 +9,8 @@ Virtual Race is an IOS application designed to let Fitbit users race themselves 
 
 - New York City to Los Angeles
 - U.S. Cellular Field to Wrigley Field in Chicago, IL
-- Philadelphia, PA to Washington, D.C.
+- Baton Rouge, LA to New Orleans, LA
+- Boston, MA to Washington D.C.
 
 You have the option to race yourself to see how quickly you can finish the race, or you can challenge your Fitbit friends to races to see who can finish first. 
 
@@ -20,22 +21,21 @@ You have the option to race yourself to see how quickly you can finish the race,
 
 - User's must have an iCloud account set up with Apple. Your phone must be signed into iCloud and Virtual Race must be given permission to use iCloud information in the iCloud Drive settings. Without being signed into iCloud, users will not be able to create new races, check the progress of their opponents, or update their progress against opponents. But, users will be able to check their progress in any specific race, although they will not be able to see the progress of their opponents or update their progress in the race on the servers. 
 
-- Viewing races currently require an internet connection in order for the app to generate the route and place user avatars on the route. If no network connection exists, the app will let the user know. 
+- Viewing races currently requires an internet connection in order for the app to generate the route and place user avatars on the route. If no network connection exists, the app will let the user know. 
 
 
 ##Other Things to Know:
 
 
-- Virtual Race access a list of friends from a user's Fitbit account. If you wish to race someone who does not show up in the Virtual Race app, first go into your Fitbit accounts and add them as a friend there.
-
-- Virtual Race will detect races started by the user on any device and automatically update the device they are currently logged into with all those races. 
+- Virtual Race accesses a list of friends from a user's Fitbit account. If you wish to race someone who does not show up in the Virtual Race app, first go into your Fitbit accounts and add them as a friend there. Virutal Race will access a user's list of fitbit friends and cross-reference this to all Virutal Race users. If a fitbit friend has downloaded the Virtual Race app, they will be an available option to request a race with. 
 
 - Virtual Race will attempt to update all multiplayer races with the users progress in the background on occasion when the user is on the View Current Races screen. 
 
-- Virtual Race requires a network connection to view races. 
+- Virtal Race can now update current two player races in the background. 
 
-- As of now, Virtual Race can only determine the day in which a user finishes the race and can not localize the time any further than that. If two racers finish on the same day but at different times, Virtual Race will declare the race a tie. This is due to the nature of the Fitbit API which only allows access to a users distance in daily increments. Fitbit does make special exceptions to this rule sometimes though, and hopefully in the future Virtual Race will be able to narrow down the finish time to a more specific increment of time. 
+- As of now, Virtual Race can only determine the day in which a user finishes the race and can not localize the time any further than that. If two racers finish on the same day but neither updates their race on that day, Virtual Race will declare the race a tie. This is due to the nature of the Fitbit API which only allows access to a users distance in daily increments. Fitbit does make special exceptions to this rule sometimes though, and hopefully in the future Virtual Race will be able to narrow down the finish time to a more specific increment of time. 
 
+- I am looking to impliment a feature where Virtual Race will search the iCloud server to see if any races exists which are not currently persisted in the user's phone and then add them to the phone. This would allow user's to continue races and monitor races from multiple devices. I am having issues getting this feature to work consistently at the moment, but hope to have it implimented soon.  
 
 MIT License
 
