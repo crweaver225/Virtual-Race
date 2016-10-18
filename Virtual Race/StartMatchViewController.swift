@@ -33,6 +33,8 @@ class StartMatchViewController: ViewControllerMethods, UITableViewDataSource, UI
         
         super.viewWillAppear(animated)
         
+        var friendCounter = 0
+        
         self.activityIndicator.startAnimating()
         
         let friends = retrieveFBFriends()
@@ -62,7 +64,7 @@ class StartMatchViewController: ViewControllerMethods, UITableViewDataSource, UI
                 
                 return
             }
-
+            
             self.checkerList = friendsList!
             
             for friends in self.checkerList {
@@ -101,6 +103,8 @@ class StartMatchViewController: ViewControllerMethods, UITableViewDataSource, UI
                             return
                         }
                         
+                        friendCounter += 1
+                        
                         if records.count != 0 {
                             
                             guard let avatar = user["avatar"] as? String else {
@@ -117,8 +121,10 @@ class StartMatchViewController: ViewControllerMethods, UITableViewDataSource, UI
                             self.friendList.append(friends)
 
                             performUIUpdatesOnMain{
-                                self.TableView.reloadData()
-                                self.activityIndicator.stopAnimating()
+                                if friendCounter == self.checkerList.count {
+                                    self.TableView.reloadData()
+                                    self.activityIndicator.stopAnimating()
+                                }
                             }
                         }
                     }

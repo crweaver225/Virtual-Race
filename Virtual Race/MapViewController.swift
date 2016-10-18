@@ -492,60 +492,24 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
         
         self.mapView.showAnnotations([sourceAnnotation,destinationAnnotation], animated: true )
         
-        let directionRequest = MKDirectionsRequest()
-        directionRequest.source = sourceMapItem
-        directionRequest.destination = destinationMapItem
-        directionRequest.transportType = .automobile
-        directionRequest.requestsAlternateRoutes = true
+        self.coords = crossTownClassic
         
-        let directions = MKDirections(request: directionRequest)
+        let polyline = MKPolyline(coordinates: self.coords, count: self.coords.count)
         
-        directions.calculate {
-            (response, error) -> Void in
-            
-            guard let response = response else {
-                if let error = error {
-                    self.displayAlert(error.localizedDescription)
-                }
-                return
-            }
-            
-            var route = MKRoute()
-            
-            for i in response.routes {
-                
-                print(i.distance)
-
-                if i.distance == self.chooseRaceCourse(self.match.raceLocation!)?.distance {
-                    route = i
-                    print("gggg")
-                    break
-                } else {
-                    print("lll")
-                     route = response.routes[0]
-                }
-            }
-            
-            self.mapView.add((route.polyline), level: MKOverlayLevel.aboveRoads)
-            
-            self.distance = route.distance
-            
-            var rect = route.polyline.boundingMapRect
-           
-            rect.size.width += 10000
-            rect.origin.x += -5000
-           
-            self.mapView.setRegion(MKCoordinateRegionForMapRect(rect), animated: true)
-            
-            var coordsPointer = UnsafeMutablePointer<CLLocationCoordinate2D>.allocate(capacity: route.polyline.pointCount)
-            route.polyline.getCoordinates(coordsPointer, range: NSMakeRange(0, route.polyline.pointCount))
-            
-            for i in 0..<route.polyline.pointCount {
-                self.coords.append(coordsPointer[i])
-            }
-            completionHandler(true)
-        }
+        self.mapView.add((polyline), level: MKOverlayLevel.aboveRoads)
+        
+        self.distance = raceCourse.distance
+        
+        var rect = polyline.boundingMapRect
+        
+    //    self.mapView.setRegion(MKCoordinateRegionForMapRect(rect), animated: true)
+        
+        self.mapView.setVisibleMapRect(rect, animated: true)
+        
+        completionHandler(true)
+        
     }
+
 
     func addPlayerToMap(_ userID: String, userDistance: Double, raceLocation: RaceCourses) {
         
