@@ -126,6 +126,9 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                 raceList.append(match)
             }
         }
+        
+        raceList.sort {$0.startDate! < $1.startDate!}
+            
         self.tableView.reloadData()
     }
     

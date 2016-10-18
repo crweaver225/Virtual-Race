@@ -69,8 +69,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, performFetchWithCompletionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         
-        print("eeee")
-        
         if Reachability.isConnectedToNetwork() {
         
         let fr = NSFetchRequest<Match>(entityName: "Match")
@@ -152,7 +150,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                         return
                                     }
                                     
-                                    print("iii")
                                     performFetchWithCompletionHandler(UIBackgroundFetchResult.newData)
                                 })
                                 

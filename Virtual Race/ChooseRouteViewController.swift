@@ -103,7 +103,7 @@ class ChooseRouteViewController: ViewControllerMethods, UITableViewDataSource, U
             
             let myID = UserDefaults.standard.object(forKey: "myID") as! String
             
-            let startMatchAlert = UIAlertController(title: "Confirm the Start of a New Match", message: "Your new match against \(self.oppName) will start the day following being accepted at midnight", preferredStyle: UIAlertControllerStyle.alert)
+            let startMatchAlert = UIAlertController(title: "Confirm the Start of a New Match", message: "Your new match against \(self.oppName) will start at midnight following being accepted", preferredStyle: UIAlertControllerStyle.alert)
             startMatchAlert.addAction(UIAlertAction(title: "Send Race Request!", style: .default, handler: { (action: UIAlertAction!) in
                 
                 performUIUpdatesOnMain{

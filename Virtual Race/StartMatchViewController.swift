@@ -65,8 +65,6 @@ class StartMatchViewController: ViewControllerMethods, UITableViewDataSource, UI
 
             self.checkerList = friendsList!
             
-            var numm = 0
-            
             for friends in self.checkerList {
                 
                 performUIUpdatesOnMain {
