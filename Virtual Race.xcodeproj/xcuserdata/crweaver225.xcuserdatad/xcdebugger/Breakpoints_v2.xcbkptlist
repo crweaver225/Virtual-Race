@@ -106,11 +106,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Virtual Race/MapViewController.swift"
-            timestampString = "498500704.933052"
+            timestampString = "498673439.718927"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "508"
-            endingLineNumber = "508"
+            startingLineNumber = "507"
+            endingLineNumber = "507"
             landmarkName = "drawMap(_:completionHandler:)"
             landmarkType = "7">
          </BreakpointContent>

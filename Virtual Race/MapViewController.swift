@@ -492,7 +492,7 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
         
         self.mapView.showAnnotations([sourceAnnotation,destinationAnnotation], animated: true )
         
-        self.coords = crossTownClassic
+        self.coords = mardiGrasShuffleDetail
         
         let polyline = MKPolyline(coordinates: self.coords, count: self.coords.count)
         
@@ -502,7 +502,8 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
         
         var rect = polyline.boundingMapRect
         
-    //    self.mapView.setRegion(MKCoordinateRegionForMapRect(rect), animated: true)
+        
+   //   self.mapView.setRegion(MKCoordinateRegionForMapRect(rect), animated: true)
         
         self.mapView.setVisibleMapRect(rect, animated: true)
         
