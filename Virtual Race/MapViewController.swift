@@ -492,20 +492,26 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
         
         self.mapView.showAnnotations([sourceAnnotation,destinationAnnotation], animated: true )
         
-        self.coords = mardiGrasShuffleDetail
+        self.coords = crossTownClassic
         
         let polyline = MKPolyline(coordinates: self.coords, count: self.coords.count)
         
         self.mapView.add((polyline), level: MKOverlayLevel.aboveRoads)
         
         self.distance = raceCourse.distance
+    
+        var regionRect = polyline.boundingMapRect
         
-        var rect = polyline.boundingMapRect
+        var wPadding = regionRect.size.width * 1.75
+        var hPadding = regionRect.size.height * 1.75
         
+        regionRect.size.width += wPadding
+        regionRect.size.height += hPadding
         
-   //   self.mapView.setRegion(MKCoordinateRegionForMapRect(rect), animated: true)
+        regionRect.origin.x -= wPadding / 2
+        regionRect.origin.y -= hPadding / 2
         
-        self.mapView.setVisibleMapRect(rect, animated: true)
+        mapView.setRegion(MKCoordinateRegionForMapRect(regionRect), animated: true)
         
         completionHandler(true)
         
