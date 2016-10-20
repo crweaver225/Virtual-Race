@@ -7,7 +7,7 @@
 //
 
 import Foundation
-
+import MapKit
 
 
 struct RaceCourses {
@@ -19,4 +19,6 @@ struct RaceCourses {
     let startingTitle: String
     let endingTitle: String
     let distance: Double
+    let coordinates: [CLLocationCoordinate2D]
+    
 }

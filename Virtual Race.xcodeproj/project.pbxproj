@@ -19,6 +19,8 @@
 		2E1F7B161D80AB7F003BC6FB /* ChooseRouteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E1F7B151D80AB7F003BC6FB /* ChooseRouteViewController.swift */; };
 		2E21A1381D8328EF00551193 /* RaceRequestsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E21A1371D8328EF00551193 /* RaceRequestsViewController.swift */; };
 		2E262C3D1D899625001DA4EC /* CheckiCloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E262C3C1D899625001DA4EC /* CheckiCloud.swift */; };
+		2E4345C91DB93C1500D47709 /* MardiGrasShuffle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4345C81DB93C1500D47709 /* MardiGrasShuffle.swift */; };
+		2E4345CB1DB93CE500D47709 /* LibertyRun.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4345CA1DB93CE500D47709 /* LibertyRun.swift */; };
 		2E4C37E31DA7546D005510C9 /* PendingRacesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4C37E21DA7546D005510C9 /* PendingRacesViewController.swift */; };
 		2E5DB2DB1D99AEFB0028350B /* ViewControllerMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E5DB2DA1D99AEFB0028350B /* ViewControllerMethods.swift */; };
 		2E5DB2DD1D99B5F20028350B /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E5DB2DC1D99B5F20028350B /* LoginViewController.swift */; };
@@ -36,7 +38,7 @@
 		2E80436B1D94152800DFBB4B /* RetrieveAccessToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E80436A1D94152800DFBB4B /* RetrieveAccessToken.swift */; };
 		2E80436E1D9415F200DFBB4B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2E80436C1D9415F200DFBB4B /* Main.storyboard */; };
 		2EB066241D908442004B6921 /* MainPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB066231D908442004B6921 /* MainPageViewController.swift */; };
-		2EC3C6571DB6751C00BD052F /* CourseDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EC3C6561DB6751C00BD052F /* CourseDetails.swift */; };
+		2EC3C6571DB6751C00BD052F /* CrossTownClassic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EC3C6561DB6751C00BD052F /* CrossTownClassic.swift */; };
 		2EF1BFFC1D904543002F2115 /* InternetReachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EF1BFFB1D904543002F2115 /* InternetReachability.swift */; };
 /* End PBXBuildFile section */
 
@@ -79,6 +81,8 @@
 		2E21A1371D8328EF00551193 /* RaceRequestsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RaceRequestsViewController.swift; sourceTree = "<group>"; };
 		2E22A67B1D8DC9D6009E71B2 /* Model 5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Model 5.xcdatamodel"; sourceTree = "<group>"; };
 		2E262C3C1D899625001DA4EC /* CheckiCloud.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CheckiCloud.swift; sourceTree = "<group>"; };
+		2E4345C81DB93C1500D47709 /* MardiGrasShuffle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MardiGrasShuffle.swift; sourceTree = "<group>"; };
+		2E4345CA1DB93CE500D47709 /* LibertyRun.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LibertyRun.swift; sourceTree = "<group>"; };
 		2E4C37E21DA7546D005510C9 /* PendingRacesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PendingRacesViewController.swift; sourceTree = "<group>"; };
 		2E5DB2DA1D99AEFB0028350B /* ViewControllerMethods.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewControllerMethods.swift; sourceTree = "<group>"; };
 		2E5DB2DC1D99B5F20028350B /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
@@ -98,7 +102,7 @@
 		2E80436D1D9415F200DFBB4B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		2E91BFDD1D883BFD00C25F33 /* Model 4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Model 4.xcdatamodel"; sourceTree = "<group>"; };
 		2EB066231D908442004B6921 /* MainPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainPageViewController.swift; sourceTree = "<group>"; };
-		2EC3C6561DB6751C00BD052F /* CourseDetails.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CourseDetails.swift; sourceTree = "<group>"; };
+		2EC3C6561DB6751C00BD052F /* CrossTownClassic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CrossTownClassic.swift; sourceTree = "<group>"; };
 		2EF1BFFB1D904543002F2115 /* InternetReachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InternetReachability.swift; sourceTree = "<group>"; };
 		2EF1BFFD1D906313002F2115 /* Model 6.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Model 6.xcdatamodel"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -194,7 +198,7 @@
 				2E80436A1D94152800DFBB4B /* RetrieveAccessToken.swift */,
 				2E8043601D940EE000DFBB4B /* RetrieveFBDistance.swift */,
 				2E1F7B0D1D8065AD003BC6FB /* RetrieveFBFriends.swift */,
-				2EC3C6561DB6751C00BD052F /* CourseDetails.swift */,
+				2E4345C71DB93BD700D47709 /* Course Coordinates */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -223,6 +227,16 @@
 				2E5DB2DA1D99AEFB0028350B /* ViewControllerMethods.swift */,
 			);
 			name = Controller;
+			sourceTree = "<group>";
+		};
+		2E4345C71DB93BD700D47709 /* Course Coordinates */ = {
+			isa = PBXGroup;
+			children = (
+				2EC3C6561DB6751C00BD052F /* CrossTownClassic.swift */,
+				2E4345C81DB93C1500D47709 /* MardiGrasShuffle.swift */,
+				2E4345CA1DB93CE500D47709 /* LibertyRun.swift */,
+			);
+			name = "Course Coordinates";
 			sourceTree = "<group>";
 		};
 		2E80435F1D931C3B00DFBB4B /* ConvenienceFunctions */ = {
@@ -377,6 +391,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2E4345C91DB93C1500D47709 /* MardiGrasShuffle.swift in Sources */,
 				2E7C619C1DAD7BA00067A0E9 /* RaceTableViewCell.swift in Sources */,
 				2E8043631D9414A700DFBB4B /* CoreDataStack.swift in Sources */,
 				2E4C37E31DA7546D005510C9 /* PendingRacesViewController.swift in Sources */,
@@ -390,7 +405,7 @@
 				2E7CD6271D81AFF300B9ACB5 /* Model.xcdatamodeld in Sources */,
 				2EF1BFFC1D904543002F2115 /* InternetReachability.swift in Sources */,
 				2E5DB2DD1D99B5F20028350B /* LoginViewController.swift in Sources */,
-				2EC3C6571DB6751C00BD052F /* CourseDetails.swift in Sources */,
+				2EC3C6571DB6751C00BD052F /* CrossTownClassic.swift in Sources */,
 				2E1F7AC91D806075003BC6FB /* AppDelegate.swift in Sources */,
 				2E8043671D9414E000DFBB4B /* GCDBlackbox.swift in Sources */,
 				2E8043691D9414F700DFBB4B /* MapViewController.swift in Sources */,
@@ -400,6 +415,7 @@
 				2E80436B1D94152800DFBB4B /* RetrieveAccessToken.swift in Sources */,
 				2E8043611D940EE000DFBB4B /* RetrieveFBDistance.swift in Sources */,
 				2E5DB2DB1D99AEFB0028350B /* ViewControllerMethods.swift in Sources */,
+				2E4345CB1DB93CE500D47709 /* LibertyRun.swift in Sources */,
 				2E262C3D1D899625001DA4EC /* CheckiCloud.swift in Sources */,
 				2E1F7B0E1D8065AD003BC6FB /* RetrieveFBFriends.swift in Sources */,
 			);

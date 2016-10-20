@@ -365,18 +365,18 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
         switch raceID {
             
         case "1":
-            let NewYorktoLA = RaceCourses(startingLat: 40.7589, startingLong: -73.9851, endingLat: 34.0522, endingLong: -118.243683, startingTitle: "New York", endingTitle: "Los Angeles", distance: 4476461.0)
+            let NewYorktoLA = RaceCourses(startingLat: 40.7589, startingLong: -73.9851, endingLat: 34.0522, endingLong: -118.243683, startingTitle: "New York", endingTitle: "Los Angeles", distance: 4476461.0, coordinates: crossTownClassicCoordinates)
             return NewYorktoLA
             
         case "2":
-            let CrossTownClassic = RaceCourses(startingLat: 41.8299, startingLong: -87.6338, endingLat: 41.9484, endingLong: -87.6553, startingTitle: "U.S. Cellular Field", endingTitle: "Wrigley Field", distance: 17970.0)
+            let CrossTownClassic = RaceCourses(startingLat: 41.8299, startingLong: -87.6338, endingLat: 41.9484, endingLong: -87.6553, startingTitle: "U.S. Cellular Field", endingTitle: "Wrigley Field", distance: 17970.0, coordinates: crossTownClassicCoordinates)
             return CrossTownClassic
             
         case "3":
-            let LibertyTrail = RaceCourses(startingLat: 39.9526, startingLong: -75.1652, endingLat: 38.9072, endingLong: -77.0369, startingTitle: "Philadelphia", endingTitle: "Washington D.C.", distance: 224855.0)
+            let LibertyTrail = RaceCourses(startingLat: 39.9526, startingLong: -75.1652, endingLat: 38.9072, endingLong: -77.0369, startingTitle: "Philadelphia", endingTitle: "Washington D.C.", distance: 224855.0, coordinates:libertyRunCoordinates)
             return LibertyTrail
         case "4":
-            let mardiShuffle = RaceCourses(startingLat: 30.4583, startingLong: -91.1403, endingLat: 29.9511, endingLong: -90.0715, startingTitle: "Baton Rouge", endingTitle: "New Orleans", distance: 129181.0)
+            let mardiShuffle = RaceCourses(startingLat: 30.4583, startingLong: -91.1403, endingLat: 29.9511, endingLong: -90.0715, startingTitle: "Baton Rouge", endingTitle: "New Orleans", distance: 129181.0, coordinates: mardiGrasShuffleCoordinates)
             return mardiShuffle
   
         default:
@@ -492,7 +492,7 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
         
         self.mapView.showAnnotations([sourceAnnotation,destinationAnnotation], animated: true )
         
-        self.coords = crossTownClassic
+        self.coords = raceCourse.coordinates
         
         let polyline = MKPolyline(coordinates: self.coords, count: self.coords.count)
         
