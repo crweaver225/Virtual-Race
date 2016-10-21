@@ -56,7 +56,7 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
             
             let match = objects
             
-            if match.oppID != nil && match.started == true && UserDefaults.standard.bool(forKey: "refresh") == true && match.myFinishDate == nil {
+            if match.oppID != nil && match.started == true && UserDefaults.standard.bool(forKey: "refresh") == true && match.myFinishDate != nil {
                 
                 DispatchQueue.global(qos: DispatchQoS.QoSClass.background).async {
                     self.updateRaces(match)
@@ -110,6 +110,10 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                     if record!.object(forKey: "winner") as? String != "" && match.winner == nil {
                         match.finished = true
                         match.winner = "Your opponent has finished the race"
+                        
+                        performUIUpdatesOnMain{
+                            self.tableView.reloadData()
+                        }
                     }
                     
                     if record!.object(forKey: "rejected") as! String == "true" {
@@ -167,48 +171,69 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                 let raceLocation = extraInfo.chooseRaceCourse(match.raceLocation!)!
                 
                 if myDistance >= raceLocation.distance {
+                    
                     if match.finished == false {
                         match.finished = true
                         match.winner = "You have finished the race"
+                        
+                        performUIUpdatesOnMain{
+                            self.tableView.reloadData()
+                        }
                     }
                     match.myDistance = raceLocation.distance as NSNumber?
-                }
-                
-                let defaultContainer = CKContainer.default()
-                
-                let publicDB = defaultContainer.publicCloudDatabase
-                
-                publicDB.fetch(withRecordID: match.recordID!) { (record, error) -> Void in
-                    guard let record = record else {
-                        print("Error fetching record: ", error)
-                        return
-                    }
-                
-                record.setObject(date as CKRecordValue?, forKey: "u" + match.myID!)
                     
-                    if isICloudContainerAvailable() {
+                    let finishDate = RetrieveDistance()
+                    finishDate.getFinishDate(raceLocation.distance, date: formatDate(match.startDate!)) { (result, error) in
                         
-                        if match.initializer == true {
-                            record.setObject(match.myDistance, forKey: "racerDistance1")
-                            record.setObject(date as CKRecordValue?, forKey: "racerUpdate1")
-                        } else {
-                            record.setObject(match.myDistance, forKey: "racerDistance2")
-                            record.setObject(date as CKRecordValue?, forKey: "racerUpdate2")
+                        if let result = result {
+                            match.myFinishDate = result
                         }
                         
-                        publicDB.save(record, completionHandler: { (record, error) -> Void in
-                            guard let record = record else {
-                                print("Error saving record: ", error)
-                                return
-                            }
-                            
-                        })
-                        
-                    } else {
-                        print("no icloud account")
+                        self.postUpdates(match, date: date)
                     }
+                } else {
+                    self.postUpdates(match, date: date)
                 }
             }
+        }
+    }
+    
+    func postUpdates(_ match: Match, date: Date) {
+        if isICloudContainerAvailable() {
+            
+            let defaultContainer = CKContainer.default()
+            
+            let publicDB = defaultContainer.publicCloudDatabase
+            
+            publicDB.fetch(withRecordID: match.recordID!) { (record, error) -> Void in
+                guard let record = record else {
+                    print("Error fetching record: ", error)
+                    return
+                }
+                
+                record.setObject(date as CKRecordValue?, forKey: "u" + match.myID!)
+                
+                if match.finishDate != nil {
+                    record.setObject(match.finishDate as CKRecordValue?, forKey: "finishDate")
+                }
+                
+                if match.initializer == true {
+                    record.setObject(match.myDistance, forKey: "racerDistance1")
+                    record.setObject(date as CKRecordValue?, forKey: "racerUpdate1")
+                } else {
+                    record.setObject(match.myDistance, forKey: "racerDistance2")
+                    record.setObject(date as CKRecordValue?, forKey: "racerUpdate2")
+                }
+                
+                publicDB.save(record, completionHandler: { (record, error) -> Void in
+                    guard let record = record else {
+                        print("Error saving record: ", error)
+                        return
+                    }
+                })
+            }
+        } else {
+            print("no icloud account")
         }
     }
     

@@ -252,9 +252,13 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
         
         if self.match.oppDistance as? Double >= self.distance && self.match.myDistance as? Double >= self.distance {
             
+            if self.match.oppFinishDate == nil {
+                self.match.oppFinishDate = record.object(forKey: "finishDate") as? String
+            }
+
             let components1 = (calendar as NSCalendar).components(.day, from: self.match.startDate! as Date, to: (dateConverter(self.match.myFinishDate!)), options: [])
             
-            let components2 = (calendar as NSCalendar).components(.day, from: self.match.startDate! as Date, to: (dateConverter(self.match.oppFinishDate!)), options: [])
+            let components2 = (calendar as NSCalendar).components(.day, from: self.match.startDate! as Date, to: dateConverter(self.match.oppFinishDate!), options: [])
             
             let daysOfFinishedRace1 = components1.day! + 1
             
@@ -264,11 +268,7 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
             
             let myFinishDate = dateConverter(self.match.myFinishDate!)
             
-            let oppFinishDate = dateConverter((record.object(forKey: "finishDate") as! String))
-            
-            self.match.oppFinishDate = record.object(forKey: "finishDate") as? String
-            
-            if myFinishDate.compare(oppFinishDate) == ComparisonResult.orderedAscending {
+            if myFinishDate.compare(dateConverter(self.match.oppFinishDate!)) == ComparisonResult.orderedAscending {
                 
                 record.setObject(self.match.myName as CKRecordValue?, forKey: "winner")
                 record.setObject(self.match.myFinishDate as CKRecordValue?, forKey: "finishDate")
@@ -277,7 +277,9 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
                     self.raceLengthLabel.text = "The Race Lasted \(daysOfFinishedRace2) Days"
                 }
                 
-            } else if myFinishDate.compare(oppFinishDate) == ComparisonResult.orderedDescending {
+                self.match.winner = self.match.myName
+                
+            } else if myFinishDate.compare(dateConverter(self.match.oppFinishDate!)) == ComparisonResult.orderedDescending {
                 
                 self.match.winner = self.match.oppName
                 
@@ -349,9 +351,9 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
                 
                 let daysOfFinishedRace2 = components2.day! + 1
                 
-                self.oppDistanceNumber.text = "Finished in \(daysOfFinishedRace2)"
+                self.oppDistanceNumber.text = "Finished in \(daysOfFinishedRace2) days"
+                
             }
-            
             self.oppDistanceNumber.isHidden = false
             self.oppNameTextView.isHidden = false
             self.oppProgressGraph.isHidden = false
@@ -513,15 +515,10 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
             var route = MKRoute()
             
             for i in response.routes {
-                
-                print(i.distance)
-
                 if i.distance == self.chooseRaceCourse(self.match.raceLocation!)?.distance {
                     route = i
-                    print("gggg")
                     break
                 } else {
-                    print("lll")
                      route = response.routes[0]
                 }
             }
