@@ -17,11 +17,11 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
     
     @IBOutlet weak var noMathesLabel: UILabel!
     
+    let delegate = UIApplication.shared.delegate as! AppDelegate
+    
     var friendList = [[String:AnyObject]]()
     
     var deleteMatchIndexPath: IndexPath? = nil
-    
-    let delegate = UIApplication.shared.delegate as! AppDelegate
     
     var raceList = [Match]()
     
@@ -56,11 +56,12 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
             
             let match = objects
             
+            print(UserDefaults.standard.bool(forKey: "refresh"))
+            
             if match.oppID != nil && match.started == true && UserDefaults.standard.bool(forKey: "refresh") == true && match.myFinishDate != nil {
                 
                 DispatchQueue.global(qos: DispatchQoS.QoSClass.background).async {
                     self.updateRaces(match)
-                    UserDefaults.standard.set(false, forKey: "refresh")
                 }
             }
             
@@ -132,6 +133,8 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
         }
         
         raceList.sort {$0.startDate! < $1.startDate!}
+        
+        UserDefaults.standard.set(false, forKey: "refresh")
             
         self.tableView.reloadData()
     }
@@ -144,6 +147,8 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
             
             let newDistance = RetrieveDistance()
             newDistance.getDistance(formatDate(match.startDate!)){ (result, error) in
+                
+                print("sss \(result)")
                 
                 guard (error == nil) else {
                     
@@ -211,10 +216,8 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                     return
                 }
                 
-                record.setObject(date as CKRecordValue?, forKey: "u" + match.myID!)
-                
-                if match.finishDate != nil {
-                    record.setObject(match.finishDate as CKRecordValue?, forKey: "finishDate")
+                if match.finished == true {
+                    record.setObject(match.myFinishDate as CKRecordValue?, forKey: "finishDate")
                 }
                 
                 if match.initializer == true {

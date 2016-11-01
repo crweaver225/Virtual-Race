@@ -53,6 +53,8 @@ class MainPageViewController: ViewControllerMethods {
         
         //temporary function for those who have already downloaded the app
         
+        UserDefaults.standard.set(true, forKey: "refresh")
+        
         if UserDefaults.standard.object(forKey: "appUser") as? Bool != true {
             
             if let userID = UserDefaults.standard.object(forKey: "myID") as? String {
