@@ -253,7 +253,11 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
         if self.match.oppDistance as? Double >= self.distance && self.match.myDistance as? Double >= self.distance {
             
             if self.match.oppFinishDate == nil {
-                self.match.oppFinishDate = record.object(forKey: "finishDate") as? String
+                if match.initializer == true {
+                    self.match.oppFinishDate = record.object(forKey: "racerUpdate2") as? String
+                } else {
+                    self.match.oppFinishDate = record.object(forKey: "racerUpdate1") as? String
+                }
             }
 
             let components1 = (calendar as NSCalendar).components(.day, from: self.match.startDate! as Date, to: (dateConverter(self.match.myFinishDate!)), options: [])
@@ -317,7 +321,7 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
             if dateConverter(self.match.myFinishDate!).compare(lastOppUpdate) == ComparisonResult.orderedAscending {
                 
                 record.setObject("true" as CKRecordValue?, forKey: "finished")
-                record.setObject(self.match.winner as CKRecordValue?, forKey: "winner")
+                record.setObject(self.match.myName as CKRecordValue?, forKey: "winner")
                 record.setObject(self.match.myFinishDate as CKRecordValue?, forKey: "finishDate")
 
             } else {

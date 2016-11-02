@@ -56,9 +56,7 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
             
             let match = objects
             
-            print(UserDefaults.standard.bool(forKey: "refresh"))
-            
-            if match.oppID != nil && match.started == true && UserDefaults.standard.bool(forKey: "refresh") == true && match.myFinishDate != nil {
+            if match.oppID != nil && match.started == true && UserDefaults.standard.bool(forKey: "refresh") == true && match.myFinishDate == nil {
                 
                 DispatchQueue.global(qos: DispatchQoS.QoSClass.background).async {
                     self.updateRaces(match)
@@ -148,8 +146,6 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
             let newDistance = RetrieveDistance()
             newDistance.getDistance(formatDate(match.startDate!)){ (result, error) in
                 
-                print("sss \(result)")
-                
                 guard (error == nil) else {
                     
                     if error as? Int == 401 {
@@ -204,6 +200,7 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
     }
     
     func postUpdates(_ match: Match, date: Date) {
+        
         if isICloudContainerAvailable() {
             
             let defaultContainer = CKContainer.default()
@@ -216,7 +213,7 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                     return
                 }
                 
-                if match.finished == true {
+                if match.myFinishDate != nil {
                     record.setObject(match.myFinishDate as CKRecordValue?, forKey: "finishDate")
                 }
                 
