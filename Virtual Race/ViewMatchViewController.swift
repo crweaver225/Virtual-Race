@@ -215,6 +215,11 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                 
                 if match.myFinishDate != nil {
                     record.setObject(match.myFinishDate as CKRecordValue?, forKey: "finishDate")
+                    if match.initializer == true {
+                        record.setObject(match.myFinishDate as CKRecordValue?, forKey: "myFinishDate")
+                    } else {
+                        record.setObject(match.myFinishDate as CKRecordValue?, forKey: "oppFinishDate")
+                    }
                 }
                 
                 if match.initializer == true {

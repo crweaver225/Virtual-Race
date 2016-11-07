@@ -21,4 +21,5 @@ class ViewControllerMethods: UIViewController {
         
         self.present(networkAlert, animated: true, completion: nil)
     }
+    
 }

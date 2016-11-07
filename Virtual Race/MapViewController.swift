@@ -119,13 +119,12 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
                             if self.match.startDate!.compare(date) == ComparisonResult.orderedDescending {
                                 self.match.oppDistance = 0.0
                             } else {
-                                if let result = result {
-                                    if self.match.initializer == true {
-                                        self.match.oppDistance = record.object(forKey: "racerDistance2") as! NSNumber?
-                                    } else {
-                                        self.match.oppDistance = record.object(forKey: "racerDistance1") as! NSNumber?
-                                    }
+                                if self.match.initializer == true {
+                                    self.match.oppDistance = record.object(forKey: "racerDistance2") as!NSNumber?
+                                } else {
+                                    self.match.oppDistance = record.object(forKey: "racerDistance1") as! NSNumber?
                                 }
+                                
                             }
 
                             self.processMultiplayerDistance(record, date: date){ (success) in
@@ -252,11 +251,15 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
         
         if self.match.oppDistance as? Double >= self.distance && self.match.myDistance as? Double >= self.distance {
             
+            record.setObject("true" as CKRecordValue?, forKey: "finished")
+            
             if self.match.oppFinishDate == nil {
                 if match.initializer == true {
-                    self.match.oppFinishDate = record.object(forKey: "racerUpdate2") as? String
+                    record.setObject(match.myFinishDate as CKRecordValue?, forKey: "myFinishDate")
+                    self.match.oppFinishDate = formatDate(record.object(forKey: "oppFinishDate") as! Date)
                 } else {
-                    self.match.oppFinishDate = record.object(forKey: "racerUpdate1") as? String
+                    record.setObject(match.myFinishDate as CKRecordValue?, forKey: "oppFinishDate")
+                    self.match.oppFinishDate = formatDate(record.object(forKey: "myFinishDate") as! Date)
                 }
             }
 
@@ -313,8 +316,10 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
             var lastOppUpdate = Date()
             
             if self.match.initializer == true {
+                record.setObject(match.myFinishDate as CKRecordValue?, forKey: "myFinishDate")
                 lastOppUpdate = record.object(forKey: "racerUpdate2") as! Date
             } else {
+                record.setObject(match.myFinishDate as CKRecordValue?, forKey: "oppFinishDate")
                 lastOppUpdate = record.object(forKey: "racerUpdate1") as! Date
             }
             

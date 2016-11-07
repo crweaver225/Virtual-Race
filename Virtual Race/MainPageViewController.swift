@@ -49,9 +49,10 @@ class MainPageViewController: ViewControllerMethods {
         
     }
     
+
     override func viewDidAppear(_ animated: Bool) {
         
-        //temporary function for those who have already downloaded the app
+        //temporary method for those who have already downloaded the app
         
         UserDefaults.standard.set(true, forKey: "refresh")
         
@@ -94,6 +95,9 @@ class MainPageViewController: ViewControllerMethods {
                 checkRaceRequests()
             }
     }
+    
+
+
     
     func checkRaceRequests() {
         
