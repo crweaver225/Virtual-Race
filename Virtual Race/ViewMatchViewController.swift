@@ -214,7 +214,7 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                 }
                 
                 if match.myFinishDate != nil {
-                    record.setObject(match.myFinishDate as CKRecordValue?, forKey: "finishDate")
+                    record.setObject("\(match.myName) has finished the race" as CKRecordValue?, forKey: "winner")
                     if match.initializer == true {
                         record.setObject(match.myFinishDate as CKRecordValue?, forKey: "myFinishDate")
                     } else {
