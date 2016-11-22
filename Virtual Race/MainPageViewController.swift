@@ -69,7 +69,7 @@ class MainPageViewController: ViewControllerMethods {
                 
                 publicDB.save(newUser, completionHandler: { (record, error) -> Void in
                     guard let record = record else {
-                        self.displayAlert("Error saving record:  \(error)")
+                        self.displayAlert("Warning, Your IOS device must be signed into an iCloud account to participate in multiplayer races. Exit the Virtual Race app > go to settings > sign into your iCloud > make sure Virtual Race has permission to use your iCloud account in the iCloud Drive settings. Virtual Race will not store any data on a user's personal iCloud accounts.")
                         return
                     }
                     

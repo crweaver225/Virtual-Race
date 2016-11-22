@@ -181,7 +181,8 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                             self.tableView.reloadData()
                         }
                     }
-                    match.myDistance = raceLocation.distance as NSNumber?
+                    
+                    match.myDistance = raceLocation.distance + 1.0 as NSNumber?
                     
                     let finishDate = RetrieveDistance()
                     finishDate.getFinishDate(raceLocation.distance, date: formatDate(match.startDate!)) { (result, error) in

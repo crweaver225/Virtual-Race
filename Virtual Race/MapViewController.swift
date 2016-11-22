@@ -256,10 +256,10 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
             if self.match.oppFinishDate == nil {
                 if match.initializer == true {
                     record.setObject(match.myFinishDate as CKRecordValue?, forKey: "myFinishDate")
-                    self.match.oppFinishDate = record.object(forKey: "oppFinishDate") as! String
+                    self.match.oppFinishDate = record.object(forKey: "oppFinishDate") as? String
                 } else {
                     record.setObject(match.myFinishDate as CKRecordValue?, forKey: "oppFinishDate")
-                    self.match.oppFinishDate = record.object(forKey: "myFinishDate") as! String?
+                    self.match.oppFinishDate = record.object(forKey: "myFinishDate") as? String
                 }
             }
 
@@ -326,6 +326,8 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
                 
                 record.setObject("true" as CKRecordValue?, forKey: "finished")
                 record.setObject(self.match.myName as CKRecordValue?, forKey: "winner")
+                
+                self.match.winner = self.match.myName
 
             } else {
                 
@@ -342,10 +344,9 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
             self.match.winner = self.match.oppName
             
             if self.match.initializer == true {
-                self.match.oppFinishDate = formatDate(record.object(forKey: "oppFinishDate") as! Date)
-                
+                self.match.oppFinishDate = record.object(forKey: "oppFinishDate") as! String?
             } else {
-                self.match.oppFinishDate = formatDate(record.object(forKey: "myFinishDate") as! Date)
+                self.match.oppFinishDate = record.object(forKey: "myFinishDate") as! String?
                
             }
             
