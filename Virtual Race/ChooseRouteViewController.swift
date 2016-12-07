@@ -124,7 +124,7 @@ class ChooseRouteViewController: ViewControllerMethods, UITableViewDataSource, U
                 newMatch.oppFinishDate = nil
                 newMatch.rejected = "false"
                 newMatch.initializer = true
-                
+               
                 
                 let onlineRace = CKRecord(recordType: "match")
                 onlineRace["myID"] = myID as CKRecordValue?

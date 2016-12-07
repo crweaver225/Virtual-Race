@@ -185,8 +185,8 @@
 		2E1F7B071D806246003BC6FB /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				2E80435F1D931C3B00DFBB4B /* ConvenienceFunctions */,
 				2E7CD6251D81AFF200B9ACB5 /* Model.xcdatamodeld */,
+				2E80435F1D931C3B00DFBB4B /* ConvenienceFunctions */,
 				2E6048BE1D87511200A18A76 /* RaceCourses.swift */,
 				2E8043641D9414CC00DFBB4B /* FBNetworking.swift */,
 				2E80436A1D94152800DFBB4B /* RetrieveAccessToken.swift */,

@@ -96,9 +96,6 @@ class MainPageViewController: ViewControllerMethods {
             }
     }
     
-
-
-    
     func checkRaceRequests() {
         
         let defaultContainer = CKContainer.default()

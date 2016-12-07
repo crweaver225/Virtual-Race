@@ -390,11 +390,13 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
         }
         
         switch row {
-            
+        
+            // Handles cases where a single player race has ended
         case let row where row.finished == true && row.oppID == nil:
             cell.detailTextLabel?.text = "The race is over!"
             cell.detailTextLabel?.textColor = UIColor.red
             
+            // Handles cases where a race is ended before completed.
         case let row where row.rejected == "true" && row.finished == false:
             if row.oppID != nil {
                 cell.textLabel?.text = "\(row.oppName!) is no longer participating in the race"
@@ -406,7 +408,8 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                 cell.detailTextLabel?.text = "The race was from \(raceLocation.startingTitle) to \(raceLocation.endingTitle)"
                 cell.detailTextLabel?.numberOfLines = 3
             }
-
+            
+            // Handles cases where a races has finished the race
         case let row where row.finished == true && row.oppID != nil:
             if row.winner! == "tie" {
                 cell.detailTextLabel?.text = "The race is over! it was a tie"
@@ -426,6 +429,7 @@ class ViewMatchViewController: ViewControllerMethods, UITableViewDataSource, UIT
                 }
             }
             
+            // Handles cases where the race is currently being run
         case let row where row.started == true:
              cell.detailTextLabel!.text = "Race start date: \(formatDate(row.startDate!))"
              cell.detailTextLabel?.textColor = UIColor(red: 0.0, green: 0.502, blue: 0.004, alpha: 1.0)

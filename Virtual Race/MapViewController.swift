@@ -173,6 +173,7 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
         
         let daysBetween = components.day! + 1
         
+        // Handles cases where app user has finished the race
         if self.match.myDistance as? Double >= self.distance {
             
             self.match.finished = true
@@ -183,6 +184,7 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
                 self.match.winner = self.match.myName
             }
             
+            // Gets the date the user finished the race and handles all relevant information related to this finish date
             self.getFinishDate(startDate, distance: (self.match.myDistance as? Double)! / 1609.344) { (result) in
                 
                 if let result = result {
@@ -249,6 +251,7 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
         
         let daysBetween = components.day! + 1
         
+        // Testing to see if both users have a distance greater than the race distance
         if self.match.oppDistance as? Double >= self.distance && self.match.myDistance as? Double >= self.distance {
             
             record.setObject("true" as CKRecordValue?, forKey: "finished")
@@ -275,6 +278,7 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
             
             let myFinishDate = dateConverter(self.match.myFinishDate!)
             
+            // Testing to see if the app user finished before their opponent
             if myFinishDate.compare(dateConverter(self.match.oppFinishDate!)) == ComparisonResult.orderedAscending {
                 
                 record.setObject(self.match.myName as CKRecordValue?, forKey: "winner")
@@ -285,6 +289,7 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
                 
                 self.match.winner = self.match.myName
                 
+            // Testing to see if opponent finished race before the app user
             } else if myFinishDate.compare(dateConverter(self.match.oppFinishDate!)) == ComparisonResult.orderedDescending {
                 
                 self.match.winner = self.match.oppName
@@ -294,7 +299,7 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
                 }
                 
             } else {
-                
+                // If niether racer can be determined to be the winner, the race is labeled a tie.
                 if self.match.winner != self.match.myName && self.match.winner != self.match.oppName {
                     
                     self.match.winner = "tie"
@@ -305,7 +310,8 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
                     }
                 }
             }
-            
+        
+            // Handles cases where app user has finished the race but opponent has not yet done so
         } else if self.match.myDistance as? Double >= self.distance && !(self.match.oppDistance as? Double >= self.distance) {
             
             performUIUpdatesOnMain{
@@ -322,8 +328,8 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
                 lastOppUpdate = record.object(forKey: "racerUpdate1") as! Date
             }
             
+            // Checks to see if opponent has updated their race after app user finished. If not, a winnner is not choosen
             if dateConverter(self.match.myFinishDate!).compare(lastOppUpdate) == ComparisonResult.orderedAscending {
-                
                 record.setObject("true" as CKRecordValue?, forKey: "finished")
                 record.setObject(self.match.myName as CKRecordValue?, forKey: "winner")
                 
@@ -333,7 +339,8 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
                 
                 self.match.winner = "\(self.match.myName!) has finished, awaiting \(self.match.oppName!) to update before confirmation of victory"
             }
-  
+            
+            // Handles cases where the opponent has finished the race but the app user has not.
         } else if self.match.oppDistance as? Double >= self.distance && !(self.match.myDistance as? Double >= self.distance) {
             
             performUIUpdatesOnMain {
@@ -358,9 +365,10 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
             
             self.oppProgressGraph.progress = Float((self.match.oppDistance as! Double) / self.distance!)
             
+            
             if self.match.oppFinishDate == nil {
                 self.oppDistanceNumber.text = String("\(Double(round((100 * (self.match.oppDistance as! Double / 1609.344))) / 100)) Miles")
-                print(self.oppDistanceNumber.text)
+                
             } else {
                 let components2 = (calendar as NSCalendar).components(.day, from: self.match.startDate! as Date, to: (dateConverter(self.match.oppFinishDate!)), options: [])
                 
@@ -571,7 +579,7 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
                 lastLocation = coordinate
             }
             else if currentDistance >= self.distance {
-                print(currentDistance)
+                
                 lastLocation = coordinate
             }
         }
