@@ -637,14 +637,6 @@ class MapViewController: ViewControllerMethods, MKMapViewDelegate {
         
         switch String(describing: annotation.title!) {
             
-        case String(describing: raceCourse?.startingTitle):
-            
-            pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
-            
-        case String(describing: raceCourse?.endingTitle):
-            
-            pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
-            
         case String(describing: self.match.myID):
             
             pinView!.image = UIImage(data: self.match.myAvatar! as! Data)
