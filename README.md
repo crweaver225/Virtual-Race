@@ -2,8 +2,8 @@
 [![Language](https://img.shields.io/badge/Swift-3.0-orange.svg?style=flat)](https://swift.org)
 [![Licence](https://img.shields.io/dub/l/vibe-d.svg?maxAge=2592000)](https://opensource.org/licenses/MIT)
 
-![PinController. Location](https://github.com/crweaver225/Virtual-Race/blob/master/screenshots/p1.png)
-![PinController. Location](https://github.com/crweaver225/Virtual-Race/blob/master/screenshots/p2.png)
+![PinController. Location](https://github.com/crweaver225/Virtual-Race/screenshots/p1.png)
+![PinController. Location](https://github.com/crweaver225/Virtual-Race/screenshots/p2.jpg)
 ![PinController. Location](https://github.com/crweaver225/Virtual-Race/blob/master/screenshots/p3.png)
 ![PinController. Location](https://github.com/crweaver225/Virtual-Race/blob/master/screenshots/p4.png)
 
