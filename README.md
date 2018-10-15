@@ -5,7 +5,6 @@
 ![PinController. Location](https://github.com/crweaver225/Virtual-Race/blob/master/screenshots/p1.jpg)
 ![PinController. Location](https://github.com/crweaver225/Virtual-Race/blob/master/screenshots/p2.jpg)
 ![PinController. Location](https://github.com/crweaver225/Virtual-Race/blob/master/screenshots/p3.jpg)
-![PinController. Location](https://github.com/crweaver225/Virtual-Race/blob/master/screenshots/p4.jpg)
 
 ## About the App:
 
